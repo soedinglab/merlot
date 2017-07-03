@@ -27,6 +27,10 @@ scTree needs certain R dependencies to be installed in order to properly work. M
 * igraph
 * fields
 
+The Destiny package for creating diffusion maps was one of the dinmensionality reduction techniques we used in order to reconstruct lineage tree topologies in a low dimensional manifold. 
+
+The destiny package as well as how to install it and use it can be found here (https://www.helmholtz-muenchen.de/icb/research/groups/quantitative-single-cell-dynamics/software/destiny/index.html)
+
 Optional packages:
 * energy
 * WGCNA
