@@ -3,10 +3,10 @@
 MERLot is a tool that can reconstruct the lineage tree topology that explains the emergence of different cell types from a progenitor population. MERLot is an R package than can reconstruct complex lineage tree topologies using coordinates for cells in a given manifold(like diffusion maps) as input.
 
 # 1) Download
-download the scTree_0.1.0.tar.gz file from this repository (https://github.com/soedinglab/merlot/blob/master/scTree_0.1.0.tar.gz).
+download the merlot_0.1.0.tar.gz file from this repository (https://github.com/soedinglab/merlot/blob/master/merlot_0.1.0.tar.gz).
 
 # 2) Python Dependencies:
-scTree consists of 1 part written in Python, which is distributed with the R package for which the following packages need to be installed. Take into account that scTree uses python 3.
+MERLoT consists of 1 part written in Python, which is distributed with the R package for which the following packages need to be installed. Take into account that MERLoT uses python 3.
 
 * scipy
 * matplotlib
@@ -19,7 +19,7 @@ scTree consists of 1 part written in Python, which is distributed with the R pac
 In case you don’t have a standard python3 installation, e.g you installed it using anaconda, when using the package you will need to set the location of your working python3 binary in the _python_url_ variable in the _ScaffoldTree()_ function. By default it is set to “/usr/bin/python3” (See the Vignette Section, ScaffoldTree() function, for more information).
 
 # 3) R Dependencies:
-scTree needs certain R dependencies to be installed in order to properly work. Most of the packages can be installed either with the install.packages() function from R or from bioconductor.
+MERLoT needs certain R dependencies to be installed in order to properly work. Most of the packages can be installed either with the install.packages() function from R or from bioconductor.
 
 * car
 * rgl
@@ -49,5 +49,5 @@ For rJava **you have to have Java installed** in your system. You can install **
 `install.packages(c("bigpca", "irlba", "nsprcomp", "plotly","fields", "igraph", "rgl", "tictoc"))`
 
 
-# 4) Install scTree
-`install.packages("/url_in_your_computer/scTree_0.1.0.tar.gz",  "types"="source", repos = NULL)`
+# 4) Install MERLoT
+`install.packages("/url_in_your_computer/merlot_0.1.0.tar.gz",  "types"="source", repos = NULL)`
