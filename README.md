@@ -3,7 +3,7 @@
 MERLot is a tool that can reconstruct the lineage tree topology that explains the emergence of different cell types from a progenitor population. MERLot is an R package than can reconstruct complex lineage tree topologies using coordinates for cells in a given manifold(like diffusion maps) as input.
 
 # 1) Download
-download the scTree_0.1.0.tar.gz file from github.
+download the scTree_0.1.0.tar.gz file from this repository (https://github.com/soedinglab/merlot/blob/master/scTree_0.1.0.tar.gz).
 
 # 2) Python Dependencies:
 scTree consists of 1 part written in Python, which is distributed with the R package for which the following packages need to be installed. Take into account that scTree uses python 3.
