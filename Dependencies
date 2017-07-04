@@ -1,0 +1,33 @@
+scTree needs the following packages:
+
+rpgraph
+install.packages(pkgs = "rJava", repos="http://rforge.net", type = 'source')
+for rJava you have to have Java installed in your system. You can install default-jre, open jdk
+
+install.packages("devtools")
+library(devtools)
+
+install.packages(c("bigpca", "irlba", "nsprcomp", "plotly","fields", "igraph", "rgl", "tictoc"))
+
+Python:
+pip3 install scipy
+pip3 install matplotlib
+pip3 install plotly
+pip3 install scikits.bootstrap
+pip3 install pandas
+sudo apt-get install python3-tk
+
+R packages:
+car
+rgl
+rJava
+rpgraph
+igraph
+fields
+
+#Statistics
+TauStar
+energy
+WGCNA
+VGAM
+
