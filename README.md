@@ -44,7 +44,7 @@ For rJava **you have to have Java installed** in your system. You can install **
 `install.packages(c("bigpca", "irlba", "nsprcomp", "plotly","fields", "igraph", "rgl", "tictoc"))`
 
 ## 3) Download
-download the [merlot_0.1.0.tar.gz](https://github.com/soedinglab/merlot/blob/master/merlot_0.1.0.tar.gz) file.
+Download the [merlot_0.1.0.tar.gz](https://github.com/soedinglab/merlot/blob/master/merlot_0.1.0.tar.gz) file.
 
 
 ## 4) Install MERLoT
