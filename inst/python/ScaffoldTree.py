@@ -3,9 +3,7 @@ import scipy as sp
 import numpy as np
 import collections
 from scipy import stats
-import plotly.plotly as py
 import sys
-#import scikits.bootstrap as bootstrap
 import csgraph_mod
 from csgraph_mod import shortest_path_mod as spm
 import time
@@ -212,8 +210,6 @@ import os, math
 import random
 import sys
 from scipy.sparse import csgraph
-#import matplotlib.pyplot as plt
-#from mpl_toolkits.mplot3d import Axes3D
 import pandas as pd
 import argparse
 
