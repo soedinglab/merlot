@@ -8,8 +8,6 @@ MERLot is a tool that can reconstruct the lineage tree topology that explains th
 MERLoT consists of 1 part written in Python, which is distributed with the R package for which the following packages need to be installed. Take into account that MERLoT uses python 3.
 
 * scipy
-* matplotlib
-* plotly
 * pandas
 * python3-tk
 
