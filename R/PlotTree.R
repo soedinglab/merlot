@@ -57,7 +57,7 @@ plot_scaffold_tree <- function(ScaffoldTree, colorcells="gray", dims=dim(Scaffol
 #' @param colorcells vector of colors for the cells
 #' @export
 
-plot_elastic_tree <- function(ElasticTree, colorcells="NULL", legend=T)
+plot_elastic_tree <- function(ElasticTree, colorcells=NULL, legend=T)
 {
   if(legend==T)
   {
@@ -108,6 +108,10 @@ plot_elastic_tree <- function(ElasticTree, colorcells="NULL", legend=T)
     legend3d("topright", legend=seq(1, length(ElasticTree$Branches), 1), pch=c(16), col = selected_colors[1:length(ElasticTree$Branches)], title="Branch")
 
     # rgl.postscript("/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Interpolated.svg","svg")
+  }
+  else
+  {
+    print ("This function cannot work with more than 3 dimensions. See help")
   }
 
 }
@@ -194,6 +198,12 @@ plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes
 
 }
 
+# Auxiliar function
+map2color<-function(x,pal,limits=NULL){
+  if(is.null(limits)) limits=range(x)
+  pal[findInterval(x,seq(limits[1],limits[2],length.out=length(pal)+1), all.inside=TRUE)]
+}
+
 
 #' Plot cells pseudotime
 #'
@@ -208,9 +218,11 @@ plot_pseudotimes <- function (CellCoordinates, Pseudotimes)
 {
   if(dim(CellCoordinates)[2]==3)
   {
-    paleta<-colorRampPalette(colors=c("yellow", "orange", "red", "black"))
-    color<-paleta(200)
-    col1<-numbers2colors(Pseudotimes$Times_cells , colors=color)
+    # paleta<-colorRampPalette(colors=c("yellow", "orange", "red", "black"))
+    # color<-paleta(200)
+    # col1<-numbers2colors(Pseudotimes$Times_cells , colors=color)
+    mypal <- colorRampPalette( c( "yellow", "orange", "darkorange", "red", "black" ) )( length(Pseudotimes$Times_cells) )
+    col1=map2color(Pseudotimes$Times_cells, mypal)
     plot3d(CellCoordinates[,1], CellCoordinates[,2], CellCoordinates[,3], col=col1, pch=16, size = 7, xlab = "DC1", ylab="DC2", zlab="DC3")
   }
   else if(dim(CellCoordinates)[2]==2)
