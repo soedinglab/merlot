@@ -28,8 +28,7 @@ The Destiny package for creating diffusion maps was one of the dinmensionality r
 The destiny package as well as how to install it and use it can be found [here](https://www.helmholtz-muenchen.de/icb/research/groups/quantitative-single-cell-dynamics/software/destiny/index.html)
 
 Optional packages:
-* energy
-* WGCNA
+* energy (needed for finding differentially expressed genes)
 * VGAM
 
 Rpgraph can be installed following the instructions from the [developer's site](https://github.com/Albluca/rpgraph/wiki).
