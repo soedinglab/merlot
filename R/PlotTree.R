@@ -1,6 +1,3 @@
-# library("car")
-# library("rgl")
-
 #' Plot Scaffold Tree
 #'
 #' Plots the scaffold tree on top of the distribution of cells in 2 or 3 coordinates.

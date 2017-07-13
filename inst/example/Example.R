@@ -30,16 +30,6 @@ EmbeddedTree= GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, E
 # Calculate Pseudotimes for the nodes in the Tree in the full gene expression space
 Pseudotimes=CalculatePseudotimes(EmbeddedTree, T0 = 1)
 
-plot3d(CellCoordinates, col=col1)
-
-map2color<-function(x,pal,limits=NULL){
-  if(is.null(limits)) limits=range(x)
-  pal[findInterval(x,seq(limits[1],limits[2],length.out=length(pal)+1), all.inside=TRUE)]
-}
-
-mypal <- colorRampPalette( c( "yellow", "orange", "darkorange", "red", "black" ) )( length(Pseudotimes$Times_cells) )
-col1=map2color(Pseudotimes$Times_cells, mypal)
-
 # Requires WGCNA library to be loaded
 plot_pseudotimes(CellCoordinates, Pseudotimes)
 

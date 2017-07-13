@@ -28,9 +28,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="582.59029"
-     inkscape:cy="853.90329"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="348.69495"
+     inkscape:cy="698.0951"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -47,7 +47,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -62,13 +62,13 @@
        height="295.71429"
        x="-50"
        y="179.50507"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
+       inkscape:export-xdpi="600.00421"
+       inkscape:export-ydpi="600.00421" />
     <g
        id="g3748"
        transform="matrix(0.47839287,-0.24152926,0.24152926,0.47839287,-179.99106,185.78127)"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90">
+       inkscape:export-xdpi="600.00421"
+       inkscape:export-ydpi="600.00421">
       <path
          sodipodi:nodetypes="ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
          inkscape:export-ydpi="90"
@@ -511,8 +511,8 @@
        id="flowRoot3803"
        style="font-style:normal;font-weight:normal;font-size:72.96057892px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        transform="translate(-62.857143,-51.428572)"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"><flowRegion
+       inkscape:export-xdpi="600.00421"
+       inkscape:export-ydpi="600.00421"><flowRegion
          id="flowRegion3805"><rect
            id="rect3807"
            width="789.53772"
@@ -527,8 +527,8 @@
        transform="matrix(0.5,0,0,0.5,79.697634,170.90242)"
        inkscape:transform-center-x="12.857141"
        inkscape:transform-center-y="-27.142861"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"><flowRegion
+       inkscape:export-xdpi="600.00421"
+       inkscape:export-ydpi="600.00421"><flowRegion
          id="flowRegion3805-9"><rect
            id="rect3807-2"
            width="1510.9662"
