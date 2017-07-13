@@ -2,7 +2,8 @@
 import scipy as sp
 import numpy as np
 import collections
-from scipy import stats
+import scipy.stats
+import scipy.spatial
 import sys
 import csgraph_mod
 from csgraph_mod import shortest_path_mod as spm

@@ -7,7 +7,7 @@
 #' @param mu_0 principal elastic tree energy function parameter.
 #' @return ElasticTree
 #' @export
-CalculateElasticTree <- function(ScaffoldTree, N_yk, input="topology", lambda_0=2.03e-09, mu_0=0.00625, FixEndpoints=F, plot=F)
+CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambda_0=2.03e-09, mu_0=0.00625, FixEndpoints=F, plot=F)
 {
   # Testing
   # Default parameters taken from adjustment in real datasets with 100 N_yks
