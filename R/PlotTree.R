@@ -312,3 +312,57 @@ plot_heatmaps_embedding <-function(Pseudotimes, EmbeddedTree, log_tranform=F, cl
 
   return(EmbeddedMatrices)
 }
+
+
+plot_gene_on_map <-function(GeneName,
+                            CellCoordinates,
+                            EmbeddedTree,
+                            CoordLabels=c("Component 1", "Component 2", "Component 3"),
+                            Average=F,
+                            knn=5,
+                            Palette=colorRampPalette(colors=c("yellow", "orange", "red","black")))
+{
+  if (!dim(CellCoordinates)[2] %in% c(2,3)) {
+    stop("Dimensions of CellCoordinates need to be 2 or 3.")
+  }
+  
+  paleta = Palette
+  color = paleta(400)
+  Gene = which(colnames(EmbeddedTree$CellCoords)==GeneName)
+  ExpressionGene = as.numeric(EmbeddedTree$CellCoords[,Gene])
+  
+  # In order to color the range properly, all values are applied an offset to be equal or greater to 0
+  if(min(ExpressionGene)<0){ExpressionGene=ExpressionGene+min(ExpressionGene*-1)}
+  
+  if(Average==T)
+  {
+    ExpressionGeneAveraged=c()
+    knn=5
+    Distances=as.matrix(dist(CellCoordinates, method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+    
+    for (i in  1:length(ExpressionGene))
+    {
+      ordered=sort(Distances[i,], index.return=T)
+      names(ordered)[names(ordered)=="x"] <- "pvals"
+      names(ordered)[names(ordered)=="ix"] <- "indexes"
+      ExpressionGeneAveraged= c(ExpressionGeneAveraged, mean(ExpressionGene[ordered$indexes[1:knn]]))
+    }
+    col1<-map2color(ExpressionGeneAveraged, color)
+    if (dim(CellCoordinates)[2] == 2) {
+      plot(CellCoordinates, main=paste("Expression Gene: ", GeneName), xlab=CoordLabels[1], ylab=CoordLabels[2], xlim=range(CellCoordinates[,1]), ylim=range(CellCoordinates[,2]), col=col1, pch=16, xaxt='n', yaxt='n')
+    }
+    else {
+      plot3d(CellCoordinates, main=paste("Expression Gene: ", GeneName), xlab=CoordLabels[1], ylab=CoordLabels[2], zlab=CoordLabels[3], xlim=range(CellCoordinates[,1]), ylim=range(CellCoordinates[,2]), zlim=range(CellCoordinates[,3]), col=col1, pch=16, size=7, xaxt='n', yaxt='n')
+    }
+  }
+  else
+  {
+    col1<-map2color(ExpressionGene, color)
+    if (dim(CellCoordinates)[2] == 2) {
+      plot(CellCoordinates, main=paste("Expression Gene: ", GeneName), xlab=CoordLabels[1], ylab=CoordLabels[2], xlim=range(CellCoordinates[,1]), ylim=range(CellCoordinates[,2]), col=col1, pch=16, xaxt='n', yaxt='n')
+    }
+    else {
+      plot3d(CellCoordinates, main=paste("Expression Gene: ", GeneName), xlab=CoordLabels[1], ylab=CoordLabels[2], zlab=CoordLabels[3], xlim=range(CellCoordinates[,1]), ylim=range(CellCoordinates[,2]), zlim=range(CellCoordinates[,3]), col=col1, pch=16, size=7, xaxt='n', yaxt='n')
+    }
+  }
+}
