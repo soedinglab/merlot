@@ -50,3 +50,15 @@ DifferentiallyExpressedGenes=subpopulations_differential_expression(SubPopulatio
 # Differentially Expressed Genes in a specific branch
 Branch1Genes=branch_differential_expression(Branch =1, EmbeddedTree, mode="cells")
 Branch2Genes=branch_differential_expression(Branch =2, EmbeddedTree, mode="cells")
+
+
+
+#cluster into a K-Star with K=3
+clust=kbranches.global(CellCoordinates,Kappa=3)
+
+#plot cluster assignments
+set.seed(1)
+pal=RColorBrewer::brewer.pal(8,"Dark2")#change the color palette
+
+plot(CellCoordinates,col=pal[clust$cluster],pch=21,bg=pal[clust$cluster])
+

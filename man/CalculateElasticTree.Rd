@@ -4,7 +4,7 @@
 \alias{CalculateElasticTree}
 \title{Calculate Elastic Tree}
 \usage{
-CalculateElasticTree(ScaffoldTree, N_yk, input = "topology",
+CalculateElasticTree(ScaffoldTree, N_yk = 100, input = "topology",
   lambda_0 = 2.03e-09, mu_0 = 0.00625, FixEndpoints = F, plot = F)
 }
 \arguments{
