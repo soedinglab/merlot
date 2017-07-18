@@ -221,6 +221,8 @@ plot_pseudotimes <- function (CellCoordinates, Pseudotimes)
     mypal <- colorRampPalette( c( "yellow", "orange", "darkorange", "red", "black" ) )( length(Pseudotimes$Times_cells) )
     col1=map2color(Pseudotimes$Times_cells, mypal)
     plot3d(CellCoordinates[,1], CellCoordinates[,2], CellCoordinates[,3], col=col1, pch=16, size = 7, xlab = "DC1", ylab="DC2", zlab="DC3")
+    legend3d()
+
   }
   else if(dim(CellCoordinates)[2]==2)
   {
