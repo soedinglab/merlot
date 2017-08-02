@@ -51,7 +51,7 @@ Download the [merlot](https://github.com/soedinglab/merlot/archive/master.zip) f
 ## 4) Install MERLoT
 Install from source:
 
-`install.packages("/url_in_your_computer/merlot-master.zip",  "types"="source", repos = NULL)`
+`install.packages("/url_in_your_computer/merlot-master.zip",  types="source", repos = NULL)`
 
 Install from github:
 
