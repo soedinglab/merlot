@@ -11,6 +11,7 @@ MERLoT consists of 1 part written in Python, which is distributed with the R pac
 * pandas
 * python3-tk
 * numpy
+* csgraph_mod (modified version of csgraph) which you can install from here: https://github.com/soedinglab/csgraph_mod
 
 **NOTE:**
 In case you don’t have a standard python3 installation, e.g you installed it using anaconda, when using the package you will need to set the location of your working python3 binary in the _python_url_ variable in the _ScaffoldTree()_ function. By default it is set to “/usr/bin/python3” (See the Vignette Section, ScaffoldTree() function, for more information).
