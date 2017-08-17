@@ -124,7 +124,7 @@ plot_elastic_tree <- function(ElasticTree, colorcells=NULL, legend=T)
 #'
 #' @export
 
-plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes, selectedcolors=rainbow(length(Pseudotimes$Branches)), branch_tags=c(), addlegend=F,  range_y=c())
+plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes, selectedcolors=rainbow(length(Pseudotimes$Branches)), branch_tags=c(), addlegend=F,  range_y="tree")
 {
   # GeneName: element from the GeneNames list in the Dataset object
   # EmbeddedTree: Embedded tree used to interpolate the genetic profiles for the tree nodes
@@ -145,14 +145,18 @@ plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes
   color_yk=Pseudotimes$Times_yk
   for(i in 1:length(Pseudotimes$Branches))
   {
-    color_yk[Pseudotimes$Branches[[i]]]=selectedcolors[i]
+    color_yk[Pseudotimes$Branches[[i]]]=selected_colors[i]
   }
 
   # Mapping colors for cells and making them semi transparent
-  CellColors=selectedcolors[Pseudotimes$Cells2Branches]
+  CellColors=selected_colors[Pseudotimes$Cells2Branches]
   CellColors <- rgb(t(col2rgb(CellColors)), alpha=50, maxColorValue=255)
 
-  if(is.null(range_y))
+  if(range_y=="cells")
+  {
+    range_y=range(ExpressionGeneOriginal)
+  }
+  else if(range_y=="tree")
   {
     range_y=range(ExpressionGene)
   }
@@ -173,7 +177,7 @@ plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes
   {
     branch_i=Pseudotimes$Branches[[i]]
     aux=sort(Pseudotimes$Times_yk[branch_i], index.return=T)
-    lines(aux$x, EmbeddedTree$Nodes[branch_i[aux$ix],Gene], col=selectedcolors[i], lwd=3)
+    lines(aux$x, EmbeddedTree$Nodes[branch_i[aux$ix],Gene], col=selected_colors[i], lwd=3)
   }
   # if(!is.null(branch_tags) & addlegend==T)
   # {
@@ -188,7 +192,15 @@ plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes
   if(addlegend==T)
   {
     par(xpd=T)
-    legend("topright", inset=c(-0.12,0), legend=seq(1, length(ElasticTree$Branches), 1), pch=c(16), col = selected_colors[1:length(ElasticTree$Branches)], title="Branch")
+    if(is.null(branch_tags))
+    {
+      legend("topright", inset=c(-0.12,0), legend=seq(1, length(ElasticTree$Branches), 1), pch=c(16), col = selected_colors[1:length(ElasticTree$Branches)], title="Branch")
+    }
+    else
+    {
+      legend("topright", inset=c(-0.12,0), legend=branch_tags, col = selected_colors[1:length(ElasticTree$Branches)], title="Branch")
+    }
+
     par(opar)
   }
 

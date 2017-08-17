@@ -7,6 +7,7 @@
 #' @param mu_0 principal elastic tree energy function parameter.
 #' @return ElasticTree
 #' @export
+
 CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambda_0=2.03e-09, mu_0=0.00625, FixEndpoints=F, plot=F)
 {
   # Testing
@@ -25,27 +26,19 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambd
   # I apply unique in case there are repeated nodes, which is a consequence of having trifurcations or higher order connections
   TopologyNodes=unique(c(ScaffoldTree$Endpoints, ScaffoldTree$Branchpoints))
   # Calculate connectivity in between branches
-  TopologyEdges=c()
   TopologyCoords=ScaffoldTree$CellCoordinates[TopologyNodes,]
-
-  for(i in (1:dim(ScaffoldTree$Branches)[1]))
-  {
-    TopologyEdges=rbind(TopologyEdges, c(which(TopologyNodes==ScaffoldTree$Branches[i,1])[1], which(TopologyNodes==ScaffoldTree$Branches[i,2])[1]))
-  }
-
-  Coords=TopologyCoords
-  Edges=TopologyEdges
 
   # Given initial topology, calculate connectivity in between branches
   TopologyNodes=c(ScaffoldTree$Endpoints, ScaffoldTree$Branchpoints)
-  EmbeddedTopology=c()
+  TopologyEdges=c()
+
   for(i in (1:dim(ScaffoldTree$Branches)[1]))
   {
-    EmbeddedTopology=rbind(EmbeddedTopology, (c(which(TopologyNodes==ScaffoldTree$Branches[i,1])[1], which(TopologyNodes==ScaffoldTree$Branches[i,2])[1])))
+    TopologyEdges=rbind(TopologyEdges, (c(which(TopologyNodes==ScaffoldTree$Branches[i,1])[1], which(TopologyNodes==ScaffoldTree$Branches[i,2])[1])))
   }
-  Edges=EmbeddedTopology
+
   ElasticTree <- computeElasticPrincipalGraph(Data = ScaffoldTree$CellCoordinates, NumNodes = N_yk,
-                                              NodesPositions = Coords, Edges = Edges,
+                                              NodesPositions = TopologyCoords, Edges = TopologyEdges,
                                               Method = 'CurveConfiguration', EP=lambda, RP=mu)
 
   # Unlist the ElasticTree structure
@@ -66,11 +59,11 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambd
 
   # Assign nodes from the embedded tree to the different branches and save the structure in the tree structure
   BranchesNodes=list()
-  for (i in 1: dim(EmbeddedTopology)[1])
+  for (i in 1: dim(TopologyEdges)[1])
   {
-    path=EmbeddedTopology[i,1]
-    first=EmbeddedTopology[i,1]
-    while (first!=EmbeddedTopology[i,2])
+    path=TopologyEdges[i,1]
+    first=TopologyEdges[i,1]
+    while (first!=TopologyEdges[i,2])
     {
       edge=ElasticTree$Edges[which(ElasticTree$Edges[,1]==first),]
       second=edge[2]

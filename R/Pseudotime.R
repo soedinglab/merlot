@@ -27,7 +27,7 @@ CalculatePseudotimes <- function (InputTree, plot=F, plotdim, T0=1, C0=NULL)
   # shortest path distances from the 1st Endpoint to all the other cells. The first endpoint is always the first element in the array
   if(!is.null(C0))
   {
-    T0=InputTree$Cells2TreeNodes[which(InputTree$Cells2TreeNodes[,1]==C0),2]
+    T0=InputTree$Cells2TreeNodes[which(InputTree$Cells2TreeNodes[,1]==C0), 2]
   }
 
   Times_yk=Times_yk[T0,]

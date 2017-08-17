@@ -6,7 +6,7 @@
 \usage{
 plot_pseudotime_expression_gene(GeneName, EmbeddedTree, Pseudotimes,
   selectedcolors = rainbow(length(Pseudotimes$Branches)), branch_tags = c(),
-  addlegend = F, range_y = c())
+  addlegend = F, range_y = "tree")
 }
 \arguments{
 \item{GeneName}{an element from the Datasets$GeneNames object.}
