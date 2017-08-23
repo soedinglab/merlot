@@ -18,8 +18,7 @@ CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, python_locat
   {
     #-------------------------------------------Execute TreeTopology.py-------------
     system(paste(python_location, " ",ScaffoldTreeScript, CoordinatesFile), wait = TRUE)
-  }
-  else
+  }  else
   {
     #-------------------------------------------Execute TreeTopology.py-------------
     system(paste(python_location, " ", ScaffoldTreeScript, CoordinatesFile, " -NBranches ", NEndpoints), wait = TRUE)
@@ -35,8 +34,18 @@ read_topology <-function (DataFile, CellCoordinates)
 {
   TopologyData=read.table(file=paste(DataFile, "_TreeTopology.dat", sep=""), sep="\t", header=F, stringsAsFactors = F)
   # ----- We add 1 to the vectors because python numbers indexes from 0 instead of 1
+
   Endpoints=as.integer(unlist(strsplit(x=TopologyData[1,3], split=" "))) + 1
-  Branchpoints=as.integer(unlist(strsplit(x=TopologyData[2,3], split=" "))) + 1
+
+  if(length(Endpoints)==2)
+  {
+    Branchpoints=0
+  }  else
+  {
+      Branchpoints=as.integer(unlist(strsplit(x=TopologyData[2,3], split=" "))) + 1
+  }
+
+
   DijkstraPredecesors=read.table(file=paste(DataFile, "_DijkstraPredecesors.dat", sep=""), sep=" ", header=F, stringsAsFactors = F)
   DijkstraPredecesors= DijkstraPredecesors + 1
   DijkstraDistances=read.table(file=paste(DataFile, "_DijkstraDistances.dat", sep=""), sep=" ", header=F, stringsAsFactors = F)
@@ -52,20 +61,37 @@ read_topology <-function (DataFile, CellCoordinates)
   SkeletonNodes=c()
   SkeletonEdges=c()
 
-  for(i in 1:dim(Branches)[1])
+  if(length(Endpoints)==2)
   {
-    iBranch=calculate_path(Branches[i,1], Branches[i,2], DijkstraPredecesors)
+    iBranch=calculate_path(Branches[1], Branches[2], DijkstraPredecesors)
     for(j in 1:(length(iBranch)-1))
     {
       SkeletonEdges=rbind(SkeletonEdges, (c(iBranch[j], iBranch[j+1])))
     }
     SkeletonNodes=c(SkeletonNodes, iBranch)
+    SkeletonNodes=sort(unique(SkeletonNodes))
+
+    # Joining all the elements together in a list
+    ScafffoldTree= list(Endpoints=Endpoints, Branchpoints=Branchpoints, DijkstraPredecesors=DijkstraPredecesors, DijkstraSteps=DijkstraSteps, DijkstraDistances= DijkstraDistances, Branches= Branches, SkeletonNodes=SkeletonNodes, SkeletonEdges= SkeletonEdges, CellCoordinates=CellCoordinates)
+  }
+  else if(length(Endpoints)>2)
+  {
+    for(i in 1:dim(Branches)[1])
+    {
+      iBranch=calculate_path(Branches[i,1], Branches[i,2], DijkstraPredecesors)
+      for(j in 1:(length(iBranch)-1))
+      {
+        SkeletonEdges=rbind(SkeletonEdges, (c(iBranch[j], iBranch[j+1])))
+      }
+      SkeletonNodes=c(SkeletonNodes, iBranch)
+    }
+
+    SkeletonNodes=sort(unique(SkeletonNodes))
+
+    # Joining all the elements together in a list
+    ScafffoldTree= list(Endpoints=Endpoints, Branchpoints=Branchpoints, DijkstraPredecesors=DijkstraPredecesors, DijkstraSteps=DijkstraSteps, DijkstraDistances= DijkstraDistances, Branches= Branches, SkeletonNodes=SkeletonNodes, SkeletonEdges= SkeletonEdges, CellCoordinates=CellCoordinates)
   }
 
-  SkeletonNodes=sort(unique(SkeletonNodes))
-
-  # Joining all the elements together in a list
-  ScafffoldTree= list(Endpoints=Endpoints, Branchpoints=Branchpoints, DijkstraPredecesors=DijkstraPredecesors, DijkstraSteps=DijkstraSteps, DijkstraDistances= DijkstraDistances, Branches= Branches, SkeletonNodes=SkeletonNodes, SkeletonEdges= SkeletonEdges, CellCoordinates=CellCoordinates)
 
   return(ScafffoldTree)
 }

@@ -9,9 +9,10 @@ License: GPL
 LazyData: TRUE
 RoxygenNote: 6.0.1
 Depends:
-  car,
   rgl,
   rJava,
   rpgraph,
   igraph,
-  fields
+  fields,
+  scales,
+  car

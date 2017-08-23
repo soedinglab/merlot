@@ -250,12 +250,20 @@ Epsilons=calculate_secondary_endpoints(EndPoints, DijkstraMatrix, DijkstraSteps,
 if len(EndPoints) <= 2: 
 	print ("Only 2 Endpoints detected. There is no tree to reconstruct.")
 	print("Endpoints:", len(EndPoints), *EndPoints)
+	print("Branchpoints:", 0, 0)
 
 	TreeTopologyDat=DMCoordinates+"_TreeTopology.dat"
 	with open(TreeTopologyDat, 'w') as out:
 		print("Endpoints:", len(EndPoints), *EndPoints)
 		EndPointsLine="Endpoints:"+"\t"+str(len(EndPoints))+"\t"+ ' '.join(map(str, EndPoints))+"\n"
 		out.write(EndPointsLine)
+
+		BranchpointsLine="Branchpoints:"+"\t"+str(0)+"\t"+' '+str(0)+"\n"
+		out.write(BranchpointsLine)
+
+		TopologyLine="Tree_Branch"+"\t"+str(EndPoints[0])+"\t"+str(EndPoints[1])+"\n"
+		out.write(TopologyLine)
+
 	out.close()
 
 	DijkstraStepsDat=DMCoordinates+"_DijkstraSteps.dat"

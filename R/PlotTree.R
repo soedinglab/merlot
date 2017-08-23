@@ -12,13 +12,24 @@ plot_scaffold_tree <- function(ScaffoldTree, colorcells="gray", dims=dim(Scaffol
   {
     # Plot 2d Dijkstra's tree
     plot(ScaffoldTree$CellCoordinates[,1], ScaffoldTree$CellCoordinates[,2], pch=16, col=alpha(colorcells, 0.6), xlab="Component 1", ylab="Component 2", cex=1)
-    for(i in 1:dim(ScaffoldTree$Branches)[1])
+
+    if(length(ScafffoldTree$Endpoints)==2)
     {
-      Path=calculate_path(ScaffoldTree$Branches[i,1], ScaffoldTree$Branches[i,2], ScaffoldTree$DijkstraPredecesors)
+      Path=calculate_path(ScaffoldTree$Branches[1], ScaffoldTree$Branches[2], ScaffoldTree$DijkstraPredecesors)
       lines(ScaffoldTree$CellCoordinates[Path,1], ScaffoldTree$CellCoordinates[Path,2], lwd=3, col="black")
       points(ScaffoldTree$CellCoordinates[ScaffoldTree$Endpoints,1], ScaffoldTree$CellCoordinates[ScaffoldTree$Endpoints,2], col="black", pch=16, cex=2)
       points(ScaffoldTree$CellCoordinates[ScaffoldTree$Branchpoints,1], ScaffoldTree$CellCoordinates[ScaffoldTree$Branchpoints,2], col="black", pch=16, cex=2)
       box(lwd=2)
+    }else
+    {
+      for(i in 1:dim(ScaffoldTree$Branches)[1])
+      {
+        Path=calculate_path(ScaffoldTree$Branches[i,1], ScaffoldTree$Branches[i,2], ScaffoldTree$DijkstraPredecesors)
+        lines(ScaffoldTree$CellCoordinates[Path,1], ScaffoldTree$CellCoordinates[Path,2], lwd=3, col="black")
+        points(ScaffoldTree$CellCoordinates[ScaffoldTree$Endpoints,1], ScaffoldTree$CellCoordinates[ScaffoldTree$Endpoints,2], col="black", pch=16, cex=2)
+        points(ScaffoldTree$CellCoordinates[ScaffoldTree$Branchpoints,1], ScaffoldTree$CellCoordinates[ScaffoldTree$Branchpoints,2], col="black", pch=16, cex=2)
+        box(lwd=2)
+      }
     }
   }
   else if (dims==3)
@@ -27,18 +38,33 @@ plot_scaffold_tree <- function(ScaffoldTree, colorcells="gray", dims=dim(Scaffol
     points3d(ScaffoldTree$CellCoordinates[ScaffoldTree$Branchpoints,], col="red", size = 7)
     legend3d(x="topright", legend=c("Endpoints", "Branchpoints"), col=c("green", "red"), pch=16)
 
-    for(i in 1:dim(ScaffoldTree$Branches)[1])
+    if(length(ScafffoldTree$Endpoints)==2)
     {
-      lines3d(ScaffoldTree$CellCoordinates[calculate_path(ScaffoldTree$Branches[i,1], ScaffoldTree$Branches[i,2], ScaffoldTree$DijkstraPredecesors),], lwd=2)
+      lines3d(ScaffoldTree$CellCoordinates[calculate_path(ScaffoldTree$Branches[1], ScaffoldTree$Branches[2], ScaffoldTree$DijkstraPredecesors),], lwd=2)
+
+    }else
+    {
+      for(i in 1:dim(ScaffoldTree$Branches)[1])
+      {
+        lines3d(ScaffoldTree$CellCoordinates[calculate_path(ScaffoldTree$Branches[i,1], ScaffoldTree$Branches[i,2], ScaffoldTree$DijkstraPredecesors),], lwd=2)
+      }
     }
 
-    # rgl.postscript("/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Dijkstra.svg","svg")
+        # rgl.postscript("/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Dijkstra.svg","svg")
     open3d()
     plot3d(ScaffoldTree$CellCoordinates, type ="p", size=7, col = colorcells)
-    for(i in 1:dim(ScaffoldTree$Branches)[1])
+
+    if(length(ScafffoldTree$Endpoints)==2)
     {
-      lines3d(ScaffoldTree$CellCoordinates[calculate_path(ScaffoldTree$Branches[i,1], ScaffoldTree$Branches[i,2], ScaffoldTree$DijkstraPredecesors),], lwd=2)
+      lines3d(ScaffoldTree$CellCoordinates[calculate_path(ScaffoldTree$Branches[1], ScaffoldTree$Branches[2], ScaffoldTree$DijkstraPredecesors),], lwd=2)
+    }else
+    {
+      for(i in 1:dim(ScaffoldTree$Branches)[1])
+      {
+      }
     }
+
+
   }
   else
   {
@@ -54,7 +80,7 @@ plot_scaffold_tree <- function(ScaffoldTree, colorcells="gray", dims=dim(Scaffol
 #' @param colorcells vector of colors for the cells
 #' @export
 
-plot_elastic_tree <- function(ElasticTree, colorcells=NULL, legend=T)
+plot_elastic_tree <- function(ElasticTree, colorcells=NULL, legend=F, legend_names=c())
 {
   if(legend==T)
   {
@@ -96,14 +122,25 @@ plot_elastic_tree <- function(ElasticTree, colorcells=NULL, legend=T)
   # plot 3d elastic tree
   else if(dim(ElasticTree$CellCoords)[2]==3)
   {
-    plot3d(ElasticTree$CellCoords, type ="p", size=7, col = colorcells)
+    plot3d(ElasticTree$CellCoords, type ="p", size=7, col = colorcells, xlab="Component 1", ylab="Component 2", zlab="Component 3")
     for(i in 1:length(ElasticTree$Branches))
     {
       points3d(ElasticTree$Nodes[ElasticTree$Branches[[i]],], size=7, lwd=3, col="black")
       lines3d(ElasticTree$Nodes[ElasticTree$Branches[[i]],], size=7, lwd=3, col="black")
     }
-    legend3d("topright", legend=seq(1, length(ElasticTree$Branches), 1), pch=c(16), col = selected_colors[1:length(ElasticTree$Branches)], title="Branch")
 
+    if(legend==T)
+    {
+      if(is.null(legend_names))
+      {
+        legend3d("topright", legend=seq(1, length(ElasticTree$Branches), 1), pch=c(16), col = selected_colors[1:length(ElasticTree$Branches)], title="Branch")
+      }
+      else
+      {
+        legend3d("topright", legend=legend_names, pch=c(16), col = unique(colorcells), title="Branch")
+      }
+
+    }
     # rgl.postscript("/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Interpolated.svg","svg")
   }
   else
@@ -198,7 +235,7 @@ plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes
     }
     else
     {
-      legend("topright", inset=c(-0.12,0), legend=branch_tags, col = selected_colors[1:length(ElasticTree$Branches)], title="Branch")
+      legend("topright", inset=c(-0.16,0), legend=branch_tags, col = selected_colors[1:length(ElasticTree$Branches)], title="Branch", pch=c(16))
     }
 
     par(opar)
