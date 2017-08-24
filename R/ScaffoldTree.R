@@ -25,9 +25,9 @@ CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, python_locat
   }
 
   # --------Read the topology elements from the TreeTopology.py output---------------
-  ScafffoldTree=read_topology(CoordinatesFile, CellCoordinates)
+  ScaffoldTree=read_topology(CoordinatesFile, CellCoordinates)
 
-  return(ScafffoldTree)
+  return(ScaffoldTree)
 }
 
 read_topology <-function (DataFile, CellCoordinates)
@@ -72,7 +72,7 @@ read_topology <-function (DataFile, CellCoordinates)
     SkeletonNodes=sort(unique(SkeletonNodes))
 
     # Joining all the elements together in a list
-    ScafffoldTree= list(Endpoints=Endpoints, Branchpoints=Branchpoints, DijkstraPredecesors=DijkstraPredecesors, DijkstraSteps=DijkstraSteps, DijkstraDistances= DijkstraDistances, Branches= Branches, SkeletonNodes=SkeletonNodes, SkeletonEdges= SkeletonEdges, CellCoordinates=CellCoordinates)
+    ScaffoldTree= list(Endpoints=Endpoints, Branchpoints=Branchpoints, DijkstraPredecesors=DijkstraPredecesors, DijkstraSteps=DijkstraSteps, DijkstraDistances= DijkstraDistances, Branches= Branches, SkeletonNodes=SkeletonNodes, SkeletonEdges= SkeletonEdges, CellCoordinates=CellCoordinates)
   }
   else if(length(Endpoints)>2)
   {
@@ -89,11 +89,11 @@ read_topology <-function (DataFile, CellCoordinates)
     SkeletonNodes=sort(unique(SkeletonNodes))
 
     # Joining all the elements together in a list
-    ScafffoldTree= list(Endpoints=Endpoints, Branchpoints=Branchpoints, DijkstraPredecesors=DijkstraPredecesors, DijkstraSteps=DijkstraSteps, DijkstraDistances= DijkstraDistances, Branches= Branches, SkeletonNodes=SkeletonNodes, SkeletonEdges= SkeletonEdges, CellCoordinates=CellCoordinates)
+    ScaffoldTree= list(Endpoints=Endpoints, Branchpoints=Branchpoints, DijkstraPredecesors=DijkstraPredecesors, DijkstraSteps=DijkstraSteps, DijkstraDistances= DijkstraDistances, Branches= Branches, SkeletonNodes=SkeletonNodes, SkeletonEdges= SkeletonEdges, CellCoordinates=CellCoordinates)
   }
 
 
-  return(ScafffoldTree)
+  return(ScaffoldTree)
 }
 
 # Reconstructs cell path between two cells using the DijsktraPredecesors matrix calculated by TreeTopology.py
