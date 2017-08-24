@@ -32,10 +32,17 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambd
   TopologyNodes=c(ScaffoldTree$Endpoints, ScaffoldTree$Branchpoints)
   TopologyEdges=c()
 
-  for(i in (1:dim(ScaffoldTree$Branches)[1]))
+  if(length(ScaffoldTree$Endpoints)==2)
   {
-    TopologyEdges=rbind(TopologyEdges, (c(which(TopologyNodes==ScaffoldTree$Branches[i,1])[1], which(TopologyNodes==ScaffoldTree$Branches[i,2])[1])))
+    TopologyEdges=rbind(TopologyEdges, (c(which(TopologyNodes==ScaffoldTree$Branches[1])[1], which(TopologyNodes==ScaffoldTree$Branches[2])[1])))
+  }else
+  {
+    for(i in (1:dim(ScaffoldTree$Branches)[1]))
+    {
+      TopologyEdges=rbind(TopologyEdges, (c(which(TopologyNodes==ScaffoldTree$Branches[i,1])[1], which(TopologyNodes==ScaffoldTree$Branches[i,2])[1])))
+    }
   }
+
 
   ElasticTree <- computeElasticPrincipalGraph(Data = ScaffoldTree$CellCoordinates, NumNodes = N_yk,
                                               NodesPositions = TopologyCoords, Edges = TopologyEdges,
@@ -59,29 +66,57 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambd
 
   # Assign nodes from the embedded tree to the different branches and save the structure in the tree structure
   BranchesNodes=list()
-  for (i in 1: dim(TopologyEdges)[1])
+
+  if(length(ScaffoldTree$Endpoints)==2)
   {
-    path=TopologyEdges[i,1]
-    first=TopologyEdges[i,1]
-    while (first!=TopologyEdges[i,2])
+    path=TopologyEdges[1,1]
+    first=TopologyEdges[1,1]
+    while (first!=TopologyEdges[1,2])
     {
       edge=ElasticTree$Edges[which(ElasticTree$Edges[,1]==first),]
       second=edge[2]
       path=c(path, second)
       first=second
     }
-    BranchesNodes[[i]] <- path
+    BranchesNodes[[1]] <- path
+  }else
+  {
+    for (i in 1: dim(TopologyEdges)[1])
+    {
+      path=TopologyEdges[i,1]
+      first=TopologyEdges[i,1]
+      while (first!=TopologyEdges[i,2])
+      {
+        edge=ElasticTree$Edges[which(ElasticTree$Edges[,1]==first),]
+        second=edge[2]
+        path=c(path, second)
+        first=second
+      }
+      BranchesNodes[[i]] <- path
+    }
   }
 
   cell2yk=c()
-  for (i in 1:dim(ScaffoldTree$CellCoordinates)[1])
+
+  if(length(ScaffoldTree$Endpoints)==2)
   {
-    cell_i=matrix(ScaffoldTree$CellCoordinates[i,], nrow=1)
+    cell_i=matrix(ScaffoldTree$CellCoordinates[1,], nrow=1)
     dist_cell_i=as.matrix(dist(rbind(cell_i, ElasticTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
     #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
     closest_yk=sort(dist_cell_i[,1], index.return=T)$ix[2]-1
-    cell2yk=rbind(cell2yk, c(i, closest_yk))
+    cell2yk=rbind(cell2yk, c(1, closest_yk))
+  }else
+  {
+    for (i in 1:dim(ScaffoldTree$CellCoordinates)[1])
+    {
+      cell_i=matrix(ScaffoldTree$CellCoordinates[i,], nrow=1)
+      dist_cell_i=as.matrix(dist(rbind(cell_i, ElasticTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+      #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
+      closest_yk=sort(dist_cell_i[,1], index.return=T)$ix[2]-1
+      cell2yk=rbind(cell2yk, c(i, closest_yk))
+    }
   }
+
 
   # Add cells 2 yks mapping
   ElasticTree=c(ElasticTree, Cells2TreeNodes=1)

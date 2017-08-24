@@ -209,7 +209,12 @@ plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes
   plot(Pseudotimes$Times_cells, ExpressionGeneOriginal, col=CellColors, pch=16, xlab="Pseudotime", ylab="Expression Level", main=GeneName, cex=1, ylim=range_y)
   # points(Pseudotimes$Times_yk, ExpressionGene, pch=16, xlab="Pseudotime assignment", ylab="Expression Level", main=paste(GeneName, "Expression"), col=color_yk, cex=1.5)
   points(Pseudotimes$Times_yk[EmbeddedTree$Topology$Endpoints], ExpressionGene[EmbeddedTree$Topology$Endpoints], pch=16, col="black", cex=1.5)
-  points(Pseudotimes$Times_yk[EmbeddedTree$Topology$Branchpoints], ExpressionGene[EmbeddedTree$Topology$Branchpoints], pch=16, col="black", cex=1.5)
+
+  if(length(EmbeddedTree$Topology$Endpoints)>2)
+  {
+    points(Pseudotimes$Times_yk[EmbeddedTree$Topology$Branchpoints], ExpressionGene[EmbeddedTree$Topology$Branchpoints], pch=16, col="black", cex=1.5)
+  }
+
   for(i in 1:length(Pseudotimes$Branches))
   {
     branch_i=Pseudotimes$Branches[[i]]
