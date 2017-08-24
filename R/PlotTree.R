@@ -13,7 +13,7 @@ plot_scaffold_tree <- function(ScaffoldTree, colorcells="gray", dims=dim(Scaffol
     # Plot 2d Dijkstra's tree
     plot(ScaffoldTree$CellCoordinates[,1], ScaffoldTree$CellCoordinates[,2], pch=16, col=alpha(colorcells, 0.6), xlab="Component 1", ylab="Component 2", cex=1)
 
-    if(length(ScafffoldTree$Endpoints)==2)
+    if(length(ScaffoldTree$Endpoints)==2)
     {
       Path=calculate_path(ScaffoldTree$Branches[1], ScaffoldTree$Branches[2], ScaffoldTree$DijkstraPredecesors)
       lines(ScaffoldTree$CellCoordinates[Path,1], ScaffoldTree$CellCoordinates[Path,2], lwd=3, col="black")
@@ -38,10 +38,9 @@ plot_scaffold_tree <- function(ScaffoldTree, colorcells="gray", dims=dim(Scaffol
     points3d(ScaffoldTree$CellCoordinates[ScaffoldTree$Branchpoints,], col="red", size = 7)
     legend3d(x="topright", legend=c("Endpoints", "Branchpoints"), col=c("green", "red"), pch=16)
 
-    if(length(ScafffoldTree$Endpoints)==2)
+    if(length(ScaffoldTree$Endpoints)==2)
     {
       lines3d(ScaffoldTree$CellCoordinates[calculate_path(ScaffoldTree$Branches[1], ScaffoldTree$Branches[2], ScaffoldTree$DijkstraPredecesors),], lwd=2)
-
     }else
     {
       for(i in 1:dim(ScaffoldTree$Branches)[1])
@@ -50,17 +49,18 @@ plot_scaffold_tree <- function(ScaffoldTree, colorcells="gray", dims=dim(Scaffol
       }
     }
 
-        # rgl.postscript("/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Dijkstra.svg","svg")
+    # rgl.postscript("/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Dijkstra.svg","svg")
     open3d()
     plot3d(ScaffoldTree$CellCoordinates, type ="p", size=7, col = colorcells)
 
-    if(length(ScafffoldTree$Endpoints)==2)
+    if(length(ScaffoldTree$Endpoints)==2)
     {
       lines3d(ScaffoldTree$CellCoordinates[calculate_path(ScaffoldTree$Branches[1], ScaffoldTree$Branches[2], ScaffoldTree$DijkstraPredecesors),], lwd=2)
     }else
     {
       for(i in 1:dim(ScaffoldTree$Branches)[1])
       {
+        lines3d(ScaffoldTree$CellCoordinates[calculate_path(ScaffoldTree$Branches[i, 1], ScaffoldTree$Branches[i, 2], ScaffoldTree$DijkstraPredecesors),], lwd=2)
       }
     }
 
