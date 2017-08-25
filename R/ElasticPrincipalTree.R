@@ -291,7 +291,7 @@ GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-0
   EmbeddedTree$AveragedNodes <- yk_profiles
 
   # dif_yk_profiles <- DiffusionMap(yk_profiles_nozeros, verbose = T)
-  dif_elastic_yk <- DiffusionMap(EmbeddedTree$Nodes,  density.norm = T)
+  # dif_elastic_yk <- DiffusionMap(EmbeddedTree$Nodes,  density.norm = T)
 
   return (EmbeddedTree)
 }
