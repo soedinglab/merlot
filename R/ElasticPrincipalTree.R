@@ -204,7 +204,7 @@ GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-0
   # set NA values for y_k with no mapped x_n to 0
   yk_profiles=as.matrix(yk_profiles)
   yk_profiles[which(is.na(yk_profiles))]=0
-  length(which(yk_counts==0))
+  # length(which(yk_counts==0))
 
   # # # Work in progress
   # for(i in 1:N_yk)
