@@ -5,7 +5,7 @@
 \title{Gene Space Embedding}
 \usage{
 GenesSpaceEmbedding(ExpressionMatrix, ElasticTree, lambda_0 = 2.03e-09,
-  mu_0 = 0.00625, increaseFactor = 10)
+  mu_0 = 0.00625, increaseFactor_mu = 10, increaseFactor_lambda = 10)
 }
 \arguments{
 \item{ExpressionMatrix}{Gene expression matrix on which the tree will be embedded}

@@ -4,7 +4,8 @@
 \alias{plot_elastic_tree}
 \title{Plot Elastic Tree}
 \usage{
-plot_elastic_tree(ElasticTree, colorcells = NULL, legend = T)
+plot_elastic_tree(ElasticTree, colorcells = NULL, legend = F,
+  legend_names = c())
 }
 \arguments{
 \item{ElasticTree}{Principal Elastic Tree calculated with the CalculateElasticTreeFunction}

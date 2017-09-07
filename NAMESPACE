@@ -3,6 +3,7 @@
 export(CalculateElasticTree)
 export(CalculatePseudotimes)
 export(CalculateScaffoldTree)
+export(DuplicateTreeNodes)
 export(GenesSpaceEmbedding)
 export(ReadDataset)
 export(branch_differential_expression)
