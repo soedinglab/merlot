@@ -157,7 +157,7 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambd
 
 #' Duplicate Elastic Tree Nodes
 #'
-#'Duplicates the number of nodes in a given elastic tree
+#'Introduces intermediate nodes in between nodes being part of an edge in the ElasticTree structure
 #' @param ElasticTree Elastic Tree to which nodes will be added
 #' @return ElasticTree
 #' @export
@@ -182,25 +182,41 @@ DuplicateTreeNodes <- function(ElasticTree)
     NewEdges=rbind(NewEdges, c(Edge_i[2], N_yk+i))
     NewNodes=rbind(NewNodes, coords_interpolate)
 
-    # add node to branch structure
-    if(!Edge_i[1] %in% ElasticTree$Topology$Branchpoints)
-    {
-      j=1
-      while(!Edge_i[1] %in% ElasticTree$Branches[[j]])
-      {
-        j=j+1
-      }
 
-      ElasticTree2$Branches[[j]]=c(ElasticTree2$Branches[[j]][1:which(ElasticTree2$Branches[[j]]==Edge_i[1])], N_yk+i, ElasticTree2$Branches[[j]][which(ElasticTree2$Branches[[j]]==Edge_i[2]):length(ElasticTree2$Branches[[j]])])
-    }else{
-      j=1
-      while(!Edge_i[2] %in% ElasticTree$Branches[[j]])
+    # Find branch
+    branch_edges=c()
+    for(j in 1:length(ElasticTree2$Branches))
+    {
+      if(Edge_i[1] %in% ElasticTree2$Branches[[j]] && Edge_i[2] %in% ElasticTree2$Branches[[j]])
       {
-        j=j+1
+        branch_edges=j
       }
-      ElasticTree2$Branches[[j]]=c(ElasticTree2$Branches[[j]][1:which(ElasticTree2$Branches[[j]]==Edge_i[1])], N_yk+i, ElasticTree2$Branches[[j]][which(ElasticTree2$Branches[[j]]==Edge_i[2]):length(ElasticTree2$Branches[[j]])])
-      # ElasticTree2$Branches[[j]]=c(ElasticTree2$Branches[[j]], N_yk+i)
     }
+
+    if(which(ElasticTree2$Branches[[branch_edges]]==Edge_i[2]) < which(ElasticTree2$Branches[[branch_edges]]==Edge_i[1]))
+    {
+       Edge_i=rev(Edge_i)
+    }
+
+    ElasticTree2$Branches[[branch_edges]]=c(ElasticTree2$Branches[[branch_edges]][1:which(ElasticTree2$Branches[[branch_edges]]==Edge_i[1])], N_yk+i, ElasticTree2$Branches[[branch_edges]][which(ElasticTree2$Branches[[branch_edges]]==Edge_i[2]):length(ElasticTree2$Branches[[branch_edges]])])
+    # # add node to branch structure
+    # if(!Edge_i[1] %in% ElasticTree$Topology$Branchpoints)
+    # {
+    #   j=1
+    #   while(!Edge_i[1] %in% ElasticTree$Branches[[j]])
+    #   {
+    #     j=j+1
+    #   }
+    #   ElasticTree2$Branches[[j]]=c(ElasticTree2$Branches[[j]][1:which(ElasticTree2$Branches[[j]]==Edge_i[1])], N_yk+i, ElasticTree2$Branches[[j]][which(ElasticTree2$Branches[[j]]==Edge_i[2]):length(ElasticTree2$Branches[[j]])])
+    # }else{
+    #   j=1
+    #   while(!Edge_i[2] %in% ElasticTree$Branches[[j]])
+    #   {
+    #     j=j+1
+    #   }
+    #   ElasticTree2$Branches[[j]]=c(ElasticTree2$Branches[[j]][1:which(ElasticTree2$Branches[[j]]==Edge_i[1])], N_yk+i, ElasticTree2$Branches[[j]][which(ElasticTree2$Branches[[j]]==Edge_i[2]):length(ElasticTree2$Branches[[j]])])
+    #   # ElasticTree2$Branches[[j]]=c(ElasticTree2$Branches[[j]], N_yk+i)
+    # }
   }
 
   ElasticTree2$Edges=NewEdges
