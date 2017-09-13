@@ -96,3 +96,31 @@ branch_differential_expression<-function(Branch, EmbeddedTree, mode=c("tree", "c
   return(Branch_Genes)
 
 }
+
+#' Get Gene Correlation Network
+#'
+#' Given an gene expression matrix (raw or embedded in the high dimensional elastic tree) it calculates the correlations in between all pairs of gene expression profiles and plots the network
+#'
+#' @param ExpressionMatrix contaings the expression profiles(columns) along the cells (rows)
+#' @param cor_threshold correlation threshold for showing edges in the network plot (default=0.4)
+#' @param plot whether the network should be plotted or not (default=T)
+#'
+#' @return cor.genes pair correlation matrix
+#'
+#'
+#' @export
+GetGeneCorrelationNetwork <-function(ExpressionMatrix, cor_threshold=0.4, plot=T)
+{
+  GeneCorrelations<- cor(ExpressionMatrix, use="pair")
+  GeneCorrelationsPlot=GeneCorrelations
+  GeneCorrelationsPlot[GeneCorrelationsPlot < cor_threshold] <- 0
+  diag(GeneCorrelationsPlot) <- 0
+  graph <- graph.adjacency(GeneCorrelationsPlot, weighted=TRUE, mode="lower")
+  set.seed(2)
+  if(plot)
+  {
+    plot.igraph(graph, vertex.size=6, edge.width=0.5, vertex.label=rownames(GeneCorrelationsPlot), layout=layout.fruchterman.reingold(graph))
+  }
+  return(GeneCorrelations)
+}
+
