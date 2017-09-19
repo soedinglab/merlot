@@ -60,6 +60,7 @@ read_topology <-function (DataFile, CellCoordinates)
   # Nodes that constitute the skeleton for the tree are saved in a vector
   SkeletonNodes=c()
   SkeletonEdges=c()
+  BranchesNodes=list()
 
   if(length(Endpoints)==2)
   {
@@ -69,6 +70,7 @@ read_topology <-function (DataFile, CellCoordinates)
       SkeletonEdges=rbind(SkeletonEdges, (c(iBranch[j], iBranch[j+1])))
     }
     SkeletonNodes=c(SkeletonNodes, iBranch)
+    BranchesNodes[[1]] <- iBranch
     SkeletonNodes=sort(unique(SkeletonNodes))
 
     # Joining all the elements together in a list
@@ -84,14 +86,14 @@ read_topology <-function (DataFile, CellCoordinates)
         SkeletonEdges=rbind(SkeletonEdges, (c(iBranch[j], iBranch[j+1])))
       }
       SkeletonNodes=c(SkeletonNodes, iBranch)
+      BranchesNodes[[i]] <- iBranch
     }
 
     SkeletonNodes=sort(unique(SkeletonNodes))
 
     # Joining all the elements together in a list
-    ScaffoldTree= list(Endpoints=Endpoints, Branchpoints=Branchpoints, DijkstraPredecesors=DijkstraPredecesors, DijkstraSteps=DijkstraSteps, DijkstraDistances= DijkstraDistances, Branches= Branches, SkeletonNodes=SkeletonNodes, SkeletonEdges= SkeletonEdges, CellCoordinates=CellCoordinates)
+    ScaffoldTree= list(Endpoints=Endpoints, Branchpoints=Branchpoints, DijkstraPredecesors=DijkstraPredecesors, DijkstraSteps=DijkstraSteps, DijkstraDistances= DijkstraDistances, Branches= Branches, SkeletonNodes=SkeletonNodes, SkeletonEdges= SkeletonEdges, CellCoordinates=CellCoordinates, Nodes2BranchesAssignments=BranchesNodes)
   }
-
 
   return(ScaffoldTree)
 }
