@@ -7,7 +7,7 @@
 #' @return ScaffoldTre object with the structure and connectivity of the Scaffold Tree
 #' @export
 
-CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, python_location="python3")
+CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLength=-1, python_location="python3")
 {
   CoordinatesFile=tempfile()
   write.table(CellCoordinates, file = CoordinatesFile, sep="\t", col.names = F, row.names = F)
@@ -17,7 +17,7 @@ CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, python_locat
   if(is.null(NEndpoints))
   {
     #-------------------------------------------Execute TreeTopology.py-------------
-    system(paste(python_location, " ",ScaffoldTreeScript, CoordinatesFile), wait = TRUE)
+    system(paste(python_location, " ",ScaffoldTreeScript, CoordinatesFile, "-BranchMinLength ", BranchMinLength), wait = TRUE)
   }  else
   {
     #-------------------------------------------Execute TreeTopology.py-------------

@@ -40,13 +40,15 @@ def calc_extreme_endpoints(CellDistances):
     EndPoints.append(Endpoint2)
     return EndPoints
     
-def calculate_secondary_endpoints(Endpoints, DijkstraMatrix, NumberNodes, NBranches=-1, graph='no'):
+def calculate_secondary_endpoints(Endpoints, DijkstraMatrix, NumberNodes, NBranches=-1, BranchMinLength=-1, graph='no'):
     R_epsilon_todos={}
     TryEndpoint=True
     NewBranch=True
     NBranches=int(NBranches)
     nodes=list(range(DijkstraMatrix.shape[0]))
-    BranchMinLength=np.sqrt(len(nodes)/2)
+    if BranchMinLength==-1:
+        BranchMinLength=np.sqrt(len(nodes)/2)
+
     while TryEndpoint:
         #Add a new endpoint
         ScoreEndpoints=np.zeros(len(nodes))
@@ -218,10 +220,12 @@ import argparse
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('Filename', help='Matrix with "cells" x "genes" dimensions. Fields shout be delimited by tabs')
 parser.add_argument('-NBranches', type=int, default=(-1), help='Number of desired branches for the resulting tree. By default the value is set to -1, meaning that all branches longer than sqrt(N/2) will be considered')
+parser.add_argument('-BranchMinLength', type=int, default=(-1), help='Minimum length for a branch to be included in the tree. Default minimum length: sqrt(N/2) with N being the number of cells in the dataset')
 parser.add_argument('-showplot', type=str, default="no", help='Weather or not 2D/3D plots should be shown. Options are "yes" and "no". By default it is not activated')
 args = parser.parse_args()
 DMCoordinates=args.Filename
 NBranches=args.NBranches
+BranchMinLength=args.BranchMinLength
 plot=args.showplot
 
 #---Read Manifold Coordinates (DMs, t-SNE, etc)
@@ -245,7 +249,7 @@ DijkstraSteps=DijkstraSteps-1
 
 #Calculate Endpoints in the tree
 EndPoints=calc_extreme_endpoints(DijkstraSteps)
-Epsilons=calculate_secondary_endpoints(EndPoints, DijkstraMatrix, DijkstraSteps, NBranches)
+Epsilons=calculate_secondary_endpoints(EndPoints, DijkstraMatrix, DijkstraSteps, NBranches, BranchMinLength)
 
 if len(EndPoints) <= 2: 
 	print ("Only 2 Endpoints detected.")

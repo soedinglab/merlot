@@ -392,3 +392,162 @@ GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-0
 
   return (EmbeddedTree)
 }
+
+
+
+#' Calculate Elastic Tree 2
+#'
+#'Calculates an elastic tree using a scaffold tree to initialize it. A set of N_yk nodes are included one byone into a tree structure that minimizes an error and an energetic functions to the cell coordinates. The initialization with the scaffold tree ensures that the correct number of endpoints and branchpoints and their connectivity are preserved in the elastic tree interpolation.
+#' @param Scaffoldtree scaffoldTree calculated by the CalculateScaffoldTree function.
+#' @param N_yk number of nodes for the elastic principal tree
+#' @param lambda_0 principal elastic tree energy function parameter.
+#' @param mu_0 principal elastic tree energy function parameter.
+#' @return ElasticTree
+#' @export
+
+CalculateElasticTree2 <- function(ScaffoldTree, N_yk=100, input="topology", lambda_0=2.03e-09, mu_0=0.00625, FixEndpoints=F, plot=F)
+{
+  # Testing
+  # Default parameters taken from adjustment in real datasets with 100 N_yks
+  lambda_0=2.03e-09
+  mu_0=0.00625
+  #  End testing
+
+  Coords=c()
+  Edges=c()
+
+  # scaling according to N_yk
+  mu=(N_yk-1)*mu_0
+  lambda=((N_yk-2)**3)*lambda_0
+
+  # I apply unique in case there are repeated nodes, which is a consequence of having trifurcations or higher order connections
+  TopologyNodes=unique(c(ScaffoldTree$Endpoints, ScaffoldTree$Branchpoints))
+  # Calculate connectivity in between branches
+  TopologyCoords=ScaffoldTree$CellCoordinates[TopologyNodes,]
+  # Given initial topology, calculate connectivity in between branches
+  TopologyNodes=c(ScaffoldTree$Endpoints, ScaffoldTree$Branchpoints)
+  TopologyEdges=c()
+
+  if(length(ScaffoldTree$Endpoints)==2)
+  {
+    TopologyEdges=rbind(TopologyEdges, (c(which(TopologyNodes==ScaffoldTree$Branches[1])[1], which(TopologyNodes==ScaffoldTree$Branches[2])[1])))
+  }else
+  {
+    for(i in (1:dim(ScaffoldTree$Branches)[1]))
+    {
+      TopologyEdges=rbind(TopologyEdges, (c(which(TopologyNodes==ScaffoldTree$Branches[i,1])[1], which(TopologyNodes==ScaffoldTree$Branches[i,2])[1])))
+    }
+  }
+
+
+  ElasticTree <- computeElasticPrincipalGraph(Data = ScaffoldTree$CellCoordinates, NumNodes = N_yk,
+                                              NodesPositions = TopologyCoords, Edges = TopologyEdges,
+                                              Method = 'DefaultPrincipalTreeConfiguration', EP=lambda, RP=mu)
+
+  # Unlist the ElasticTree structure
+  ElasticTree=ElasticTree[[1]]
+
+  # Add the topology in the tree structure
+  ETreeTopology= list(Endpoints=seq(from=1, to=length(ScaffoldTree$Endpoints), by=1), Branchpoints=seq(from=(length(ScaffoldTree$Endpoints) +1), to= (length(ScaffoldTree$Endpoints)) + length(ScaffoldTree$Branchpoints), by=1))
+  ElasticTree=c(ElasticTree, Topology=1)
+  ElasticTree$Topology <- ETreeTopology
+
+  # Coords for the topology elements
+  ElasticTree=c(ElasticTree, EndpointsCoords=1)
+  ElasticTree$EndpointsCoords=ElasticTree$Nodes[ElasticTree$Topology$Endpoints,]
+  ElasticTree=c(ElasticTree, BranchpointsCoords=1)
+  ElasticTree$BranchpointsCoords=ElasticTree$Nodes[ElasticTree$Topology$Branchpoints,]
+
+  # Add Input Coordinates to the tree structure
+  ElasticTree=c(ElasticTree, CellCoords=1)
+  ElasticTree$CellCoords <- ScaffoldTree$CellCoordinates
+
+  # Add Tree Connectivity
+  ElasticTree=c(ElasticTree, Connectivity=1)
+  ElasticTree$Connectivity  <- Edges
+
+  # Assign nodes from the embedded tree to the different branches and save the structure in the tree structure
+  BranchesNodes=list()
+
+  if(length(ScaffoldTree$Endpoints)==2)
+  {
+    path=TopologyEdges[1,1]
+    first=TopologyEdges[1,1]
+    while (first!=TopologyEdges[1,2])
+    {
+      edge=ElasticTree$Edges[which(ElasticTree$Edges[,1]==first),]
+      second=edge[2]
+      path=c(path, second)
+      first=second
+    }
+    BranchesNodes[[1]] <- path
+  }else
+  {
+    for (i in 1: dim(TopologyEdges)[1])
+    {
+      path=TopologyEdges[i,1]
+      first=TopologyEdges[i,1]
+      while (first!=TopologyEdges[i,2])
+      {
+        edge=ElasticTree$Edges[which(ElasticTree$Edges[,1]==first),]
+        second=edge[2]
+        path=c(path, second)
+        first=second
+      }
+      BranchesNodes[[i]] <- path
+    }
+  }
+
+  cell2yk=c()
+
+  if(length(ScaffoldTree$Endpoints)==2)
+  {
+    cell_i=matrix(ScaffoldTree$CellCoordinates[1,], nrow=1)
+    dist_cell_i=as.matrix(dist(rbind(cell_i, ElasticTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+    #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
+    closest_yk=sort(dist_cell_i[,1], index.return=T)$ix[2]-1
+    cell2yk=rbind(cell2yk, c(1, closest_yk))
+  }else
+  {
+    for (i in 1:dim(ScaffoldTree$CellCoordinates)[1])
+    {
+      cell_i=matrix(ScaffoldTree$CellCoordinates[i,], nrow=1)
+      dist_cell_i=as.matrix(dist(rbind(cell_i, ElasticTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+      #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
+      closest_yk=sort(dist_cell_i[,1], index.return=T)$ix[2]-1
+      cell2yk=rbind(cell2yk, c(i, closest_yk))
+    }
+  }
+
+
+  # Add cells 2 yks mapping
+  ElasticTree=c(ElasticTree, Cells2TreeNodes=1)
+  ElasticTree$Cells2TreeNodes <- cell2yk
+
+  # assign cells to the branches
+  allnodes=c()
+  for(i in 1:length(BranchesNodes))
+  {
+    allnodes=c(allnodes, BranchesNodes[[i]])
+  }
+  allnodes=sort(unique(allnodes))
+  cells_branchs_assigments=c()
+  for (i in 1:length(BranchesNodes))
+  {
+    cells_branchs_assigments[which(cell2yk[,2] %in% BranchesNodes[[i]])]=i
+  }
+
+  ElasticTree=c(ElasticTree, Branches=1)
+  ElasticTree$Branches <- BranchesNodes
+
+  ElasticTree=c(ElasticTree, Cells2Branches=1)
+  ElasticTree$Cells2Branches <- cells_branchs_assigments
+
+  # Fixing endpoints coordinates
+  if(FixEndpoints==T)
+  {
+    ElasticTree$Nodes[1:length(ScaffoldTree$Endpoints),]=ScaffoldTree$CellCoordinates[ScaffoldTree$Endpoints,]
+  }
+
+  return (ElasticTree)
+}
