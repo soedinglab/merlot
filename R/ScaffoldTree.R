@@ -3,6 +3,7 @@
 #' creates the scaffold tree from the expression matrix in the Dataset object.
 #' @param CellCoordinates file containing coordinates from the low dimensional manifold (e.g: first 3 diffusion components from a diffusion map)
 #' @param NEndpoints Users can specify how many endpoints they want the algorithm to find. In case this variable is not defined all branches producing branches longer than sqrt(N/2) will be added to the tree structure
+#' @param BranchMinLength Minimum number of nodes a branch has to contain in order to be included in the 3 structure. By default this value is set to sqrt(N/2) with N being the total number of cells in the dataset.
 #' @param python_location url to the python3 executable binary. In case it is not specified a default call to python3 will be used.
 #' @return ScaffoldTre object with the structure and connectivity of the Scaffold Tree
 #' @export
