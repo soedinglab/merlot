@@ -62,6 +62,7 @@ read_topology <-function (DataFile, CellCoordinates)
   SkeletonNodes=c()
   SkeletonEdges=c()
   BranchesNodes=list()
+  BranchesCells=list()
 
   if(length(Endpoints)==2)
   {
@@ -70,8 +71,15 @@ read_topology <-function (DataFile, CellCoordinates)
     {
       SkeletonEdges=rbind(SkeletonEdges, (c(iBranch[j], iBranch[j+1])))
     }
+
+    # Add nodes to the skeleton
     SkeletonNodes=c(SkeletonNodes, iBranch)
+    # Add branch to the branch object
     BranchesNodes[[1]] <- iBranch
+    names(BranchesNodes)=c()
+    # Add all cells to the only branch
+    BranchesCells[[1]] <- seq(1, dim(CellCoordinates)[1], 1)
+
     SkeletonNodes=sort(unique(SkeletonNodes))
 
     # Joining all the elements together in a list
@@ -86,14 +94,66 @@ read_topology <-function (DataFile, CellCoordinates)
       {
         SkeletonEdges=rbind(SkeletonEdges, (c(iBranch[j], iBranch[j+1])))
       }
+      # Add nodes to the skeleton
       SkeletonNodes=c(SkeletonNodes, iBranch)
+      # Add branch to the branch object
       BranchesNodes[[i]] <- iBranch
+      names(BranchesNodes)=c()
     }
+
+    # Create the branchescells object as a temporal copy of the branchesnodes
+    BranchesCells=BranchesNodes
+
+    # Assign cells to branches
+    Cells2ScaffoldCells=c()
+    ScaffoldCells=sort(unique(unlist(BranchesNodes)))
+    for(i in 1:dim(CellCoordinates)[1])
+    {
+      cell_i=matrix(CellCoordinates[i,], nrow=1)
+      # Calculate which is the closest cell in the scaffold to cell i
+      dist_cell_i=as.matrix(dist(rbind(cell_i, CellCoordinates[ScaffoldCells,]), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+      #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
+      min_cell_dist=ScaffoldCells[sort(dist_cell_i[,1], index.return=T)$ix[2]-1]
+      min_branch_dist=sort(dist_cell_i[,1], index.return=T)$x[2]
+      Cells2ScaffoldCells=rbind(Cells2ScaffoldCells, c(i, min_cell_dist))
+    }
+    colnames(Cells2ScaffoldCells)=c("cell", "scaffoldcell")
+
+    for(i in 1:length(BranchesNodes))
+    {
+      BranchesCells[[i]]= which(Cells2ScaffoldCells[,2] %in% BranchesNodes[[i]])
+    }
+
+
+    # cells_to_assign=which(!(1:dim(CellCoordinates)[1] %in% unlist(BranchesNodes)))
+    #
+    # for( i in cells_to_assign)
+    # {
+    #   # take cell i
+    #   cell_i=matrix(CellCoordinates[i,], nrow=1)
+    #
+    #   # calculate minimum distance to each branch
+    #   min_branch_dist=c()
+    #   min_cell_dist=c()
+    #
+    #   for(j in 1:length(BranchesNodes))
+    #   {
+    #     dist_cell_i=as.matrix(dist(rbind(cell_i, CellCoordinates[BranchesNodes[[j]],]), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+    #     #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
+    #     min_cell_dist=c(min_cell_dist, BranchesNodes[[j]][sort(dist_cell_i[,1], index.return=T)$ix[2]-1])
+    #     min_branch_dist=c(min_branch_dist, sort(dist_cell_i[,1], index.return=T)$x[2])[1]
+    #   }
+    #
+    #   # to which branch cell i should be assigned?
+    #   branch_assignment=which(min_branch_dist==min(min_branch_dist))
+    #   BranchesCells[[branch_assignment]]=c(BranchesCells[[branch_assignment]], i)
+    # }
+
 
     SkeletonNodes=sort(unique(SkeletonNodes))
 
     # Joining all the elements together in a list
-    ScaffoldTree= list(Endpoints=Endpoints, Branchpoints=Branchpoints, DijkstraPredecesors=DijkstraPredecesors, DijkstraSteps=DijkstraSteps, DijkstraDistances= DijkstraDistances, Branches= Branches, SkeletonNodes=SkeletonNodes, SkeletonEdges= SkeletonEdges, CellCoordinates=CellCoordinates, Nodes2BranchesAssignments=BranchesNodes)
+    ScaffoldTree= list(Endpoints=Endpoints, Branchpoints=Branchpoints, DijkstraPredecesors=DijkstraPredecesors, DijkstraSteps=DijkstraSteps, DijkstraDistances= DijkstraDistances, Branches= Branches, SkeletonNodes=SkeletonNodes, SkeletonEdges= SkeletonEdges, CellCoordinates=CellCoordinates, Nodes2BranchesAssignments=BranchesNodes, Cells2BranchesAssignments=BranchesCells)
   }
 
   return(ScaffoldTree)
