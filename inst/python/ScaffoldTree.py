@@ -53,6 +53,7 @@ def calculate_secondary_endpoints(Endpoints, DijkstraMatrix, NumberNodes, NBranc
         #Add a new endpoint
         ScoreEndpoints=np.zeros(len(nodes))
         ScoreEndpointsNodes=np.zeros(len(nodes))
+
         for n in nodes:
             if n in EndPoints:
                 continue
@@ -68,6 +69,11 @@ def calculate_secondary_endpoints(Endpoints, DijkstraMatrix, NumberNodes, NBranc
                             CombinatoryEndpointIncreamentNodes.append(AddedDistanceNodes)
                 ScoreEndpoints[n]=0.5*min(CombinatoryEndpointIncreament)
                 ScoreEndpointsNodes[n]=0.5*min(CombinatoryEndpointIncreamentNodes)
+
+        # if the scores for the best potential new branchpoint is not positive it means that no other node is better than the existing endpoints and hence we finish the search
+        if np.max(ScoreEndpointsNodes) <= 0:
+                print ("[Note: EndPoints search terminated because no further positive scores were found...]")
+                break
 
         #we get the nodes with the largest number of cells on path
         nodes_maxnodes=np.where(ScoreEndpointsNodes==np.max(ScoreEndpointsNodes))[0]
