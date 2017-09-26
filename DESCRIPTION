@@ -2,7 +2,7 @@ Package: merlot
 Type: Package
 Title: MERLoT
 Description: A method for reconstructing lineage-tree topologies from scRNA-seq data
-Version: 0.1.0
+Version: 0.1.1
 Author: R. Gonzalo Parra <gparra@mpibpc.mpg.de>
 Maintainer: R. Gonzalo Parra <gparra@mpibpc.mpg.de>
 License: GPL

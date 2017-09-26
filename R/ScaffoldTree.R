@@ -10,6 +10,7 @@
 
 CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLength=-1, python_location="python3")
 {
+  CellCoordinates=as.matrix(CellCoordinates)
   CoordinatesFile=tempfile()
   write.table(CellCoordinates, file = CoordinatesFile, sep="\t", col.names = F, row.names = F)
 

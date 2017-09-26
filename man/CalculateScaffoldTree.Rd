@@ -5,12 +5,14 @@
 \title{Calculate Scaffold tree}
 \usage{
 CalculateScaffoldTree(CellCoordinates, NEndpoints = NULL,
-  python_location = "python3")
+  BranchMinLength = -1, python_location = "python3")
 }
 \arguments{
 \item{CellCoordinates}{file containing coordinates from the low dimensional manifold (e.g: first 3 diffusion components from a diffusion map)}
 
 \item{NEndpoints}{Users can specify how many endpoints they want the algorithm to find. In case this variable is not defined all branches producing branches longer than sqrt(N/2) will be added to the tree structure}
+
+\item{BranchMinLength}{Minimum number of nodes a branch has to contain in order to be included in the 3 structure. By default this value is set to sqrt(N/2) with N being the total number of cells in the dataset.}
 
 \item{python_location}{url to the python3 executable binary. In case it is not specified a default call to python3 will be used.}
 }

@@ -395,22 +395,24 @@ GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-0
 
 
 
-#' Calculate Elastic Tree 2
+#' Calculate elastic tree with iterative constraints
 #'
-#'Calculates an elastic tree using a scaffold tree to initialize it. A set of N_yk nodes are included one byone into a tree structure that minimizes an error and an energetic functions to the cell coordinates. The initialization with the scaffold tree ensures that the correct number of endpoints and branchpoints and their connectivity are preserved in the elastic tree interpolation.
+#'Calculates an elastic tree using a scaffold tree to initialize it. A set of N_yk nodes are included one by one into a tree structure that minimizes an error and an energetic functions to the cell coordinates. The initialization with the scaffold tree ensures that the correct number of endpoints and branchpoints and their connectivity are preserved in the elastic tree interpolation.
 #' @param Scaffoldtree scaffoldTree calculated by the CalculateScaffoldTree function.
-#' @param N_yk number of nodes for the elastic principal tree
+#' @param N_yk total number of nodes for the elastic principal tree
+#' @param start_N_yk initial number of nodes with which the elastic tree will be calculated on top of which additional constraints will be added
+#' @param step_N_yk number of nodes that will be interatively added to the elastic tree until the N_yk nodes are added. After each iteration the nodes will be added as additional constraints to the next iteration.
 #' @param lambda_0 principal elastic tree energy function parameter.
 #' @param mu_0 principal elastic tree energy function parameter.
 #' @return ElasticTree
 #' @export
 
-CalculateElasticTree2 <- function(ScaffoldTree, N_yk=100, input="topology", lambda_0=2.03e-09, mu_0=0.00625, FixEndpoints=F, plot=F)
+CalculateElasticTreeContrained <- function(ScaffoldTree, N_yk=150, start_N_yk=100, step_N_yk=50,  input="topology", lambda_0=2.03e-09, mu_0=0.00625, FixEndpoints=F, plot=F)
 {
   # Testing
   # Default parameters taken from adjustment in real datasets with 100 N_yks
-  lambda_0=2.03e-09
-  mu_0=0.00625
+  # lambda_0=2.03e-09
+  # mu_0=0.00625
   #  End testing
 
   Coords=c()
@@ -439,10 +441,28 @@ CalculateElasticTree2 <- function(ScaffoldTree, N_yk=100, input="topology", lamb
     }
   }
 
+  N_yk_limits=(seq(from=start_N_yk, to=N_yk, by=step_N_yk))
+  N_yk_limits=unique(c(N_yk_limits, N_yk))
 
-  ElasticTree <- computeElasticPrincipalGraph(Data = ScaffoldTree$CellCoordinates, NumNodes = N_yk,
+  mu=(N_yk_limits[1]-1)*mu_0
+  lambda=((N_yk_limits[1]-2)**3)*lambda_0
+
+  ElasticTree <- computeElasticPrincipalGraph(Data = ScaffoldTree$CellCoordinates, NumNodes = N_yk_limits[1],
                                               NodesPositions = TopologyCoords, Edges = TopologyEdges,
-                                              Method = 'DefaultPrincipalTreeConfiguration', EP=lambda, RP=mu)
+                                              Method = 'CurveConfiguration', EP=lambda, RP=mu)
+
+  for( i in N_yk_limits[2:length(N_yk_limits)])
+  {
+    InitCoords=ElasticTree[[1]]$Nodes
+    InitEdges=ElasticTree[[1]]$Edges
+
+    mu=(i-1)*mu_0
+    lambda=((i-2)**3)*lambda_0
+
+    ElasticTree <- computeElasticPrincipalGraph(Data = ScaffoldTree$CellCoordinates, NumNodes = i,
+                                                NodesPositions = InitCoords, Edges = InitEdges,
+                                                Method = 'CurveConfiguration', EP=lambda, RP=mu)
+  }
 
   # Unlist the ElasticTree structure
   ElasticTree=ElasticTree[[1]]
@@ -550,4 +570,96 @@ CalculateElasticTree2 <- function(ScaffoldTree, N_yk=100, input="topology", lamb
   }
 
   return (ElasticTree)
+}
+
+#' Duplicate Elastic Tree Nodes
+#'
+#'Introduces intermediate nodes in between nodes being part of an edge in the ElasticTree structure
+#' @param ElasticTree Elastic Tree to which nodes will be added
+#' @return ElasticTree
+#' @export
+#'
+DuplicateTreeNodes <- function(ElasticTree)
+{
+  ElasticTree2=ElasticTree
+  N_yk=dim(ElasticTree$Nodes)[1]
+  NewEdges=c()
+  NewNodes=c()
+
+  for(i in 1:dim(ElasticTree$Edges)[1])
+    # for(i in 1:3)
+  {
+    Edge_i=ElasticTree$Edges[i,]
+    coords_node1=ElasticTree$Nodes[Edge_i[1],]
+    coords_node2=ElasticTree$Nodes[Edge_i[2],]
+    coords_interpolate=coords_node1 + ((coords_node2 - coords_node1)/2)
+
+    # node N_yk + i
+    NewEdges=rbind(NewEdges, c(Edge_i[1], N_yk+i))
+    NewEdges=rbind(NewEdges, c(Edge_i[2], N_yk+i))
+    NewNodes=rbind(NewNodes, coords_interpolate)
+
+
+    # Find branch
+    branch_edges=c()
+    for(j in 1:length(ElasticTree2$Branches))
+    {
+      if(Edge_i[1] %in% ElasticTree2$Branches[[j]] && Edge_i[2] %in% ElasticTree2$Branches[[j]])
+      {
+        branch_edges=j
+      }
+    }
+
+    if(which(ElasticTree2$Branches[[branch_edges]]==Edge_i[2]) < which(ElasticTree2$Branches[[branch_edges]]==Edge_i[1]))
+    {
+      Edge_i=rev(Edge_i)
+    }
+
+    ElasticTree2$Branches[[branch_edges]]=c(ElasticTree2$Branches[[branch_edges]][1:which(ElasticTree2$Branches[[branch_edges]]==Edge_i[1])], N_yk+i, ElasticTree2$Branches[[branch_edges]][which(ElasticTree2$Branches[[branch_edges]]==Edge_i[2]):length(ElasticTree2$Branches[[branch_edges]])])
+    # # add node to branch structure
+    # if(!Edge_i[1] %in% ElasticTree$Topology$Branchpoints)
+    # {
+    #   j=1
+    #   while(!Edge_i[1] %in% ElasticTree$Branches[[j]])
+    #   {
+    #     j=j+1
+    #   }
+    #   ElasticTree2$Branches[[j]]=c(ElasticTree2$Branches[[j]][1:which(ElasticTree2$Branches[[j]]==Edge_i[1])], N_yk+i, ElasticTree2$Branches[[j]][which(ElasticTree2$Branches[[j]]==Edge_i[2]):length(ElasticTree2$Branches[[j]])])
+    # }else{
+    #   j=1
+    #   while(!Edge_i[2] %in% ElasticTree$Branches[[j]])
+    #   {
+    #     j=j+1
+    #   }
+    #   ElasticTree2$Branches[[j]]=c(ElasticTree2$Branches[[j]][1:which(ElasticTree2$Branches[[j]]==Edge_i[1])], N_yk+i, ElasticTree2$Branches[[j]][which(ElasticTree2$Branches[[j]]==Edge_i[2]):length(ElasticTree2$Branches[[j]])])
+    #   # ElasticTree2$Branches[[j]]=c(ElasticTree2$Branches[[j]], N_yk+i)
+    # }
+  }
+
+  ElasticTree2$Edges=NewEdges
+  rownames(NewNodes)=c()
+  ElasticTree2$Nodes=rbind(ElasticTree2$Nodes, NewNodes)
+
+  # Reassing cells to nodes
+  # reassigning cells to nodes on the full dimensional space
+  cell2yk_post=c()
+  for (i in 1:dim(ElasticTree2$CellCoords)[1])
+  {
+    cell_i= matrix(ElasticTree2$CellCoords[i,], nrow=1)
+    dist_cell_i=as.matrix(dist(rbind(cell_i, ElasticTree2$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+    #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
+    closest_yk=sort(dist_cell_i[,1], index.return=T)$ix[2]-1
+    cell2yk_post=rbind(cell2yk_post, c(i, closest_yk))
+  }
+
+  # allnodes=1:N_yk
+  # cells_branchs_assigments=c()
+  # for (i in 1:length(ElasticTree2$Branches))
+  # {
+  #   cells_branchs_assigments[which(cell2yk_post[,2] %in% ElasticTree2$Branches[[i]])]=i
+  # }
+  ElasticTree2$Cells2TreeNodes=cell2yk_post
+  # --------------------
+
+  return(ElasticTree2)
 }

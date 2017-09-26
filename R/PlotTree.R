@@ -169,7 +169,7 @@ plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes
   # selectedcolors: colors for the branches, by defaul the rainbow palette is used.
 
   # # Testing--------
-  # GeneName="gene_60"
+  GeneName="Tapt1"
   selected_colors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue", "aquamarine", "magenta", "brown", "gray")
 
   # End testing
@@ -280,9 +280,11 @@ plot_pseudotimes <- function (CellCoordinates, Pseudotimes)
   }
   else if(dim(CellCoordinates)[2]==2)
   {
-    paleta<-colorRampPalette(colors=c("yellow", "orange", "red", "black"))
-    color<-paleta(200)
-    col1<-numbers2colors(Pseudotimes$Times_cells , colors=color)
+    mypal <- colorRampPalette( c( "yellow", "orange", "darkorange", "red", "black" ) )( length(Pseudotimes$Times_cells) )
+    col1=map2color(Pseudotimes$Times_cells, mypal)
+    # paleta<-colorRampPalette(colors=c("yellow", "orange", "red", "black"))
+    # color<-paleta(200)
+    # col1<-numbers2colors(Pseudotimes$Times_cells , colors=color)
     plot(CellCoordinates[,1], CellCoordinates[,2], col=col1, pch=16, cex=1.5, ylab="Cooordinate 1", xlab="Coordinate 2")
   }
   else
@@ -381,7 +383,7 @@ plot_heatmaps_embedding <-function(Pseudotimes, EmbeddedTree, log_tranform=F, cl
 #'
 plot_gene_on_map <-function(GeneName,
                             CellCoordinates,
-                            Dataset,
+                            ExpressionMatrix,
                             CoordLabels=c("Component 1", "Component 2", "Component 3"),
                             Average=F,
                             knn=5,
@@ -393,8 +395,8 @@ plot_gene_on_map <-function(GeneName,
 
   paleta = Palette
   color = paleta(400)
-  Gene = which(colnames(Dataset$ExpressionMatrix)==GeneName)
-  ExpressionGene = as.numeric(Dataset$ExpressionMatrix[,Gene])
+  Gene = which(colnames(ExpressionMatrix)==GeneName)
+  ExpressionGene = as.numeric(ExpressionMatrix[,Gene])
 
   # In order to color the range properly, all values are applied an offset to be equal or greater to 0
   if(min(ExpressionGene)<0){ExpressionGene=ExpressionGene+min(ExpressionGene*-1)}
