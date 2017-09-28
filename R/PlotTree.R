@@ -92,7 +92,7 @@ plot_elastic_tree <- function(ElasticTree, colorcells=NULL, legend=F, legend_nam
   # color cells by branch
   if(is.null(colorcells))
   {
-    selected_colors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue", "aquamarine", "magenta", "brown", "gray")
+    selected_colors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue", "aquamarine", "wheat4", "brown", "gray")
     CellBranches=ElasticTree$Cells2Branches
     Types=sort(unique(CellBranches))
 
@@ -169,7 +169,7 @@ plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes
   # selectedcolors: colors for the branches, by defaul the rainbow palette is used.
 
   # # Testing--------
-  GeneName="Tapt1"
+  # GeneName="Tapt1"
   selected_colors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue", "aquamarine", "magenta", "brown", "gray")
 
   # End testing

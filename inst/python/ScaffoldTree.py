@@ -32,6 +32,16 @@ def calculate_cell_paths(Distancias, DijkstraPredecesors):
             Paths[i][j]=path
     return(Paths)
 
+
+def calculate_1cell_paths(i, j, DijkstraPredecesors):
+    path = []
+    k=j
+    while (i != k) & (k >= 0):
+        path.append(k)
+        k = DijkstraPredecesors[i,k]
+    path.append(i)
+    return(path)
+
 def calc_extreme_endpoints(CellDistances):
     EndPoints=[]
     Endpoint1=np.where(CellDistances==np.max(CellDistances))[0][0]
@@ -40,7 +50,40 @@ def calc_extreme_endpoints(CellDistances):
     EndPoints.append(Endpoint2)
     return EndPoints
     
-def calculate_secondary_endpoints(Endpoints, DijkstraMatrix, NumberNodes, NBranches=-1, BranchMinLength=-1, graph='no'):
+def length_new_branch(NewEndPointCheck, EndPointsAux, DijkstraMatrix, DijkstraPredecesors, DijkstraSteps):
+    #This function checks the length of a new branch that does not fulfill the sqrt(N/2) requirement for a branch to be a valid one
+    #It calculates the topology structure of the tree by adding that new branch and calculates the length of the new branch
+    #Here we check to which branch the new endpoint belongs
+    EndPointsAux.append(NewEndPointCheck)
+    branchingaux, TreeConnectivityaux =calculate_branchpoints(EndPointsAux, DijkstraMatrix, DijkstraPredecesors, DijkstraSteps)
+    for i in range(0, TreeConnectivityaux.shape[0]):
+        if NewEndPointCheck in TreeConnectivityaux[i]:
+            new_endpoint_branch=i
+    # Here we map the scaffold cells to the different branches
+    ScaffoldCells=[]
+    ScaffoldCells=np.array(ScaffoldCells)
+    ScaffoldCells2Branches=[]
+    for i in range(0, TreeConnectivityaux.shape[0]):
+        path=np.array(calculate_1cell_paths(TreeConnectivityaux[i][0], TreeConnectivityaux[i][1], DijkstraPredecesors))
+        ScaffoldCells=np.append(ScaffoldCells, path)
+        ScaffoldCells2Branches.append(path)
+
+    #The new branch length is initialized with the number of scaffold cells mapped to it
+    NewBranchLength=len(ScaffoldCells2Branches[new_endpoint_branch])
+    # We check which cell i is mapped to the branch to which the new endpoint belongs and add a +1 if TRUE
+    for i in range(0, Coordinates.shape[0]):
+        if i not in ScaffoldCells:
+            DistancesScaffold={}
+            for j in range(0, len(ScaffoldCells)):
+                DistancesScaffold[j]=(euclidean(Coordinates[i], Coordinates[int(ScaffoldCells[j])]))
+                ClosestScaffoldCell=min(zip(DistancesScaffold.values(), DistancesScaffold.keys()))[1]
+                ClosestScaffoldCell=int(ScaffoldCells[ClosestScaffoldCell])
+            if ClosestScaffoldCell in ScaffoldCells2Branches[new_endpoint_branch]:
+                NewBranchLength=NewBranchLength+1
+    return(NewBranchLength)
+
+
+def calculate_secondary_endpoints(Endpoints, DijkstraMatrix, NumberNodes, NBranches=-1, BranchMinLength=-1, BranchMinLengthSensitive=-1, graph='no'):
     R_epsilon_todos={}
     TryEndpoint=True
     NewBranch=True
@@ -95,23 +138,31 @@ def calculate_secondary_endpoints(Endpoints, DijkstraMatrix, NumberNodes, NBranc
             var_epsilon=np.var(R_epsilon_val)
 
         if NBranches > 0 :
-        	if (len(EndPoints)) < NBranches:
-        		EndPoints.append(new_endpoint)
-        		if graph == "yes":
-        			print_hist_newpoint(R_epsilon_val, R_epsilon, new_endpoint)
-        	else:
-        		TryEndpoint=False
+                if (len(EndPoints)) < NBranches:
+                        EndPoints.append(new_endpoint)
+                        if graph == "yes":
+                                print_hist_newpoint(R_epsilon_val, R_epsilon, new_endpoint)
+                else:
+                        TryEndpoint=False
         else:
-        	if ScoreEndpointsNodes[new_endpoint]<BranchMinLength:
-		        NewBranch=False
+                if ScoreEndpointsNodes[new_endpoint]<BranchMinLength:
+                        if BranchMinLengthSensitive < 0:
+                            #print("Finish endpoints search")
+                            NewBranch=False
 
-        	if R_epsilon[new_endpoint] >= BranchMinLength:
-		        EndPoints.append(new_endpoint)
-		        if graph == "yes":
-		            print_hist_newpoint(R_epsilon_val, R_epsilon, new_endpoint)
+                        else:
+                            EndPointsAux=list(EndPoints)
+                            LengthNewBranch=length_new_branch(new_endpoint, EndPointsAux, DijkstraMatrix, DijkstraPredecesors, DijkstraSteps)
+                            if LengthNewBranch < BranchMinLengthSensitive:
+                                NewBranch=False
 
-        	else:
-		        TryEndpoint=False
+                if R_epsilon[new_endpoint] >= BranchMinLength:
+                        EndPoints.append(new_endpoint)
+                        if graph == "yes":
+                            print_hist_newpoint(R_epsilon_val, R_epsilon, new_endpoint)
+
+                else:
+                        TryEndpoint=False
 
     return (R_epsilon_todos)
 
@@ -226,12 +277,14 @@ import argparse
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('Filename', help='Matrix with "cells" x "genes" dimensions. Fields shout be delimited by tabs')
 parser.add_argument('-NBranches', type=int, default=(-1), help='Number of desired branches for the resulting tree. By default the value is set to -1, meaning that all branches longer than sqrt(N/2) will be considered')
-parser.add_argument('-BranchMinLength', type=int, default=(-1), help='Minimum length for a branch to be included in the tree. Default minimum length: sqrt(N/2) with N being the number of cells in the dataset')
+parser.add_argument('-BranchMinLength', type=int, default=(-1), help='Minimum length for a branch to be included in the tree. Considers only cells in the scaffold as length. This threshold is quite strict. For a more sensitive detection a second threshold can be used with the option BranchMinLengthSensitive. Default minimum length: sqrt(N/2) with N being the number of cells in the dataset')
+parser.add_argument('-BranchMinLengthSensitive', type=int, default=(-1), help='Minimum length for a branch to be included in the tree. It reconstructs the topology of the tree and maps cells to the potential new branch to decide if the branch will be added or not. Suggested value: sqrt(N) with N being the number of cells in the dataset')
 parser.add_argument('-showplot', type=str, default="no", help='Weather or not 2D/3D plots should be shown. Options are "yes" and "no". By default it is not activated')
 args = parser.parse_args()
 DMCoordinates=args.Filename
 NBranches=args.NBranches
 BranchMinLength=args.BranchMinLength
+BranchMinLengthSensitive=args.BranchMinLengthSensitive
 plot=args.showplot
 
 #---Read Manifold Coordinates (DMs, t-SNE, etc)
@@ -255,7 +308,7 @@ DijkstraSteps=DijkstraSteps-1
 
 #Calculate Endpoints in the tree
 EndPoints=calc_extreme_endpoints(DijkstraSteps)
-Epsilons=calculate_secondary_endpoints(EndPoints, DijkstraMatrix, DijkstraSteps, NBranches, BranchMinLength)
+Epsilons=calculate_secondary_endpoints(EndPoints, DijkstraMatrix, DijkstraSteps, NBranches, BranchMinLength, BranchMinLengthSensitive)
 
 if len(EndPoints) <= 2: 
 	print ("Only 2 Endpoints detected.")

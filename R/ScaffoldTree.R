@@ -8,18 +8,18 @@
 #' @return ScaffoldTre object with the structure and connectivity of the Scaffold Tree
 #' @export
 
-CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLength=-1, python_location="python3")
+CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLength=-1, BranchMinLengthSensitive=-1, python_location="python3")
 {
   CellCoordinates=as.matrix(CellCoordinates)
   CoordinatesFile=tempfile()
   write.table(CellCoordinates, file = CoordinatesFile, sep="\t", col.names = F, row.names = F)
-
+  BranchMinLengthSensitive=floor(BranchMinLengthSensitive)
   ScaffoldTreeScript=paste(find.package("merlot"), "/python/ScaffoldTree.py", sep="")
 
   if(is.null(NEndpoints))
   {
     #-------------------------------------------Execute TreeTopology.py-------------
-    system(paste(python_location, " ",ScaffoldTreeScript, CoordinatesFile, "-BranchMinLength ", BranchMinLength), wait = TRUE)
+    system(paste(python_location, " ",ScaffoldTreeScript, CoordinatesFile, "-BranchMinLength ", BranchMinLength, "-BranchMinLengthSensitive", BranchMinLengthSensitive), wait = TRUE)
   }  else
   {
     #-------------------------------------------Execute TreeTopology.py-------------
