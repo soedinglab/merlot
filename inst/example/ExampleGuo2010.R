@@ -5,28 +5,67 @@ library(merlot)
 DataFile= paste(find.package("merlot"), "/example/Guo2010.txt", sep="")
 Dataset=ReadDataset(DataFile)
 
+# Load the cell types
+CellTypes=read.table(file=paste(find.package("merlot"), "/example/GuoFeatures.txt", sep=""), sep="\t", header = F, stringsAsFactors = F)
+CellTypes=CellTypes[,2]
+selected_colors=c("red", "orange", "yellow", "green", "cyan", "darkblue")
+
+guo_colorcells=c()
+guo_colorcells[which(CellTypes=="2C")]="red"
+guo_colorcells[which(CellTypes=="4C")]="orange"
+guo_colorcells[which(CellTypes=="8C")]="yellow"
+guo_colorcells[which(CellTypes=="16C")]="green"
+guo_colorcells[which(CellTypes=="32C")]="cyan"
+guo_colorcells[which(CellTypes=="64C")]="darkblue"
+
 # Embed Cells into their manifold
 library(destiny)
 DatasetDM <- DiffusionMap(Dataset$ExpressionMatrix, density.norm = T, verbose = F, sigma="global")
+#
+t <- -20
+theta = t / 180 * pi
+rot = matrix(c(cos(theta), sin(theta), -sin(theta), cos(theta)), nrow=2, ncol=2)
+coords = DatasetDM@eigenvectors[,c(1,3)]
+tcoords = coords %*% rot
+plot(DatasetDM@eigenvectors[,2], tcoords[,1], main=t, pch=16, xlab="Component 2", ylab="Transformed Component", col=guo_colorcells)
+# CellCoordinates=cbind(DatasetDM@eigenvectors[,2], tcoords[,1])
+# write.table(CellCoordinates,file = "/home/gonzalo/Desktop/benchmark10/Guocoords.txt",  quote = F, row.names = F, col.names = F, sep="\t")
 
 # The first 3 diffusion map components will be used for this example
 CellCoordinates=DatasetDM@eigenvectors[,1:3]
 # End Embedding into manifold
 
-write.table(CellCoordinates,file = "/home/gonzalo/Desktop/benchmark10/Guocoords.txt",  quote = F, row.names = F, col.names = F, sep="\t")
+
 
 # We calculate the scaffold tree using the first 3 diffusion components from the diffusion map
-ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates, BranchMinLengthSensitive = 20)
+ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates)
 # Plot the calculated tree
-plot_scaffold_tree(ScaffoldTree = ScaffoldTree)
+plot_scaffold_tree(ScaffoldTree = ScaffoldTree, colorcells = guo_colorcells)
 
 NumberOfNodes=100
 # We calculate the elastic principal tree using the scaffold tree for its initialization
 ElasticTree= CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes, FixEndpoints = F)
+plot_elastic_tree(ElasticTree, colorcells=guo_colorcells)
+
+# Embedd the principal elastic tree on the gene expression space from which it was calculated.
+EmbeddedTree= GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = ElasticTree, increaseFactor_mu = 10, increaseFactor_lambda = 10)
+
+# Calculate Pseudotimes for the nodes in the Tree in the full gene expression space
+Pseudotimes=CalculatePseudotimes(EmbeddedTree, T0=3)
+plot_pseudotimes(CellCoordinates, Pseudotimes)
+
+# Plot gene expression profile as a function of pseudotime
+plot_pseudotime_expression_gene(GeneName = "Gata4" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
+plot_pseudotime_expression_gene(GeneName = "Fgf4" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
+plot_pseudotime_expression_gene(GeneName = "Id2" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
+plot_pseudotime_expression_gene(GeneName = "Sox2" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
+plot_pseudotime_expression_gene(GeneName = "Nanog" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
+plot_pseudotime_expression_gene(GeneName = "Klf2" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
 
 
+# Rotation of coordinates for generating a 2D plot for this dataset
 # rotate
-t <- -30
+t <- -20
 theta = t / 180 * pi
 rot = matrix(c(cos(theta), sin(theta), -sin(theta), cos(theta)), nrow=2, ncol=2)
 coords = DatasetDM@eigenvectors[,c(1,3)]
@@ -41,7 +80,7 @@ tcoords = coords %*% rot
 plot(ElasticTreeToPlot$Nodes[,2], tcoords[,1], main=t, pch=16, xlab="Component 2", ylab="Transformed Component")
 ElasticTreeToPlot$Nodes=cbind(ElasticTreeToPlot$Nodes[,2], tcoords[,1])
 ElasticTreeToPlot$CellCoords=CoordinatesToPlot
-plot_elastic_tree(ElasticTreeToPlot, colorcells = NULL)
+plot_elastic_tree(ElasticTreeToPlot, colorcells=guo_colorcells)
 
 # Plot the principal elastic tree
 svg(filename = paste("/home/gonzalo/merlot/inst/example/Guo.svg", sep=""), height = 8, width = 8)
@@ -55,32 +94,6 @@ dev.off()
 # open3d()
 # plot_elastic_tree(ElasticTree, colorcells = NULL)
 
-# Embedd the principal elastic tree on the gene expression space from which it was calculated.
-EmbeddedTree= GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = ElasticTree, increaseFactor_mu = 10, increaseFactor_lambda = 10)
-# EmbeddedTreeInterp= GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = ElasticTree2, increaseFactor_mu = 10, increaseFactor_lambda = 10)
-# length(which((ElasticTree$Cells2Branches -EmbeddedTree$Cells2Branches) != 0))
-
-# EmbeddedTreeInterp=DuplicateTreeNodes(EmbeddedTree)
-# EmbeddedTreeInterp=DuplicateTreeNodes(EmbeddedTreeInterp)
-
-# Calculate Pseudotimes for the nodes in the Tree in the full gene expression space
-Pseudotimes=CalculatePseudotimes(EmbeddedTree, T0=3)
-# PseudotimesInterp=CalculatePseudotimes(EmbeddedTreeInterp, T0=3)
-
-# Requires WGCNA library to be loaded
-plot_pseudotimes(CellCoordinates, Pseudotimes)
-
-# Plot gene expression profile as a function of pseudotime
-plot_pseudotime_expression_gene(GeneName = "Gata4" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
-plot_pseudotime_expression_gene(GeneName = "Gata4" , EmbeddedTree = EmbeddedTreeInterp, Pseudotimes = PseudotimesInterp, addlegend = T)
-
-plot_pseudotime_expression_gene(GeneName = "Fgf4" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
-plot_pseudotime_expression_gene(GeneName = "Fgf4" , EmbeddedTree = EmbeddedTreeInterp, Pseudotimes = PseudotimesInterp, addlegend = T)
-
-plot_pseudotime_expression_gene(GeneName = "Id2" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
-plot_pseudotime_expression_gene(GeneName = "Sox2" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
-plot_pseudotime_expression_gene(GeneName = "Nanog" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
-plot_pseudotime_expression_gene(GeneName = "Klf2" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
 
 
 

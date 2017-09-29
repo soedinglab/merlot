@@ -140,26 +140,24 @@ def calculate_secondary_endpoints(Endpoints, DijkstraMatrix, NumberNodes, NBranc
         if NBranches > 0 :
                 if (len(EndPoints)) < NBranches:
                         EndPoints.append(new_endpoint)
-                        if graph == "yes":
-                                print_hist_newpoint(R_epsilon_val, R_epsilon, new_endpoint)
                 else:
                         TryEndpoint=False
         else:
                 if ScoreEndpointsNodes[new_endpoint]<BranchMinLength:
                         if BranchMinLengthSensitive < 0:
                             #print("Finish endpoints search")
-                            NewBranch=False
+                            TryEndpoint=False
 
                         else:
                             EndPointsAux=list(EndPoints)
                             LengthNewBranch=length_new_branch(new_endpoint, EndPointsAux, DijkstraMatrix, DijkstraPredecesors, DijkstraSteps)
                             if LengthNewBranch < BranchMinLengthSensitive:
-                                NewBranch=False
+                                TryEndpoint=False
+                            else:
+                                EndPoints.append(new_endpoint)
 
                 if R_epsilon[new_endpoint] >= BranchMinLength:
                         EndPoints.append(new_endpoint)
-                        if graph == "yes":
-                            print_hist_newpoint(R_epsilon_val, R_epsilon, new_endpoint)
 
                 else:
                         TryEndpoint=False
@@ -373,4 +371,5 @@ else:
 
 end_dijkstra = time.time()
 print("Finished Scaffold Tree...", end_dijkstra-start_dijkstra, "seconds")
+
 
