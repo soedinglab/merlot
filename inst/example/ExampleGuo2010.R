@@ -35,10 +35,8 @@ plot(DatasetDM@eigenvectors[,2], tcoords[,1], main=t, pch=16, xlab="Component 2"
 CellCoordinates=DatasetDM@eigenvectors[,1:3]
 # End Embedding into manifold
 
-
-
 # We calculate the scaffold tree using the first 3 diffusion components from the diffusion map
-ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates)
+ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates, BranchMinLengthSensitive = sqrt(428))
 # Plot the calculated tree
 plot_scaffold_tree(ScaffoldTree = ScaffoldTree, colorcells = guo_colorcells)
 
@@ -64,7 +62,7 @@ plot_pseudotime_expression_gene(GeneName = "Klf2" , EmbeddedTree = EmbeddedTree,
 
 
 # Rotation of coordinates for generating a 2D plot for this dataset
-# rotate
+# The diffusion maps function has a random component so exact coordinates as in the figure require the angle to be changes every time.
 t <- -20
 theta = t / 180 * pi
 rot = matrix(c(cos(theta), sin(theta), -sin(theta), cos(theta)), nrow=2, ncol=2)
@@ -73,29 +71,26 @@ tcoords = coords %*% rot
 plot(DatasetDM@eigenvectors[,2], tcoords[,1], main=t, pch=16, xlab="Component 2", ylab="Transformed Component")
 
 CoordinatesToPlot=cbind(DatasetDM@eigenvectors[,2], tcoords[,1])
+# CoordinatesToPlot=read.table(file="/home/gonzalo/merlot/inst/example/GuoRotatedCoordinates.txt", sep="\t", header = F, stringsAsFactors = F)
 ElasticTreeToPlot=ElasticTree
-
-coords = ElasticTreeToPlot$Nodes[,c(1,3)]
-tcoords = coords %*% rot
-plot(ElasticTreeToPlot$Nodes[,2], tcoords[,1], main=t, pch=16, xlab="Component 2", ylab="Transformed Component")
-ElasticTreeToPlot$Nodes=cbind(ElasticTreeToPlot$Nodes[,2], tcoords[,1])
+# ElasticTreeToPlot$Nodes=CoordinatesToPlot
 ElasticTreeToPlot$CellCoords=CoordinatesToPlot
+
+coords =ElasticTreeToPlot$Nodes[,c(1,3)]
+tcoords = coords %*% rot
+ElasticTreeToPlot$Nodes=cbind(ElasticTreeToPlot$Nodes[,2], tcoords[,1])
+# plot(ElasticTreeToPlot$Nodes[,2], tcoords[,1], main=t, pch=16, xlab="Component 2", ylab="Transformed Component")
 plot_elastic_tree(ElasticTreeToPlot, colorcells=guo_colorcells)
 
-# Plot the principal elastic tree
-svg(filename = paste("/home/gonzalo/merlot/inst/example/Guo.svg", sep=""), height = 8, width = 8)
-plot_elastic_tree(ElasticTree, legend = F)
-dev.off()
-# ElasticTreeInterp=DuplicateTreeNodes(ElasticTree)
-# ElasticTreeInterp=DuplicateTreeNodes(ElasticTreeInterp)
-# ElasticTreeInterp=DuplicateTreeNodes(ElasticTreeInterp)
-# plot_elastic_tree(ElasticTreeInterp, colorcells = NULL)
+# We calculate the scaffold tree using the first 3 diffusion components from the diffusion map
+ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CoordinatesToPlot, BranchMinLengthSensitive = sqrt(428))
+# Plot the calculated tree
+plot_scaffold_tree(ScaffoldTree = ScaffoldTree, colorcells = guo_colorcells)
 
-# open3d()
-# plot_elastic_tree(ElasticTree, colorcells = NULL)
+ElasticTree= CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes, FixEndpoints = F)
+plot_elastic_tree(ElasticTree, colorcells=guo_colorcells)
 
-
-
+# Downstream analysis -------------
 
 svg(filename = "/home/gonzalo/Dropbox/SoedingGroup/ISMB2017/Show1.svg", height = 4, width = 6)
 plot_pseudotime_expression_gene(GeneName = "Gata4" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
@@ -140,7 +135,7 @@ guo_colorcells[which(CellTypes=="64C")]="darkblue"
 
 DatasetDM <- DiffusionMap(Dataset$ExpressionMatrix, density.norm = T, verbose = F, sigma="global")
 
-t <- -15
+t <- -20
 theta = t / 180 * pi
 rot = matrix(c(cos(theta), sin(theta), -sin(theta), cos(theta)), nrow=2, ncol=2)
 coords = DatasetDM@eigenvectors[,c(1,3)]

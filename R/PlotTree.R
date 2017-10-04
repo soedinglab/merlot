@@ -92,7 +92,8 @@ plot_elastic_tree <- function(ElasticTree, colorcells=NULL, legend=F, legend_nam
   # color cells by branch
   if(is.null(colorcells))
   {
-    selected_colors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue", "aquamarine", "wheat4", "brown", "gray")
+    selected_colors = c("forestgreen", "darkorchid", "darkorange3", "dodgerblue3", "firebrick3", "orange", "blue", "aquamarine", "wheat4", "brown", "gray")
+    # selected_colors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue", "aquamarine", "wheat4", "brown", "gray")
     CellBranches=ElasticTree$Cells2Branches
     Types=sort(unique(CellBranches))
 
