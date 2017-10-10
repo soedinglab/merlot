@@ -5,7 +5,8 @@
 \title{Calculate Scaffold tree}
 \usage{
 CalculateScaffoldTree(CellCoordinates, NEndpoints = NULL,
-  BranchMinLength = -1, python_location = "python3")
+  BranchMinLength = -1, BranchMinLengthSensitive = -1,
+  python_location = "python3")
 }
 \arguments{
 \item{CellCoordinates}{file containing coordinates from the low dimensional manifold (e.g: first 3 diffusion components from a diffusion map)}

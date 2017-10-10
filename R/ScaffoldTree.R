@@ -15,6 +15,10 @@ CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLen
   write.table(CellCoordinates, file = CoordinatesFile, sep="\t", col.names = F, row.names = F)
   BranchMinLengthSensitive=floor(BranchMinLengthSensitive)
   ScaffoldTreeScript=paste(find.package("merlot"), "/python/ScaffoldTree.py", sep="")
+  if(BranchMinLengthSensitive==-1 && is.null(NEndpoints))
+  {
+    BranchMinLengthSensitive=round(sqrt(dim(CellCoordinates)[1]))
+  }
 
   if(is.null(NEndpoints))
   {
