@@ -11,7 +11,7 @@ plot_scaffold_tree <- function(ScaffoldTree, colorcells="gray", dims=dim(Scaffol
   if(dims==2)
   {
     # Plot 2d Dijkstra's tree
-    plot(ScaffoldTree$CellCoordinates[,1], ScaffoldTree$CellCoordinates[,2], pch=16, col=alpha(colorcells, 0.6), xlab="Component 1", ylab="Component 2", cex=1)
+    plot(ScaffoldTree$CellCoordinates[,1], ScaffoldTree$CellCoordinates[,2], pch=16, col=alpha(colorcells, 0.6), xlab="Component 1", ylab="Component 2", cex=1.5)
 
     if(length(ScaffoldTree$Endpoints)==2)
     {

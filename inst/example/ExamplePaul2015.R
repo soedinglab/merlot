@@ -8,10 +8,9 @@ JobFolder="/home/gonzalo/Desktop/Postdoc/Colabs/Niko/Papers/PreparingDatasets/Tr
 Types=read.table(file = "/home/gonzalo/Desktop/Postdoc/Colabs/Niko/Papers/PreparingDatasets/ProcessedDatasets/Trials/Paul/MAP.csv", header=F, stringsAsFactors = F, sep=",")
 paul_colorcells=c()
 
+selected_colors=c("cyan1", "cyan4", "darkcyan",  "blue", "darkblue", "blue4", "navy", "darkgoldenrod", "darkgoldenrod1", "darkgoldenrod1", "gold", "bisque", "palegreen", "darkolivegreen2", "darkolivegreen3", "darkolivegreen4", "darkolivegreen", "chartreuse4", "darkgreen")
 
 
-
-selected_colors=c("cyan1", "cyan4", "darkcyan",  "blue", "darkblue", "blue4", "darkgoldenrod4", "darkgoldenrod", "darkgoldenrod1", "darkgoldenrod1", "gold", "bisque", "darkkhaki", "darkolivegreen1", "darkolivegreen3", "darkolivegreen4", "darkolivegreen", "chartreuse4", "darkgreen")
 
 for(i in 1:19)
 {
@@ -19,13 +18,14 @@ for(i in 1:19)
 }
 
 unique(paul_colorcells)
+plot_scaffold_tree(ScaffoldTree = ScaffoldTree, colorcells = paul_colorcells)
 
 
 # Generate DDR2 coordinates
 library(monocle)
 
 raw <- read.table("/home/gonzalo/Desktop/Postdoc/TreeTopology_Parra2016/ProcessedDatasets/PaulDescription.txt", sep="\t", header=T, row.names=1, stringsAsFactors = T)
-which(rowSums(raw<300)
+which(rowSums(raw<300))
 exprs <- t(as.matrix(raw))
 
 data <- newCellDataSet(exprs, expressionFamily = negbinomial.size(), lowerDetectionLimit = 1)
@@ -53,7 +53,11 @@ dim(CellCoordinates)
 plot(CellCoordinates, pch=16, col=paul_colorcells)
 
 ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates, NEndpoints = 3)
-plot_scaffold_tree(ScaffoldTree = ScaffoldTree)
+
+svg(filename = "/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Figuras/Fig1Bis/DMPaulScaffold.svg", height = 6, width = 6)
+plot_scaffold_tree(ScaffoldTree = ScaffoldTree, colorcells = paul_colorcells)
+legend(x="bottomright", legend=paste("Cluster ", 1:19 ), col=selected_colors, pch=16, cex=0.7)
+dev.off()
 
 NumberOfNodes=70
 # We calculate the elastic principal tree using the scaffold tree for its initialization

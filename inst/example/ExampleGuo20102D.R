@@ -36,7 +36,9 @@ CellCoordinates=as.matrix(CellCoordinates[,1:2])
 # We calculate the scaffold tree using the first 3 diffusion components from the diffusion map
 ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates, BranchMinLengthSensitive = sqrt(428))
 # Plot the calculated tree
+svg(filename = "/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Figuras/Fig1Bis/DMGuoScaffold.svg", height = 6, width = 6)
 plot_scaffold_tree(ScaffoldTree = ScaffoldTree, colorcells = guo_colorcells)
+dev.off()
 
 NumberOfNodes=100
 # We calculate the elastic principal tree using the scaffold tree for its initialization
@@ -76,3 +78,16 @@ Branch2Genes=branch_differential_expression(Branch =2, EmbeddedTree, mode="cells
 
 GetGeneCorrelationNetwork(EmbeddedTree$Nodes, cor_threshold = 0.7)
 GetGeneCorrelationNetwork(Dataset$ExpressionMatrix, cor_threshold = 0.2)
+
+# Differentially Expressed Genes among two subpopulations in the tree
+Group1=EmbeddedTree$Branches[[4]]
+Group2=EmbeddedTree$Branches[[5]]
+
+DifferentiallyExpressedGenes=subpopulations_differential_expression(SubPopulation1 = Group1, SubPopulation2 = Group2, EmbeddedTree = EmbeddedTree, mode = "cells")
+
+plot_pseudotime_expression_gene(GeneName = "Gata4" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
+plot_pseudotime_expression_gene(GeneName = "Runx1" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
+plot_pseudotime_expression_gene(GeneName = "Fgf4" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
+plot_pseudotime_expression_gene(GeneName = "Fgfr2" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
+
+
