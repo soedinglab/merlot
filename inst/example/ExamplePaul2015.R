@@ -76,6 +76,8 @@ legend(colors()[seq(495, 495+18, 1)])
 DataFile="/home/gonzalo/Desktop/Postdoc/TreeTopology_Parra2016/ProcessedDatasets/PaulDescription.txt"
 Dataset=ReadDataset(DataFile)
 
+dim(Dataset$ExpressionMatrix)
+
 # We embed the elastic tree on the expression matrix
 EmbeddedTree= GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = ElasticTree, increaseFactor_mu = 10, increaseFactor_lambda=10)
 

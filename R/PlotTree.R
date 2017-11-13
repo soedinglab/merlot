@@ -93,7 +93,6 @@ plot_elastic_tree <- function(ElasticTree, colorcells=NULL, legend=F, legend_nam
   if(is.null(colorcells))
   {
     selected_colors = c("forestgreen", "darkorchid", "darkorange3", "dodgerblue3", "firebrick3", "orange", "blue", "aquamarine", "wheat4", "brown", "gray")
-    # selected_colors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue", "aquamarine", "wheat4", "brown", "gray")
     CellBranches=ElasticTree$Cells2Branches
     Types=sort(unique(CellBranches))
 
@@ -308,22 +307,43 @@ plot_heatmaps_embedding <-function(Pseudotimes, EmbeddedTree, log_tranform=F, cl
 {
 
   # Testing
-  # EmbeddedTree=EmbeddedTree
-  # log_tranform=F
-  # cluster_genes=T
+  EmbeddedTree=EmbeddedTree
+  log_tranform=F
+  cluster_genes=T
   # end testing
 
   CellByBranchTimes=c()
   CheckPseudotime=c()
 
+  BranchesSequences=c()
+  BranchesColors=c()
+
+  selected_colors = c("forestgreen", "darkorchid", "darkorange3", "dodgerblue3", "firebrick3", "orange", "blue", "aquamarine", "wheat4", "brown", "gray")
+
+  # Take cells from every branch and order them by pseudotime
   for(i in 1:length(Pseudotimes$Branches))
   {
     branch_i=Pseudotimes$Branches[[i]]
     aux=sort(Pseudotimes$Times_yk[branch_i], index.return=T)
+
+    # generate a sequence of numbers to represent the limits between branches in the matrix
+    if(i!=length(Pseudotimes$Branches))
+    {
+    BranchesSequences=c(BranchesSequences, rep(i, length(Pseudotimes$Branches[[i]])-1))
+    BranchesColors=c(BranchesColors, rep(selected_colors[i], length(Pseudotimes$Branches[[i]])-1))
+    }else{
+      BranchesSequences=c(BranchesSequences, rep(i, length(Pseudotimes$Branches[[i]])))
+      BranchesColors=c(BranchesColors, rep(selected_colors[i], length(Pseudotimes$Branches[[i]])))
+    }
     CellByBranchTimes=c(CellByBranchTimes, branch_i[aux$ix])
   }
 
   CellByBranchTimes=unique(CellByBranchTimes)
+
+
+  # svg(filename = paste("/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Figuras/Fig2/", "Cells.Interpolated", ".svg", sep=""), width = 6, height = 3.5)
+  # image.plot(t(as.matrix(cbind(BranchesSequences,BranchesSequences))), col= t(cbind(BranchesColors,BranchesColors)), legend.shrink = 1)
+  # dev.off()
 
   OrderedAverageNodes=EmbeddedTree$AveragedNodes[CellByBranchTimes,]
   OrderedInterpoaltedNodes=EmbeddedTree$Nodes[CellByBranchTimes,]
@@ -356,12 +376,14 @@ plot_heatmaps_embedding <-function(Pseudotimes, EmbeddedTree, log_tranform=F, cl
 
   my.colors = colorRampPalette(c("black", "red","orange", "yellow", "white"))
   range_heatmap= c(min(c(range(OrderedAverageNodes)[1], range(OrderedInterpoaltedNodes)[1])), max(c(range(OrderedAverageNodes)[2], range(OrderedInterpoaltedNodes)[2])))
-  # svg(filename = paste("/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Figuras/Fig2/", "Yk_averaged", ".svg", sep=""), width = 6, height = 3.5)
+  # svg(filename = paste("/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Figuras/Fig2/", "Yk_averaged3D", ".svg", sep=""), width = 6, height = 3.5)
   image.plot(t(OrderedAverageNodes), xlab="Genes", ylab="Cells", col =my.colors(300) , zlim=range_heatmap, xaxt='n', yaxt='n')
   # dev.off()
-  # svg(filename = paste("/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Figuras/Fig2/", "Yk_interpolated", ".svg", sep=""), width = 6, height = 3.5)
+  # svg(filename = paste("/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Figuras/Fig2/", "Yk_interpolated3D", ".svg", sep=""), width = 6, height = 3.5)
   image.plot(t(OrderedInterpoaltedNodes), xlab="Genes", ylab="Cells",  col =my.colors(300), zlim=range_heatmap, xaxt='n', yaxt='n')
-  # dev.off()
+  # image.plot(t(OrderedInterpoaltedNodes), xlab="Genes", ylab="Cells",  col =my.colors(300), zlim=range_heatmap, xaxt='n', yaxt='n', horizontal = T, legend.width = 0.7, legend.lab = "Gene Expression")
+  # image.plot(t(OrderedInterpoaltedNodes), xlab="Genes", ylab="Cells", legend.only = T)
+  dev.off()
 
   EmbeddedMatrices= list(AveragedMatrix=OrderedAverageNodes, InterpolatedMatrix=OrderedInterpoaltedNodes)
 

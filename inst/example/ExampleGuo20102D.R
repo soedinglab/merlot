@@ -11,6 +11,7 @@ CellTypes=CellTypes[,2]
 selected_colors=c("red", "orange", "yellow", "green", "cyan", "darkblue")
 
 guo_colorcells=c()
+# guo_colorcells[which(CellTypes=="1C")]="firebrick3"
 guo_colorcells[which(CellTypes=="2C")]="red"
 guo_colorcells[which(CellTypes=="4C")]="orange"
 guo_colorcells[which(CellTypes=="8C")]="yellow"
@@ -19,6 +20,7 @@ guo_colorcells[which(CellTypes=="32C")]="cyan"
 guo_colorcells[which(CellTypes=="64C")]="darkblue"
 
 # Embed Cells into their manifold
+# This part here calculates the diffusion map and collapses the 3rd dimension into the plane.
 # library(destiny)
 # DatasetDM <- DiffusionMap(Dataset$ExpressionMatrix, density.norm = T, verbose = F, sigma="global")
 # CellCoordinates=DatasetDM@eigenvectors[,1:3]
@@ -29,25 +31,28 @@ guo_colorcells[which(CellTypes=="64C")]="darkblue"
 # tcoords = coords %*% rot
 # # CellCoordinates=cbind(DatasetDM@eigenvectors[,2], tcoords[,1])
 
-# The first 3 diffusion map components will be used for this example
+# Here we use precalculated and rotated coordinates.
 CellCoordinates=read.table(file="/home/gonzalo/merlot/inst/example/GuoRotatedCoordinates.txt", sep="\t", header = F, stringsAsFactors = F)
 CellCoordinates=as.matrix(CellCoordinates[,1:2])
 
 # We calculate the scaffold tree using the first 3 diffusion components from the diffusion map
 ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates, BranchMinLengthSensitive = sqrt(428))
+
 # Plot the calculated tree
-svg(filename = "/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Figuras/Fig1Bis/DMGuoScaffold.svg", height = 6, width = 6)
+# svg(filename = "/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Figuras/Fig1Bis/DMGuoScaffold.svg", height = 6, width = 6)
 plot_scaffold_tree(ScaffoldTree = ScaffoldTree, colorcells = guo_colorcells)
-dev.off()
+legend(x="bottomright", legend=c("2C", "4C", "8C", "16C", "32C", "64C"), col=selected_colors, pch=16)
+# dev.off()
 
 NumberOfNodes=100
 # We calculate the elastic principal tree using the scaffold tree for its initialization
 ElasticTree= CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes, FixEndpoints = F)
 
-svg(filename = "/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Figuras/Fig1Bis/DMGuo.svg", height = 6, width = 6)
+# svg(filename = "/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Figuras/Fig1Bis/DMGuo.svg", height = 6, width = 6)
 plot_elastic_tree(ElasticTree)
+# plot with cell types colors
 # plot_elastic_tree(ElasticTree, colorcells = guo_colorcells)
-dev.off()
+# dev.off()
 
 # Embedd the principal elastic tree on the gene expression space from which it was calculated.
 EmbeddedTree= GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = ElasticTree, increaseFactor_mu = 10, increaseFactor_lambda = 10)

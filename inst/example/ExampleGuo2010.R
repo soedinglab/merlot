@@ -39,6 +39,7 @@ CellCoordinates=DatasetDM@eigenvectors[,1:3]
 ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates, BranchMinLengthSensitive = sqrt(428))
 # Plot the calculated tree
 plot_scaffold_tree(ScaffoldTree = ScaffoldTree, colorcells = guo_colorcells)
+legend(x="bottomright", legend=c("2C", "4C", "8C", "16C", "32C", "64C"), col=selected_colors, pch=16, cex=0.7)
 
 NumberOfNodes=100
 # We calculate the elastic principal tree using the scaffold tree for its initialization
