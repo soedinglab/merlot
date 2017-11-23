@@ -11,7 +11,6 @@ CellTypes=CellTypes[,2]
 selected_colors=c("red", "orange", "yellow", "green", "cyan", "darkblue")
 
 guo_colorcells=c()
-# guo_colorcells[which(CellTypes=="1C")]="firebrick3"
 guo_colorcells[which(CellTypes=="2C")]="red"
 guo_colorcells[which(CellTypes=="4C")]="orange"
 guo_colorcells[which(CellTypes=="8C")]="yellow"
@@ -20,20 +19,23 @@ guo_colorcells[which(CellTypes=="32C")]="cyan"
 guo_colorcells[which(CellTypes=="64C")]="darkblue"
 
 # Embed Cells into their manifold
-# This part here calculates the diffusion map and collapses the 3rd dimension into the plane.
-# library(destiny)
-# DatasetDM <- DiffusionMap(Dataset$ExpressionMatrix, density.norm = T, verbose = F, sigma="global")
-# CellCoordinates=DatasetDM@eigenvectors[,1:3]
-# t <- -25
-# theta = t / 180 * pi
-# rot = matrix(c(cos(theta), sin(theta), -sin(theta), cos(theta)), nrow=2, ncol=2)
-# coords = DatasetDM@eigenvectors[,c(1,3)]
-# tcoords = coords %*% rot
-# # CellCoordinates=cbind(DatasetDM@eigenvectors[,2], tcoords[,1])
+library(destiny)
+DatasetDM <- DiffusionMap(Dataset$ExpressionMatrix, density.norm = T, verbose = F, sigma="global")
+
+# Read the first 3 coordinates
+CellCoordinates=DatasetDM@eigenvectors[,1:3]
+
+# This part here calculates the diffusion map and collapses the 3rd dimension into the plane
+t <- -25
+theta = t / 180 * pi
+rot = matrix(c(cos(theta), sin(theta), -sin(theta), cos(theta)), nrow=2, ncol=2)
+coords = DatasetDM@eigenvectors[,c(1,3)]
+tcoords = coords %*% rot
+CellCoordinates=cbind(DatasetDM@eigenvectors[,2], tcoords[,1])
 
 # Here we use precalculated and rotated coordinates.
-CellCoordinates=read.table(file="/home/gonzalo/merlot/inst/example/GuoRotatedCoordinates.txt", sep="\t", header = F, stringsAsFactors = F)
-CellCoordinates=as.matrix(CellCoordinates[,1:2])
+# CellCoordinates=read.table(file="/home/gonzalo/merlot/inst/example/GuoRotatedCoordinates.txt", sep="\t", header = F, stringsAsFactors = F)
+# CellCoordinates=as.matrix(CellCoordinates[,1:2])
 
 # We calculate the scaffold tree using the first 3 diffusion components from the diffusion map
 ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates, BranchMinLengthSensitive = sqrt(428))
