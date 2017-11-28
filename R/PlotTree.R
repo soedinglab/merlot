@@ -383,7 +383,7 @@ plot_heatmaps_embedding <-function(Pseudotimes, EmbeddedTree, log_tranform=F, cl
   image.plot(t(OrderedInterpoaltedNodes), xlab="Genes", ylab="Cells",  col =my.colors(300), zlim=range_heatmap, xaxt='n', yaxt='n')
   # image.plot(t(OrderedInterpoaltedNodes), xlab="Genes", ylab="Cells",  col =my.colors(300), zlim=range_heatmap, xaxt='n', yaxt='n', horizontal = T, legend.width = 0.7, legend.lab = "Gene Expression")
   # image.plot(t(OrderedInterpoaltedNodes), xlab="Genes", ylab="Cells", legend.only = T)
-  dev.off()
+  #dev.off()
 
   EmbeddedMatrices= list(AveragedMatrix=OrderedAverageNodes, InterpolatedMatrix=OrderedInterpoaltedNodes)
 
