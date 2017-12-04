@@ -2,32 +2,25 @@ library(merlot)
 
 JobName="Paul"
 # Folder where results and temporal objects will be stored
-JobFolder="/home/gonzalo/Desktop/Postdoc/Colabs/Niko/Papers/PreparingDatasets/TreeTopology_Parra2016/"
 
-# colors for paul
-Types=read.table(file = "/home/gonzalo/Desktop/Postdoc/Colabs/Niko/Papers/PreparingDatasets/ProcessedDatasets/Trials/Paul/MAP.csv", header=F, stringsAsFactors = F, sep=",")
+# Read cell assignments provided by the dataset authors
+Types=read.table(file = "/home/gonzalo/merlot/inst/example/PaulCellsMapping", header=F, stringsAsFactors = F, sep=",")
+
 paul_colorcells=c()
-
 selected_colors=c("cyan1", "cyan4", "darkcyan",  "blue", "darkblue", "blue4", "navy", "darkgoldenrod", "darkgoldenrod1", "darkgoldenrod1", "gold", "bisque", "palegreen", "darkolivegreen2", "darkolivegreen3", "darkolivegreen4", "darkolivegreen", "chartreuse4", "darkgreen")
-
-
-
 for(i in 1:19)
 {
   paul_colorcells[which(Types[,2]==i)]=selected_colors[i]
 }
+# unique(paul_colorcells)
+# plot_scaffold_tree(ScaffoldTree = ScaffoldTree, colorcells = paul_colorcells)
 
-unique(paul_colorcells)
-plot_scaffold_tree(ScaffoldTree = ScaffoldTree, colorcells = paul_colorcells)
 
-
-# Generate DDR2 coordinates
+# Generate DDRTree coordinates using Monocle2
 library(monocle)
-
 raw <- read.table("/home/gonzalo/Desktop/Postdoc/TreeTopology_Parra2016/ProcessedDatasets/PaulDescription.txt", sep="\t", header=T, row.names=1, stringsAsFactors = T)
-which(rowSums(raw<300))
+# which(rowSums(raw<300))
 exprs <- t(as.matrix(raw))
-
 data <- newCellDataSet(exprs, expressionFamily = negbinomial.size(), lowerDetectionLimit = 1)
 
 # run monocle ----

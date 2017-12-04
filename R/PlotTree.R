@@ -170,7 +170,7 @@ plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes
 
   # # Testing--------
   # GeneName="Tapt1"
-  selected_colors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue", "aquamarine", "magenta", "brown", "gray")
+  selected_colors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue", "aquamarine", "magenta", "brown", "gray", "wheat1", "azure4", "lightsalmon4", "navy", "sienna1", "gold4", "red4", "violetred")
 
   # End testing
   # # Testing-------
