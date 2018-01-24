@@ -277,31 +277,24 @@ GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-0
   }
 
   # count number of xn per y_k
-  yk_counts=c()
-  yk_profiles=c()
+  yk_counts <- rep(0, N_yk)
+  yk_profiles <- matrix(data = 0, ncol = dim(ExpressionMatrix)[2], nrow = N_yk)
 
   # calculate the transcriptional profile for y_ks
   for (i in 1:dim(ElasticTree$Nodes)[1])
   {
     # count cells associated to y_ki
-    yk_counts=c(yk_counts, length(cell2yk[which(cell2yk[,2]==i),]))
-
-    # when more than 1 x_n is mapped to y_ki
-    if(is.matrix(ExpressionMatrix[which(cell2yk[,2]==i),]))
-    {
-      yk_profiles=rbind(yk_profiles, colMeans(ExpressionMatrix[which(cell2yk[,2]==i),]))
-    }
-    # if only 1 or 0 x_n is mapped to y_ki
-    else  if(length(ExpressionMatrix[which(cell2yk[,2]==i),])==dim(ExpressionMatrix)[2])
-    {
-      yk_profiles=rbind(yk_profiles, ExpressionMatrix[which(cell2yk[,2]==i),])
+    yk_counts[i] <- length(cell2yk[which(cell2yk[,2]==i),1])
+    if (yk_counts[i] > 1) {
+      yk_profiles[i,] <- colMeans(ExpressionMatrix[which(cell2yk[,2]==i),])
+    } else if (yk_counts[i] == 1) {
+      yk_profiles[i,] <- unlist(ExpressionMatrix[which(cell2yk[,2]==i),])
     }
   }
 
   # set NA values for y_k with no mapped x_n to 0
-  yk_profiles=as.matrix(yk_profiles)
-  yk_profiles[which(is.na(yk_profiles))]=0
-  # length(which(yk_counts==0))
+  yk_profiles[yk_counts == 0, ] <- 0
+
 
   # # # Work in progress
   # for(i in 1:N_yk)

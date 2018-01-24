@@ -67,8 +67,18 @@ DifferentiallyExpressedGenes=subpopulations_differential_expression(SubPopulatio
 Branch1Genes=branch_differential_expression(Branch =1, EmbeddedTree)
 Branch2Genes=branch_differential_expression(Branch =2, EmbeddedTree)
 
-# Calculating gene networks based on the original gene expression profiles
-GetGeneCorrelationNetwork(Dataset$ExpressionMatrix, cor_threshold = 0.7)
 
+for(i in seq(0.1,0.9,0.1))
+{
+svg(paste("/home/gonzalo/Desktop/new_figs/networks/net", i,".svg", sep=""), width = 7, height = 6)
+# Calculating gene networks based on the original gene expression profiles
+GetGeneCorrelationNetwork(Dataset$ExpressionMatrix, cor_threshold = i)
+dev.off()
+}
 # Calculating gene networks based on denoised expression profiles
+for(i in seq(0.1,0.9,0.1))
+{
+svg(paste("/home/gonzalo/Desktop/new_figs/networks/net_tree", i,".svg", sep=""), width = 7, height = 6)
 GetGeneCorrelationNetwork(EmbeddedTree$Nodes, cor_threshold = 0.7)
+dev.off()
+}

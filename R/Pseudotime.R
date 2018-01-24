@@ -77,11 +77,11 @@ CalculatePseudotimes <- function (InputTree, plot=F, plotdim, T0=1, C0=NULL)
       cell2yk[which(cell2yk[,1]==i),2]
       PseudoExpressionMatrix[i,]=InputTree$Nodes[cell2yk[which(cell2yk[,1]==i),2],]
     }
-    Pseudotimes= list(Times_yk=Times_yk, Times_cells=Times_cells, Proyected_Times_Cells=Proyected_Times_Cells, Branches=InputTree$Branches, Cells2TreeNodes=cell2yk, Cells2Branches=cells_branchs_assigments, PseudoExpressionMatrix=PseudoExpressionMatrix)
+    Pseudotimes= list(Times_yk=Times_yk, Times_cells=Times_cells, Proyected_Times_Cells=Proyected_Times_Cells, Branches=InputTree$Branches, Cells2TreeNodes=cell2yk, Cells2Branches=cells_branchs_assigments, PseudoExpressionMatrix=PseudoExpressionMatrix, T0=T0, C0=C0)
   }
   else
   {
-    Pseudotimes= list(Times_yk=Times_yk, Times_cells=Times_cells, Proyected_Times_Cells=Proyected_Times_Cells, Branches=InputTree$Branches, Cells2TreeNodes=cell2yk, Cells2Branches=cells_branchs_assigments)
+    Pseudotimes= list(Times_yk=Times_yk, Times_cells=Times_cells, Proyected_Times_Cells=Proyected_Times_Cells, Branches=InputTree$Branches, Cells2TreeNodes=cell2yk, Cells2Branches=cells_branchs_assigments, T0=T0, C0=C0)
   }
   return (Pseudotimes)
 }

@@ -169,7 +169,7 @@ plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes
   # selectedcolors: colors for the branches, by defaul the rainbow palette is used.
 
   # # Testing--------
-  # GeneName="Tapt1"
+  # GeneName="alas2"
   selected_colors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue", "aquamarine", "magenta", "brown", "gray", "wheat1", "azure4", "lightsalmon4", "navy", "sienna1", "gold4", "red4", "violetred")
 
   # End testing
@@ -217,9 +217,32 @@ plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes
 
   for(i in 1:length(Pseudotimes$Branches))
   {
-    branch_i=Pseudotimes$Branches[[i]]
-    aux=sort(Pseudotimes$Times_yk[branch_i], index.return=T)
-    lines(aux$x, EmbeddedTree$Nodes[branch_i[aux$ix],Gene], col=selected_colors[i], lwd=3)
+    # If and endpoint or branchpoint was selected as t0
+    if(is.null(Pseudotimes$C0))
+    {
+      branch_i=Pseudotimes$Branches[[i]]
+      aux=sort(Pseudotimes$Times_yk[branch_i], index.return=T)
+      lines(aux$x, EmbeddedTree$Nodes[branch_i[aux$ix],Gene], col=selected_colors[i], lwd=3)
+    }else{
+      #If a cell was selected as t0
+      if(Pseudotimes$T0 %in% Pseudotimes$Branches[[i]])
+      {
+        # if the branch contains t0, it will be plotted in two parts
+        middle_node=which(Pseudotimes$Branches[[i]]==Pseudotimes$T0)
+        semi_branch_i1=Pseudotimes$Branches[[i]][1:middle_node]
+        aux=sort(Pseudotimes$Times_yk[semi_branch_i1], index.return=T)
+        lines(aux$x, EmbeddedTree$Nodes[semi_branch_i1[aux$ix],Gene], col=selected_colors[i], lwd=3)
+
+        semi_branch_i2=Pseudotimes$Branches[[i]][middle_node:length(Pseudotimes$Branches[[i]])]
+        aux=sort(Pseudotimes$Times_yk[semi_branch_i2], index.return=T)
+        lines(aux$x, EmbeddedTree$Nodes[semi_branch_i2[aux$ix],Gene], col=selected_colors[i], lwd=3)
+      }else{
+        # if branch does not contain t0 it is plotted as before
+        branch_i=Pseudotimes$Branches[[i]]
+        aux=sort(Pseudotimes$Times_yk[branch_i], index.return=T)
+        lines(aux$x, EmbeddedTree$Nodes[branch_i[aux$ix],Gene], col=selected_colors[i], lwd=3)
+      }
+    }
   }
   # if(!is.null(branch_tags) & addlegend==T)
   # {
@@ -236,11 +259,11 @@ plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes
     par(xpd=T)
     if(is.null(branch_tags))
     {
-      legend("topright", inset=c(-0.12,0), legend=seq(1, length(ElasticTree$Branches), 1), pch=c(16), col = selected_colors[1:length(ElasticTree$Branches)], title="Branch")
+      legend("topright", inset=c(-0.12,0), legend=seq(1, length(EmbeddedTree$Branches), 1), pch=c(16), col = selected_colors[1:length(EmbeddedTree$Branches)], title="Branch")
     }
     else
     {
-      legend("topright", inset=c(-0.16,0), legend=branch_tags, col = selected_colors[1:length(ElasticTree$Branches)], title="Branch", pch=c(16))
+      legend("topright", inset=c(-0.16,0), legend=branch_tags, col = selected_colors[1:length(EmbeddedTree$Branches)], title="Branch", pch=c(16))
     }
 
     par(opar)
