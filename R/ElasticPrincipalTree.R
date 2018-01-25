@@ -279,7 +279,7 @@ GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-0
   # count number of xn per y_k
   yk_counts <- rep(0, N_yk)
   yk_profiles <- matrix(data = 0, ncol = dim(ExpressionMatrix)[2], nrow = N_yk)
-
+  colnames(yk_profiles) <- colnames(ExpressionMatrix)
   # calculate the transcriptional profile for y_ks
   for (i in 1:dim(ElasticTree$Nodes)[1])
   {
