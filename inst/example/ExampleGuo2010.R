@@ -10,6 +10,7 @@ CellTypes=read.table(file=paste(find.package("merlot"), "/example/GuoFeatures.tx
 CellTypes=CellTypes[,2]
 selected_colors=c("red", "orange", "yellow", "green", "cyan", "darkblue")
 
+# create color code given the different cell types
 guo_colorcells=c()
 guo_colorcells[which(CellTypes=="2C")]="red"
 guo_colorcells[which(CellTypes=="4C")]="orange"
@@ -24,10 +25,9 @@ DatasetDM <- DiffusionMap(Dataset$ExpressionMatrix, density.norm = T, verbose = 
 
 # The first 3 diffusion map components will be used for this example
 CellCoordinates=DatasetDM@eigenvectors[,1:3]
-# End Embedding into manifold
 
 # We calculate the scaffold tree using the first 3 diffusion components from the diffusion map
-ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates, BranchMinLengthSensitive = sqrt(428))
+ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates)
 # Plot the calculated tree
 plot_scaffold_tree(ScaffoldTree = ScaffoldTree, colorcells = guo_colorcells)
 legend(x="bottomright", legend=c("2C", "4C", "8C", "16C", "32C", "64C"), col=selected_colors, pch=16, cex=0.7)

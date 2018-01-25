@@ -310,7 +310,8 @@ Epsilons=calculate_secondary_endpoints(EndPoints, DijkstraMatrix, DijkstraSteps,
 
 if len(EndPoints) <= 2: 
 	print ("Only 2 Endpoints detected.")
-	print("Endpoints:", len(EndPoints), *EndPoints)
+	EndPointsPrint = [x+1 for x in EndPoints]
+	print("Endpoints:", len(EndPoints), *EndPointsPrint)
 	print("Branchpoints:", 0, 0)
 	print("Tree_Branch: ",str(EndPoints[0]), str(EndPoints[1]))
 
@@ -340,7 +341,8 @@ if len(EndPoints) <= 2:
 else:
 	#Calculate branchpoints and tree topology
 	branching, TreeConnectivity =calculate_branchpoints(EndPoints, DijkstraMatrix, DijkstraPredecesors, DijkstraSteps)
-	print("Endpoints:", len(EndPoints), *EndPoints)
+	EndPointsPrint = [x+1 for x in EndPoints]
+	print("Endpoints:", len(EndPoints), *EndPointsPrint)
 
 	TreeTopologyDat=DMCoordinates+"_TreeTopology.dat"
 	with open(TreeTopologyDat, 'w') as out:
@@ -348,7 +350,8 @@ else:
 		out.write(EndPointsLine)
 
 		branching=set(branching)
-		print("Branchpoints:", len(branching), *branching)
+		branchingPrint = [x+1 for x in branching]
+		print("Branchpoints:", len(branching), *branchingPrint)
 		BranchpointsLine="Branchpoints:"+"\t"+str(len(branching))+"\t"+' '.join(map(str, branching))+"\n"
 		out.write(BranchpointsLine)
 
@@ -356,7 +359,8 @@ else:
 		for i in range(TreeConnectivity.shape[0]):
 			# In case of trifurcations or higher order connections it avoids printing branches in between the same node
 			if TreeConnectivity[i][0] != TreeConnectivity[i][1]:
-				print("Tree_Branch", TreeConnectivity[i][0], TreeConnectivity[i][1])
+				TreeConnectivityPrint=TreeConnectivity+1
+				print("Tree_Branch", TreeConnectivityPrint[i][0], TreeConnectivityPrint[i][1])
 				TopologyLine="Tree_Branch"+"\t"+str(TreeConnectivity[i][0])+"\t"+str(TreeConnectivity[i][1])+"\n"
 				out.write(TopologyLine)
 	out.close()
