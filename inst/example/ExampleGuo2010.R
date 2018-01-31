@@ -58,7 +58,6 @@ plot_pseudotime_expression_gene(GeneName = "Klf2" , EmbeddedTree = EmbeddedTree,
 
 # Check the heatmaps for the gene expression values
 OrderedMatrix=plot_heatmaps_embedding(Pseudotimes, EmbeddedTree, log_tranform=F)
-
 # Differentially Expressed Genes among two subpopulations in the tree
 # Selecting cells in branch 1
 Group1=EmbeddedTree$Branches[[1]]
@@ -73,17 +72,5 @@ Branch1Genes=branch_differential_expression(Branch =1, EmbeddedTree)
 Branch2Genes=branch_differential_expression(Branch =2, EmbeddedTree)
 
 
-for(i in seq(0.1,0.9,0.1))
-{
-svg(paste("/home/gonzalo/Desktop/new_figs/networks/net", i,".svg", sep=""), width = 7, height = 6)
-# Calculating gene networks based on the original gene expression profiles
-GetGeneCorrelationNetwork(Dataset$ExpressionMatrix, cor_threshold = i)
-dev.off()
-}
-# Calculating gene networks based on denoised expression profiles
-for(i in seq(0.1,0.9,0.1))
-{
-svg(paste("/home/gonzalo/Desktop/new_figs/networks/net_tree", i,".svg", sep=""), width = 7, height = 6)
+GetGeneCorrelationNetwork(Dataset$ExpressionMatrix, cor_threshold = 0.7)
 GetGeneCorrelationNetwork(EmbeddedTree$Nodes, cor_threshold = 0.7)
-dev.off()
-}

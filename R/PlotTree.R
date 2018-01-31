@@ -169,7 +169,7 @@ plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes
   # selectedcolors: colors for the branches, by defaul the rainbow palette is used.
 
   # # Testing--------
-  # GeneName="alas2"
+  # GeneName="Fgf4"
   selected_colors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue", "aquamarine", "magenta", "brown", "gray", "wheat1", "azure4", "lightsalmon4", "navy", "sienna1", "gold4", "red4", "violetred")
 
   # End testing
@@ -329,11 +329,11 @@ plot_pseudotimes <- function (CellCoordinates, Pseudotimes)
 plot_heatmaps_embedding <-function(Pseudotimes, EmbeddedTree, log_tranform=F, cluster_genes=T)
 {
 
-  # Testing
-  EmbeddedTree=EmbeddedTree
-  log_tranform=F
-  cluster_genes=T
-  # end testing
+  # # Testing
+  # EmbeddedTree=EmbeddedTree
+  # log_tranform=F
+  # cluster_genes=T
+  # # end testing
 
   CellByBranchTimes=c()
   CheckPseudotime=c()
@@ -400,10 +400,10 @@ plot_heatmaps_embedding <-function(Pseudotimes, EmbeddedTree, log_tranform=F, cl
   my.colors = colorRampPalette(c("black", "red","orange", "yellow", "white"))
   range_heatmap= c(min(c(range(OrderedAverageNodes)[1], range(OrderedInterpoaltedNodes)[1])), max(c(range(OrderedAverageNodes)[2], range(OrderedInterpoaltedNodes)[2])))
   # svg(filename = paste("/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Figuras/Fig2/", "Yk_averaged3D", ".svg", sep=""), width = 6, height = 3.5)
-  image.plot(t(OrderedAverageNodes), xlab="Genes", ylab="Cells", col =my.colors(300) , zlim=range_heatmap, xaxt='n', yaxt='n')
+  image.plot(t(OrderedAverageNodes), xlab="Genes", ylab="PseudoCells", col =my.colors(300) , zlim=range_heatmap, xaxt='n', yaxt='n', main="Averaged Gene Expression Profiles")
   # dev.off()
   # svg(filename = paste("/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Figuras/Fig2/", "Yk_interpolated3D", ".svg", sep=""), width = 6, height = 3.5)
-  image.plot(t(OrderedInterpoaltedNodes), xlab="Genes", ylab="Cells",  col =my.colors(300), zlim=range_heatmap, xaxt='n', yaxt='n')
+  image.plot(t(OrderedInterpoaltedNodes), xlab="Genes", ylab="PseudoCells", col =my.colors(300) , zlim=range_heatmap, xaxt='n', yaxt='n', main="Imputed Gene Expression Profiles")
   # image.plot(t(OrderedInterpoaltedNodes), xlab="Genes", ylab="Cells",  col =my.colors(300), zlim=range_heatmap, xaxt='n', yaxt='n', horizontal = T, legend.width = 0.7, legend.lab = "Gene Expression")
   # image.plot(t(OrderedInterpoaltedNodes), xlab="Genes", ylab="Cells", legend.only = T)
   #dev.off()

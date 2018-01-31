@@ -121,7 +121,7 @@ def calculate_secondary_endpoints(Endpoints, DijkstraMatrix, NumberNodes, NBranc
         #we get the nodes with the largest number of cells on path
         nodes_maxnodes=np.where(ScoreEndpointsNodes==np.max(ScoreEndpointsNodes))[0]
 
-        #from the array of nodes with the largest number of cells on path, we take the one with the max shortest path
+        #from the array of nodes with the largest number of cells on path, we take the one with the longest shortest path
         new_endpoint=nodes_maxnodes[np.where(ScoreEndpoints[nodes_maxnodes]==np.max(ScoreEndpoints[nodes_maxnodes]))[0][0]]
         
         R_epsilon={}
