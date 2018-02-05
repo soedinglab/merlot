@@ -14,7 +14,8 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambd
   # Default parameters taken from adjustment in real datasets with 100 N_yks
   # lambda_0=2.03e-09
   # mu_0=0.00625
-  #  End testing
+  # N_yk=100
+   # End testing
 
   Coords=c()
   Edges=c()
@@ -45,7 +46,7 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambd
 
   ElasticTree <- computeElasticPrincipalGraph(Data = ScaffoldTree$CellCoordinates, NumNodes = N_yk,
                                               NodesPositions = TopologyCoords, Edges = TopologyEdges,
-                                              Method = 'CurveConfiguration', EP=lambda, RP=mu)
+                                              Method = 'CurveConfiguration', EP=lambda, RP=mu, numiter=40, eps = 0.001)
 
   # Unlist the ElasticTree structure
   ElasticTree=ElasticTree[[1]]
