@@ -34,7 +34,7 @@ tcoords = coords %*% rot
 CellCoordinates=cbind(DatasetDM@eigenvectors[,2], tcoords[,1])
 
 # Here we use precalculated and rotated coordinates.
-# CellCoordinates=read.table(file="/home/gonzalo/merlot/inst/example/GuoRotatedCoordinates.txt", sep="\t", header = F, stringsAsFactors = F)
+CellCoordinates=read.table(file=paste(find.package("merlot"), "/example/GuoRotatedCoordinates.txt", sep=""), sep="\t", header = F, stringsAsFactors = F)
 # CellCoordinates=as.matrix(CellCoordinates[,1:2])
 
 # We calculate the scaffold tree using the first 3 diffusion components from the diffusion map

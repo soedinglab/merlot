@@ -45,9 +45,11 @@ plot_scaffold_tree(ScaffoldTree = ScaffoldTree, colorcells = paul_colorcells)
 legend(x="bottomright", legend=paste("Cluster ", 1:19 ), col=selected_colors, pch=16, cex=0.7)
 
 NumberOfNodes=100
+ElasticTree= CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes, NBranchScaffoldNodes = 1)
+
 # We calculate the elastic principal tree using the scaffold tree for its initialization
 #We start with a tree with 70 nodes (start_N_yk) and iteratively add 10 nodes (step_N_yk) until 100 nodes (N_yk) are reached
-ElasticTree=CalculateElasticTreeConstrained(ScaffoldTree=ScaffoldTree,  N_yk=NumberOfNodes, start_N_yk=70, step_N_yk=10)
+# ElasticTree=CalculateElasticTreeConstrained(ScaffoldTree=ScaffoldTree,  N_yk=NumberOfNodes, start_N_yk=70, step_N_yk=10)
 
 plot_elastic_tree(ElasticTree, colorcells = paul_colorcells)
 legend(x="bottomright", legend=paste("Cluster ", 1:19 ), col=selected_colors, pch=16, cex=0.7)
