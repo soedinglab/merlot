@@ -1,6 +1,5 @@
 # Example for running the tool on the Guo's Dataset
 library(merlot)
-library(ElPiGraph.R)
 # Read the example Guo dataset that is distributed with the package
 DataFile= paste(find.package("merlot"), "/example/Guo2010.txt", sep="")
 Dataset=ReadDataset(DataFile)
