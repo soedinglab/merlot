@@ -5,17 +5,19 @@
 #' @param N_yk number of nodes for the elastic principal tree
 #' @param lambda_0 principal elastic tree energy function parameter.
 #' @param mu_0 principal elastic tree energy function parameter.
+#' @param ExtraScaffoldNodes number of internal scaffold nodes per branch to be used to initialize the EPT calculation. By default it is set to NULL so only coordinates and edges for branchpoints
 #' @return ElasticTree
 #' @export
 
-CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambda_0=2.03e-09, mu_0=0.00625, FixEndpoints=F, plot=F)
+CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambda_0=2.03e-09, mu_0=0.00625, ExtraScaffoldNodes=F, FixEndpoints=F, plot=F)
 {
   # Testing
   # Default parameters taken from adjustment in real datasets with 100 N_yks
   # lambda_0=2.03e-09
   # mu_0=0.00625
   # N_yk=100
-   # End testing
+  # ExtraScaffoldNodes=T
+  # End testing
 
   Coords=c()
   Edges=c()
@@ -24,11 +26,11 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambd
   mu=(N_yk-1)*mu_0
   lambda=((N_yk-2)**3)*lambda_0
 
-  # I apply unique in case there are repeated nodes, which is a consequence of having trifurcations or higher order connections
+  # apply unique in case there are repeated nodes, which is a consequence of having trifurcations or higher order connections
   TopologyNodes=unique(c(ScaffoldTree$Endpoints, ScaffoldTree$Branchpoints))
-  # Calculate connectivity in between branches
+  # Calculate connectivity between branches
   TopologyCoords=ScaffoldTree$CellCoordinates[TopologyNodes,]
-  # Given initial topology, calculate connectivity in between branches
+  # Given initial topology, calculate connectivity between branches
   TopologyNodes=c(ScaffoldTree$Endpoints, ScaffoldTree$Branchpoints)
   TopologyEdges=c()
 
@@ -44,13 +46,52 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambd
   }
 
 
+  TopologyCoordsAux=TopologyCoords
+  TopologyEdgesAux=TopologyEdges
+  TopologyNodesAux=TopologyNodes
+
+  # ---------------------------------------
+  # -------Add branch middle scaffold nodes
+  # ---------------------------------------
+  if(ExtraScaffoldNodes)
+  {
+    TopologyEdgesAux=c()
+
+    for(i in 1:dim(ScaffoldTree$Branches)[1])
+    {
+      # Distance between to branch extreme cells
+      extremepointsDistance=ScaffoldTree$DijkstraDistances[ScaffoldTree$Branches[i,1], ScaffoldTree$Branches[i,2]]
+      # Cells between those two branches
+      nodesBranchi=ScaffoldTree$SkeletonNodes[which(ScaffoldTree$SkeletonNodes %in% ScaffoldTree$Cells2BranchesAssignments[[i]])]
+      # take the endpoints out of the array
+      nodesBranchi=nodesBranchi[which(!(nodesBranchi %in% ScaffoldTree$Branches[i,]))]
+
+      minDistanceCenter=min((ScaffoldTree$DijkstraDistances[ScaffoldTree$Branches[i,1],nodesBranchi])-(extremepointsDistance/2))
+      Distances2Nodes=ScaffoldTree$DijkstraDistances[ScaffoldTree$Branches[i,1],nodesBranchi]
+
+      # New ScaffoldNode
+      NewScaffoldNode=which(abs(Distances2Nodes-(extremepointsDistance/2)) == min(abs(Distances2Nodes-extremepointsDistance/2)))
+      TopologyCoordsAux=rbind(TopologyCoordsAux, ScaffoldTree$CellCoordinates[NewScaffoldNode,])
+      NewScaffoldNodePosition=length(TopologyNodesAux)+1
+      TopologyNodesAux=c(TopologyNodesAux, NewScaffoldNode)
+      # NedEdges
+      Edge1=c(which(TopologyNodesAux==ScaffoldTree$Branches[i,1]), NewScaffoldNodePosition)
+      Edge2=c(which(TopologyNodesAux==ScaffoldTree$Branches[i,2]), NewScaffoldNodePosition)
+      TopologyEdgesAux=rbind(TopologyEdgesAux, Edge1)
+      TopologyEdgesAux=rbind(TopologyEdgesAux, Edge2)
+      rownames(TopologyEdgesAux)<-NULL
+      # -----------------------------------------
+      # Finish adding intermediate scaffold nodes
+      # -----------------------------------------
+    }
+  }
+
   ElasticTree <- computeElasticPrincipalGraph(Data = ScaffoldTree$CellCoordinates, NumNodes = N_yk,
-                                              NodesPositions = TopologyCoords, Edges = TopologyEdges,
+                                              NodesPositions = TopologyCoordsAux, Edges = TopologyEdgesAux,
                                               Method = 'CurveConfiguration', EP=lambda, RP=mu, numiter=40, eps = 0.001)
 
   # Unlist the ElasticTree structure
   ElasticTree=ElasticTree[[1]]
-
   # Add the topology in the tree structure
   ETreeTopology= list(Endpoints=seq(from=1, to=length(ScaffoldTree$Endpoints), by=1), Branchpoints=seq(from=(length(ScaffoldTree$Endpoints) +1), to= (length(ScaffoldTree$Endpoints)) + length(ScaffoldTree$Branchpoints), by=1))
   ElasticTree=c(ElasticTree, Topology=1)
@@ -68,37 +109,57 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambd
 
   # Add Tree Connectivity
   ElasticTree=c(ElasticTree, Connectivity=1)
-  ElasticTree$Connectivity  <- Edges
+  ElasticTree$Connectivity  <- TopologyEdges
 
   # Assign nodes from the embedded tree to the different branches and save the structure in the tree structure
   BranchesNodes=list()
+  EdgesTree=matrix(0, N_yk, N_yk)
+  for(i in (1: dim(ElasticTree$Edges)[1]))
+  {
+    EdgesTree[ElasticTree$Edges[i, 1], ElasticTree$Edges[i, 2]]=1
+    EdgesTree[ElasticTree$Edges[i, 2], ElasticTree$Edges[i, 1]]=1
+  }
+  Graph_yk=graph_from_adjacency_matrix(EdgesTree)
+
+  # for(i in 1:dim(TopologyEdges)[1])
+  # {
+  #   path_brach_i=get.shortest.paths(Graph_yk,from = TopologyEdges[i,1], to = TopologyEdges[i,2])
+  #   BranchesNodes[[i]]=path_brach_i$vpath[[1]]
+  # }
 
   if(length(ScaffoldTree$Endpoints)==2)
   {
-    path=TopologyEdges[1,1]
-    first=TopologyEdges[1,1]
-    while (first!=TopologyEdges[1,2])
-    {
-      edge=ElasticTree$Edges[which(ElasticTree$Edges[,1]==first),]
-      second=edge[2]
-      path=c(path, second)
-      first=second
-    }
-    BranchesNodes[[1]] <- path
+    # path=TopologyEdges[1,1]
+    # first=TopologyEdges[1,1]
+    # while (first!=TopologyEdges[1,2])
+    # {
+    #   edge=ElasticTree$Edges[which(ElasticTree$Edges[,1]==first),]
+    #   second=edge[2]
+    #   path=c(path, second)
+    #   first=second
+    # }
+    # BranchesNodes[[1]] <- path
+    path_brach_i=get.shortest.paths(Graph_yk,from = TopologyEdges[1,1], to = TopologyEdges[1,2])
+    BranchesNodes[[1]]=path_brach_i$vpath[[1]]
   }else
   {
-    for (i in 1: dim(TopologyEdges)[1])
+    # for (i in 1: dim(TopologyEdges)[1])
+    # {
+    #   path=TopologyEdges[i,1]
+    #   first=TopologyEdges[i,1]
+    #   while (first!=TopologyEdges[i,2])
+    #   {
+    #     edge=ElasticTree$Edges[which(ElasticTree$Edges[,1]==first),]
+    #     second=edge[2]
+    #     path=c(path, second)
+    #     first=second
+    #   }
+    #   BranchesNodes[[i]] <- path
+    # }
+    for(i in 1:dim(TopologyEdges)[1])
     {
-      path=TopologyEdges[i,1]
-      first=TopologyEdges[i,1]
-      while (first!=TopologyEdges[i,2])
-      {
-        edge=ElasticTree$Edges[which(ElasticTree$Edges[,1]==first),]
-        second=edge[2]
-        path=c(path, second)
-        first=second
-      }
-      BranchesNodes[[i]] <- path
+      path_brach_i=get.shortest.paths(Graph_yk,from = TopologyEdges[i,1], to = TopologyEdges[i,2])
+      BranchesNodes[[i]]=path_brach_i$vpath[[1]]
     }
   }
 
