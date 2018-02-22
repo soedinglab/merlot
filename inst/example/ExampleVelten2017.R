@@ -37,7 +37,7 @@ plot_elastic_tree(ElasticTree, legend = F, colorcells = branches_colors)
 # dev.off()
 
 # Read the dataset to be embedded in the low dimensional manifold
-ExpressionData=paste(find.package("merlot"), "/example/Steinmetz2017.txt", sep="")
+ExpressionData=paste(find.package("merlot"), "/example/Velten2017.txt", sep="")
 Dataset=ReadDataset(ExpressionData)
 EmbeddedTree= GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = ElasticTree)
 
