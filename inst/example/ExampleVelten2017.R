@@ -7,8 +7,8 @@ Genes=read.table(file = StemnetCoordinates, stringsAsFactors = F, sep="\t")
 CellCoordinates=Genes[,2:3]
 
 # We read the cell types for the dataset and we prepare the vector with the cell colors
-StemnetCellTypes=paste(find.package("merlot"), "/example/SteinmetzCellTypes.txt", sep="")
-CellTypes=read.table(file = StemnetCellTypes, sep="\t", stringsAsFactors = F)
+VeltenCellTypes=paste(find.package("merlot"), "/example/VeltenCellTypes.txt", sep="")
+CellTypes=read.table(file = VeltenCellTypes, sep="\t", stringsAsFactors = F)
 CellTypes=as.array(CellTypes[,1])
 
 # We assigned different colors to the different cell types on each branch
