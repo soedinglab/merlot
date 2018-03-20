@@ -45,14 +45,15 @@ plot_scaffold_tree(ScaffoldTree = ScaffoldTree, colorcells = paul_colorcells)
 legend(x="bottomright", legend=paste("Cluster ", 1:19 ), col=selected_colors, pch=16, cex=0.7)
 
 NumberOfNodes=100
-ElasticTree= CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes, NBranchScaffoldNodes = 1)
+# ElasticTree= CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes, NBranchScaffoldNodes = 1)
+
+ElasticTree= CalculateElasticTreeNew(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes, NBranchScaffoldNodes=1)
 
 # We calculate the elastic principal tree using the scaffold tree for its initialization
 #We start with a tree with 70 nodes (start_N_yk) and iteratively add 10 nodes (step_N_yk) until 100 nodes (N_yk) are reached
 # ElasticTree=CalculateElasticTreeConstrained(ScaffoldTree=ScaffoldTree,  N_yk=NumberOfNodes, start_N_yk=70, step_N_yk=10)
-
 plot_elastic_tree(ElasticTree, colorcells = paul_colorcells)
-legend(x="bottomright", legend=paste("Cluster ", 1:19 ), col=selected_colors, pch=16, cex=0.7)
+# legend(x="bottomright", legend=paste("Elasticity ", "lambda:", lambda_0_i, "mu:",mu_0_i  ), col=selected_colors, pch=16, cex=0.7)
 
 # We read the Expression Matrix for the Pau Dataset
 DataFile="/home/gonzalo/Desktop/Postdoc/TreeTopology_Parra2016/ProcessedDatasets/PaulDescription.txt"
@@ -68,7 +69,7 @@ plot_pseudotimes(CellCoordinates, Pseudotimes)
 # imputed expression values as a function of pseudotime
 plot_pseudotime_expression_gene("Klf1" , EmbeddedTree, Pseudotimes, addlegend = F, selectedcolors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue"))
 plot_pseudotime_expression_gene("Cebpa" , EmbeddedTree, Pseudotimes, addlegend = F, selectedcolors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue"))
-plot_pseudotime_expression_gene("Gata2" , EmbeddedTree, Pseudotimes, addlegend = F, selectedcolors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue"))
+plot_pseudotime_expression_gene("Gata2" , EmbeddedTree, Pseudotimes, addlegend = F, selectedcolors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue"), range_y = "cells")
 
 
 # Raw gene expression values mapped in the manifold space

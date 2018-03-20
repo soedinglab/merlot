@@ -1,6 +1,6 @@
 # Example for running the tool on the Guo's Dataset
 library(merlot)
-library(ElPiGraph.R)
+# library(ElPiGraph.R)
 # Read the example Guo dataset that is distributed with the package
 DataFile= paste(find.package("merlot"), "/example/Guo2010.txt", sep="")
 Dataset=ReadDataset(DataFile)
@@ -34,14 +34,17 @@ legend(x="bottomright", legend=c("2C", "4C", "8C", "16C", "32C", "64C"), col=sel
 
 # Set the number of nodes to be used to build the Principal Elastic Tree.
 NumberOfNodes=100
-
+# ElasticTree= CalculateElasticTreeNew(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes)
 # We calculate the elastic principal tree using the scaffold tree for its initialization
 ElasticTree= CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes)
 plot_elastic_tree(ElasticTree, colorcells=guo_colorcells)
 
 # Embedd the principal elastic tree into the gene expression space from which it was calculated.
 EmbeddedTree= GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = ElasticTree)
+EmbeddedTree= GenesSpaceEmbeddingNew(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = ElasticTree)
 
+# plot(EmbeddedTree$AveragedNodes[,2], EmbeddedTree$Nodes[,2])
+# dim(EmbeddedTree$Nodes)
 # Calculate Pseudotimes for the nodes in the Tree in the full gene expression space.
 # T0=3 means that the Endpoint number 3 in the Endpoints list corresponds to the zygote fate and is used as initial pseudotime t0
 # Any given cell can be used as t0 by specifying its index using the parameter C0=cell_index
@@ -51,13 +54,16 @@ plot_pseudotimes(CellCoordinates, Pseudotimes)
 # Plot gene expression profile as a function of pseudotime
 plot_pseudotime_expression_gene(GeneName = "Gata4" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
 plot_pseudotime_expression_gene(GeneName = "Fgf4" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
-plot_pseudotime_expression_gene(GeneName = "Id2" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
+plot_pseudotime_expression_gene(GeneName = "Fgfr2" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
 plot_pseudotime_expression_gene(GeneName = "Sox2" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
 plot_pseudotime_expression_gene(GeneName = "Nanog" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
 plot_pseudotime_expression_gene(GeneName = "Klf2" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
+plot_pseudotime_expression_gene(GeneName = "Runx1" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
 
 # Check the heatmaps for the gene expression values
 OrderedMatrix=plot_heatmaps_embedding(Pseudotimes, EmbeddedTree, log_tranform=F)
+dim(EmbeddedTree$Nodes)
+Pseudotimes$Branches
 
 # Differentially Expressed Genes among two subpopulations in the tree
 # Selecting cells in branch 1

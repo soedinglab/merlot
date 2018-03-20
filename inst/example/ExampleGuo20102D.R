@@ -38,7 +38,7 @@ CellCoordinates=read.table(file=paste(find.package("merlot"), "/example/GuoRotat
 # CellCoordinates=as.matrix(CellCoordinates[,1:2])
 
 # We calculate the scaffold tree using the first 3 diffusion components from the diffusion map
-ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates, BranchMinLengthSensitive = sqrt(428))
+ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates)
 
 # Plot the calculated tree
 # svg(filename = "/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Figuras/Fig1Bis/DMGuoScaffold.svg", height = 6, width = 6)
@@ -46,9 +46,14 @@ plot_scaffold_tree(ScaffoldTree = ScaffoldTree, colorcells = guo_colorcells)
 legend(x="bottomright", legend=c("2C", "4C", "8C", "16C", "32C", "64C"), col=selected_colors, pch=16)
 # dev.off()
 
+# Nicer values
+lambda_0_i=0.80e-09
+mu_0_i=0.00250
+
 NumberOfNodes=100
 # We calculate the elastic principal tree using the scaffold tree for its initialization
-ElasticTree= CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes, FixEndpoints = F)
+# ElasticTree= CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes, FixEndpoints = F)
+ElasticTree= CalculateElasticTreeNew(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes, NBranchScaffoldNodes=F, lambda_0=lambda_0_i, mu_0=mu_0_i)
 
 # svg(filename = "/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Figuras/Fig1Bis/DMGuo.svg", height = 6, width = 6)
 plot_elastic_tree(ElasticTree)
