@@ -380,7 +380,7 @@ GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-0
       while (length(yk_profiles[previous_node,is.na(yk_profiles[previous_node,])])==length(yk_profiles[i,]))
       {
         previous_node=previous_node-1
-        if(length(yk_profiles[previous_node,is.na(yk_profiles[previous_node,])])!=length(yk_profiles[i,]))
+        if(length(yk_profiles[previous_node,is.na(yk_profiles[previous_node,])])!=length(yk_profiles[i,]) && found_previous > 1)
         {
           found_previous=T
         }
@@ -392,7 +392,7 @@ GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-0
       while (length(yk_profiles[next_node,is.na(yk_profiles[next_node,])])==length(yk_profiles[i,]))
       {
         next_node=next_node+1
-        if(length(yk_profiles[previous_node,is.na(yk_profiles[previous_node,])])!=length(yk_profiles[i,]))
+        if(length(yk_profiles[previous_node,is.na(yk_profiles[previous_node,])])!=length(yk_profiles[i,]) && next_node < N_yk)
         {
           found_next=T
         }
