@@ -739,8 +739,6 @@ GetTrajectory <- function(ElasticTree, Start, End, Pseudotimes=NULL)
   # ElasticTree=ElasticTree
   # End Testing
 
-  print("hello")
-
   TreeTopologyNodes=c(ElasticTree$Topology$Endpoints, ElasticTree$Topology$Branchpoints)
 
   ElasticTree$Connectivity
