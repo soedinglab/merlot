@@ -15,6 +15,14 @@ CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLen
   write.table(CellCoordinates, file = CoordinatesFile, sep="\t", col.names = F, row.names = F)
   BranchMinLengthSensitive=floor(BranchMinLengthSensitive)
   ScaffoldTreeScript=paste(find.package("merlot"), "/python/ScaffoldTree.py", sep="")
+
+  python_location <- glue::glue(
+    "cd {find.package('merlot')}/venv",
+    "source bin/activate",
+    python_location,
+    .sep = ";"
+  )
+
   if(BranchMinLengthSensitive==-1 && is.null(NEndpoints))
   {
     BranchMinLengthSensitive=round(sqrt(dim(CellCoordinates)[1]))
@@ -23,12 +31,14 @@ CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLen
   if(is.null(NEndpoints))
   {
     #-------------------------------------------Execute TreeTopology.py-------------
-    system(paste(python_location, " ",ScaffoldTreeScript, CoordinatesFile, "-BranchMinLength ", BranchMinLength, "-BranchMinLengthSensitive", BranchMinLengthSensitive), wait = TRUE)
+    commands <- paste(python_location, " ",ScaffoldTreeScript, CoordinatesFile, "-BranchMinLength ", BranchMinLength, "-BranchMinLengthSensitive", BranchMinLengthSensitive)
   }  else
   {
     #-------------------------------------------Execute TreeTopology.py-------------
-    system(paste(python_location, " ", ScaffoldTreeScript, CoordinatesFile, " -NBranches ", NEndpoints), wait = TRUE)
+    commands <- paste(python_location, " ", ScaffoldTreeScript, CoordinatesFile, " -NBranches ", NEndpoints)
   }
+
+  output <- dynutils::run_until_exit(commands)
 
   # --------Read the topology elements from the TreeTopology.py output---------------
   ScaffoldTree=read_topology(CoordinatesFile, CellCoordinates)
