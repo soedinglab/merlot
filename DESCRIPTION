@@ -16,3 +16,5 @@ Depends:
   fields,
   scales,
   car
+Remotes:
+  Albluca/rpgraph
