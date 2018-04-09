@@ -20,7 +20,7 @@ guo_colorcells[which(CellTypes=="64C")]="darkblue"
 
 # Embed Cells into their manifold, in this case we use Diffusion Maps as calculated by Destiny
 library(destiny)
-DatasetDM <- DiffusionMap(Dataset$ExpressionMatrix, density.norm = T, verbose = F, sigma="global")
+DatasetDM <- DiffusionMap(Dataset$ExpressionMatrix, density_norm = T, verbose = F)
 
 # The first 3 diffusion map components will be used for this example
 CellCoordinates=DatasetDM@eigenvectors[,1:3]
