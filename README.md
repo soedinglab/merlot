@@ -11,6 +11,10 @@ MERLoT consists of 1 part written in Python, which is distributed with the R pac
 * pandas
 * python3-tk
 * numpy
+
+In case you install packages via pip you can simply do:
+sudo pip3 install scipy pandas python3-tk numpy
+
 * csgraph_mod (modified version of csgraph) which you can install from here: https://github.com/soedinglab/csgraph_mod
 
 **NOTE:**
