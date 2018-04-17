@@ -11,6 +11,11 @@ MERLoT consists of 1 part written in Python, which is distributed with the R pac
 * pandas
 * python3-tk
 * numpy
+* cython
+
+In case you install packages via pip you can simply do:
+`sudo pip3 install scipy pandas python3-tk numpy cython`
+
 * csgraph_mod (modified version of csgraph) which you can install from here: https://github.com/soedinglab/csgraph_mod
 
 **NOTE:**
@@ -24,6 +29,9 @@ MERLoT depends on certain R packages in order to work properly. Most of the pack
 * rpgraph
 * igraph
 * fields
+
+with cran:
+`install.packages(c("car", "rgl", "igraph", "fields"))`
 
 The Destiny package for creating diffusion maps was one of the dinmensionality reduction techniques we used in order to reconstruct lineage tree topologies in a low dimensional manifold.
 
