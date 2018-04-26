@@ -10,9 +10,8 @@ LazyData: TRUE
 RoxygenNote: 6.0.1
 Depends:
   rgl,
-  rJava,
-  rpgraph,
   igraph,
   fields,
   scales,
+  ElPiGraph.R,
   car

@@ -5,7 +5,7 @@
 \title{Calculate Elastic Tree}
 \usage{
 CalculateElasticTree(ScaffoldTree, N_yk = 100, input = "topology",
-  lambda_0 = 2.03e-09, mu_0 = 0.00625, NBranchScaffoldNodes = 1,
+  lambda_0 = 2.03e-09, mu_0 = 0.00625, ExtraScaffoldNodes = F,
   FixEndpoints = F, plot = F)
 }
 \arguments{
@@ -15,7 +15,7 @@ CalculateElasticTree(ScaffoldTree, N_yk = 100, input = "topology",
 
 \item{mu_0}{principal elastic tree energy function parameter.}
 
-\item{NBranchScaffoldNodes}{number of internal scaffold nodes per branch to be used to initialize the EPT calculation. By default it is set to NULL so only coordinates and edges for branchpoints and endpoints are used for the initialization}
+\item{ExtraScaffoldNodes}{number of internal scaffold nodes per branch to be used to initialize the EPT calculation. By default it is set to NULL so only coordinates and edges for branchpoints and endpoints are used for the initialization}
 
 \item{Scaffoldtree}{scaffoldTree calculated by the CalculateScaffoldTree function.}
 }
