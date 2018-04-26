@@ -223,13 +223,13 @@ def calculate_branchpoints(EndPoints, DijkstraMatrix, DijkstraPredecesors, Numbe
         TreeConnectivity.append([minbranchpoint2, branchpoint])
 
         VBranchpoints.append(branchpoint)
-        VBranchpoints = np.unique(VBranchpoints)
+        # VBranchpoints = np.unique(VBranchpoints)
         Branchpoints.append(branchpoint)
 
-        #Here we add as a new connection the one corresponding to the root and
+        # Here we add as a new connection the one corresponding to the root and
         # the last detected branchpoint.
-        if len(VBranchpoints) == 2:
-            TreeConnectivity.append([VBranchpoints[0], VBranchpoints[1]])
+        if len(np.unique(VBranchpoints)) == 2:
+            TreeConnectivity.append([np.unique(VBranchpoints)[0], np.unique(VBranchpoints)[1]])
             TreeConnectivity = np.array(TreeConnectivity)
 
     return Branchpoints, TreeConnectivity
@@ -386,7 +386,7 @@ def main():
         #Calculate branchpoints and tree topology
         branching, TreeConnectivity = calculate_branchpoints(EndPoints, DijkstraMatrix,
                                                              DijkstraPredecesors, DijkstraSteps)
-        print(TreeConnectivity)
+        # print(TreeConnectivity)
         EndPointsPrint = [x+1 for x in EndPoints]
         print("Endpoints:", len(EndPoints), *EndPointsPrint)
 
