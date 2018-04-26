@@ -13,5 +13,8 @@ Depends:
   igraph,
   fields,
   scales,
+  tsne,
+  mclust,
+  FactoMineR,
   ElPiGraph.R,
   car

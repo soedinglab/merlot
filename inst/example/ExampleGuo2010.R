@@ -21,10 +21,20 @@ guo_colorcells[which(CellTypes=="64C")]="darkblue"
 
 # Embed Cells into their manifold, in this case we use Diffusion Maps as calculated by Destiny
 library(destiny)
-DatasetDM <- DiffusionMap(Dataset$ExpressionMatrix, density.norm = T, verbose = F, sigma="global")
+DatasetDM <- DiffusionMap(Dataset$ExpressionMatrix)
 
 # The first 3 diffusion map components will be used for this example
 CellCoordinates=DatasetDM@eigenvectors[,1:3]
+plot3d(CellCoordinates)
+
+# DE Genes
+DE_Genes=FilterGenes(Dataset$ExpressionMatrix, NPCs = 10)
+
+DatasetDM <- DiffusionMap((Dataset$ExpressionMatrix[, DE_Genes]))
+CellCoordinates=DatasetDM@eigenvectors[,1:3]
+open3d()
+plot3d(CellCoordinates)
+
 
 # We calculate the scaffold tree using the first 3 diffusion components from the diffusion map
 ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates)

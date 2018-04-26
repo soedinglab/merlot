@@ -141,7 +141,7 @@ GetGeneCorrelationNetwork <-function(ExpressionMatrix, cor_threshold=0.4, plot=T
 #'
 #' @export
 #'
-FilterGenes<-function(ExprMatrix, NPCs=10)
+FilterGenes<-function(ExprMatrix, NPCs=10, logdata=T)
 {
   # testing
   # ExprMatrix=Dataset$ExpressionMatrix
@@ -159,13 +159,21 @@ FilterGenes<-function(ExprMatrix, NPCs=10)
 
   ExprMatrix=ExprMatrix[,keep_genes]
   # Calculate PCA for the data, keeping the first 50 componentes
-  PCATransform=PCA(log2(t(ExprMatrix)+1), ncp = NPCs, graph = F)
+
+  if(logdata==T)
+  {
+    ExprMatrix= log2(t(ExprMatrix)+1)
+  }
+
+  print("Running PCA..")
+  PCATransform=PCA(ExprMatrix, ncp = NPCs, graph = F)
   # Select those components that capture 60% of the variability
   # PCsToUse=which(PCATransform$eig[,3]<60)
   PCsToUse=1:NPCs
   ReducedSpace=PCATransform$var$coord[,PCsToUse]
 
-  library(tsne)
+  # library(tsne)
+  print("Running tSNE...")
   ReducedSpace=tsne(ReducedSpace)
 
   # library(Rtsne)
@@ -174,7 +182,7 @@ FilterGenes<-function(ExprMatrix, NPCs=10)
 
 
   # We cluster the data with mclust
-  library(mclust)
+  # library(mclust)
   # We decide the number of clusters to calculate with the BIC criteria
   mclusters=mclustBIC(ReducedSpace)
 
