@@ -8,13 +8,13 @@
 #' @return ScaffoldTre object with the structure and connectivity of the Scaffold Tree
 #' @export
 
-CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLength=-1, BranchMinLengthSensitive=-1, python_location="python3")
+CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLength=-1, BranchMinLengthSensitive=-1)
 {
   CellCoordinates=as.matrix(CellCoordinates)
   CoordinatesFile=tempfile()
   write.table(CellCoordinates, file = CoordinatesFile, sep="\t", col.names = F, row.names = F)
   BranchMinLengthSensitive=floor(BranchMinLengthSensitive)
-  ScaffoldTreeScript=paste(find.package("merlot"), "/python/ScaffoldTree.py", sep="")
+  ScaffoldTreeScript=paste(find.package("merlot"), "/python/ScaffoldTree/ScaffoldTree", sep="")
   if(BranchMinLengthSensitive==-1 && is.null(NEndpoints))
   {
     BranchMinLengthSensitive=round(sqrt(dim(CellCoordinates)[1]))
@@ -23,11 +23,11 @@ CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLen
   if(is.null(NEndpoints))
   {
     #-------------------------------------------Execute TreeTopology.py-------------
-    system(paste(python_location, " ",ScaffoldTreeScript, CoordinatesFile, "-BranchMinLength ", BranchMinLength, "-BranchMinLengthSensitive", BranchMinLengthSensitive), wait = TRUE)
+    system(paste(ScaffoldTreeScript, CoordinatesFile, "-BranchMinLength", BranchMinLength, "-BranchMinLengthSensitive", BranchMinLengthSensitive), wait = TRUE)
   }  else
   {
     #-------------------------------------------Execute TreeTopology.py-------------
-    system(paste(python_location, " ", ScaffoldTreeScript, CoordinatesFile, " -NBranches ", NEndpoints), wait = TRUE)
+    system(paste(ScaffoldTreeScript, CoordinatesFile, " -NBranches", NEndpoints), wait = TRUE)
   }
 
   # --------Read the topology elements from the TreeTopology.py output---------------
