@@ -1,13 +1,12 @@
 #------Libraries needed for Tree Topology Functions ------
-import scipy as sp
-import numpy as np
-import collections
-import scipy.stats
-import scipy.spatial
-import sys
-import csgraph_mod
-from csgraph_mod import shortest_path_mod as spm
 import time
+import collections
+import argparse
+
+import numpy as np
+from scipy.spatial import distance
+
+from csgraph_mod import shortest_path_mod as spm
 
 #--------------Functions-------------------------------------
 def SinglePath(DijkstraPredecesors, i, j):
@@ -18,6 +17,7 @@ def SinglePath(DijkstraPredecesors, i, j):
         k = DijkstraPredecesors[i, k]
     path.append(i)
     return path
+
 
 def calculate_cell_paths(Distancias, DijkstraPredecesors):
     Paths = collections.defaultdict(lambda: collections.defaultdict(list))
@@ -42,6 +42,7 @@ def calculate_1cell_paths(i, j, DijkstraPredecesors):
     path.append(i)
     return path
 
+
 def calc_extreme_endpoints(CellDistances):
     EndPoints = []
     Endpoint1 = np.where(CellDistances == np.max(CellDistances))[0][0]
@@ -49,6 +50,7 @@ def calc_extreme_endpoints(CellDistances):
     EndPoints.append(Endpoint1)
     EndPoints.append(Endpoint2)
     return EndPoints
+
 
 def length_new_branch(NewEndPointCheck, EndPointsAux, DijkstraMatrix,
                       DijkstraPredecesors, DijkstraSteps):
@@ -80,11 +82,13 @@ def length_new_branch(NewEndPointCheck, EndPointsAux, DijkstraMatrix,
         if i not in ScaffoldCells:
             DistancesScaffold = {}
             for j in range(0, len(ScaffoldCells)):
-                DistancesScaffold[j] = euclidean(Coordinates[i], Coordinates[int(ScaffoldCells[j])])
-                ClosestScaffoldCell = min(zip(DistancesScaffold.values(), DistancesScaffold.keys()))[1]
+                DistancesScaffold[j] = euclidean(
+                    Coordinates[i], Coordinates[int(ScaffoldCells[j])])
+                ClosestScaffoldCell = min(
+                    zip(DistancesScaffold.values(), DistancesScaffold.keys()))[1]
                 ClosestScaffoldCell = int(ScaffoldCells[ClosestScaffoldCell])
             if ClosestScaffoldCell in ScaffoldCells2Branches[new_endpoint_branch]:
-                NewBranchLength = NewBranchLength+1
+                NewBranchLength = NewBranchLength + 1
     return NewBranchLength
 
 
@@ -96,7 +100,7 @@ def calculate_secondary_endpoints(EndPoints, DijkstraMatrix, NumberNodes, NBranc
     NBranches = int(NBranches)
     nodes = list(range(DijkstraMatrix.shape[0]))
     if BranchMinLength == -1:
-        BranchMinLength = np.sqrt(len(nodes)/2)
+        BranchMinLength = np.sqrt(len(nodes) / 2)
 
     while TryEndpoint:
         #Add a new endpoint
@@ -119,9 +123,11 @@ def calculate_secondary_endpoints(EndPoints, DijkstraMatrix, NumberNodes, NBranc
                                                  + NumberNodes[n][EndPoints[l]] \
                                                  - NumberNodes[EndPoints[k]][EndPoints[l]]
                             CombinatoryEndpointIncreament.append(AddedDistance)
-                            CombinatoryEndpointIncreamentNodes.append(AddedDistanceNodes)
+                            CombinatoryEndpointIncreamentNodes.append(
+                                AddedDistanceNodes)
                 ScoreEndpoints[n] = 0.5 * min(CombinatoryEndpointIncreament)
-                ScoreEndpointsNodes[n] = 0.5 * min(CombinatoryEndpointIncreamentNodes)
+                ScoreEndpointsNodes[n] = 0.5 * \
+                    min(CombinatoryEndpointIncreamentNodes)
 
         # if the scores for the best potential new branchpoint is not positive it means
         # that no other node is better than the existing endpoints and hence we finish the search
@@ -131,11 +137,13 @@ def calculate_secondary_endpoints(EndPoints, DijkstraMatrix, NumberNodes, NBranc
             break
 
         #we get the nodes with the largest number of cells on path
-        nodes_maxnodes = np.where(ScoreEndpointsNodes == np.max(ScoreEndpointsNodes))[0]
+        nodes_maxnodes = np.where(
+            ScoreEndpointsNodes == np.max(ScoreEndpointsNodes))[0]
 
         # from the array of nodes with the largest number of cells on path, we
         # take the one with the longest shortest path
-        max_shortest = ScoreEndpoints[nodes_maxnodes] == np.max(ScoreEndpoints[nodes_maxnodes])
+        max_shortest = ScoreEndpoints[nodes_maxnodes] == np.max(
+            ScoreEndpoints[nodes_maxnodes])
         new_endpoint = nodes_maxnodes[np.where(max_shortest)[0][0]]
 
         R_epsilon = {}
@@ -157,7 +165,7 @@ def calculate_secondary_endpoints(EndPoints, DijkstraMatrix, NumberNodes, NBranc
             else:
                 TryEndpoint = False
         else:
-            if ScoreEndpointsNodes[new_endpoint]<BranchMinLength:
+            if ScoreEndpointsNodes[new_endpoint] < BranchMinLength:
                 if BranchMinLengthSensitive < 0:
                     #print("Finish endpoints search")
                     TryEndpoint = False
@@ -180,6 +188,7 @@ def calculate_secondary_endpoints(EndPoints, DijkstraMatrix, NumberNodes, NBranc
 
     return R_epsilon_todos
 
+
 def calculate_branchpoints(EndPoints, DijkstraMatrix, DijkstraPredecesors, NumberNodes):
     NJDistances = {}
     VBranchpoints = EndPoints
@@ -198,26 +207,30 @@ def calculate_branchpoints(EndPoints, DijkstraMatrix, DijkstraPredecesors, Numbe
                     for m in VBranchpoints:
                         dbranchpoint1 += NumberNodes[branchpoint1][m]
                         dbranchpoint2 += NumberNodes[branchpoint2][m]
-                    NJDistances[(branchpoint1, branchpoint2)] = (len(VBranchpoints)-2)                    \
+                    NJDistances[(branchpoint1, branchpoint2)] = (len(VBranchpoints) - 2)                    \
                                                                 * NumberNodes[branchpoint1][branchpoint2] \
                                                                 - dbranchpoint1 - dbranchpoint2
 
-        minbranchpoint1 = min(zip(NJDistances.values(), NJDistances.keys()))[1][0]
-        minbranchpoint2 = min(zip(NJDistances.values(), NJDistances.keys()))[1][1]
+        minbranchpoint1 = min(
+            zip(NJDistances.values(), NJDistances.keys()))[1][0]
+        minbranchpoint2 = min(
+            zip(NJDistances.values(), NJDistances.keys()))[1][1]
 
         mDistances = {}
         for m in SinglePath(DijkstraPredecesors, minbranchpoint1, minbranchpoint2):
             if m not in EndPoints:
-                otherbranchpoints = list(set(VBranchpoints)-set([minbranchpoint1, minbranchpoint2]))
+                otherbranchpoints = list(
+                    set(VBranchpoints) - set([minbranchpoint1, minbranchpoint2]))
                 mDistanceothers = 0
                 for o in otherbranchpoints:
                     mDistanceothers += NumberNodes[o][m]
                 mDistances[m] = NumberNodes[m][minbranchpoint1] \
                                 + NumberNodes[m][minbranchpoint2] \
-                                + (1/(len(VBranchpoints) - 2)) * mDistanceothers
+                    + (1 / (len(VBranchpoints) - 2)) * mDistanceothers
 
         branchpoint = min(zip(mDistances.values(), mDistances.keys()))[1]
-        VBranchpoints = list(set(VBranchpoints)-set([minbranchpoint1, minbranchpoint2]))
+        VBranchpoints = list(set(VBranchpoints) -
+                             set([minbranchpoint1, minbranchpoint2]))
 
         TreeConnectivity.append([minbranchpoint1, branchpoint])
         TreeConnectivity.append([minbranchpoint2, branchpoint])
@@ -229,14 +242,17 @@ def calculate_branchpoints(EndPoints, DijkstraMatrix, DijkstraPredecesors, Numbe
         # Here we add as a new connection the one corresponding to the root and
         # the last detected branchpoint.
         if len(np.unique(VBranchpoints)) == 2:
-            TreeConnectivity.append([np.unique(VBranchpoints)[0], np.unique(VBranchpoints)[1]])
+            TreeConnectivity.append(
+                [np.unique(VBranchpoints)[0], np.unique(VBranchpoints)[1]])
             TreeConnectivity = np.array(TreeConnectivity)
 
     return Branchpoints, TreeConnectivity
 
+
 def euclidean(v1, v2):
-    distance = sp.spatial.distance.euclidean(v1, v2)
-    return distance
+    dist = distance.euclidean(v1, v2)
+    return dist
+
 
 def calc_distances(X):
     distances = np.zeros((X.shape[0], X.shape[0]))
@@ -248,6 +264,7 @@ def calc_distances(X):
                 distances[j][i] = d
     return distances
 
+
 def LengthPath(DijkstraPredecesors, i, j):
     length = 0
     k = j
@@ -255,6 +272,7 @@ def LengthPath(DijkstraPredecesors, i, j):
         length += 1
         k = DijkstraPredecesors[i, k]
     return length
+
 
 def calculate_bi_longerpath(Distancias, DijkstraPredecesors):
     NumberNodes = np.zeros(Distancias.shape)
@@ -264,7 +282,7 @@ def calculate_bi_longerpath(Distancias, DijkstraPredecesors):
     dist = -1
 
     for i in range(0, Distancias.shape[0]):
-        if i%100 == 0:
+        if i % 100 == 0:
             print("cell", i, "out of", Distances.shape[0], "analyzed...")
         for j in range(0, Distancias.shape[1]):
             if i < j:
@@ -278,6 +296,7 @@ def calculate_bi_longerpath(Distancias, DijkstraPredecesors):
                 NumberNodes[j][i] = path
     return(first, second, NumberNodes)
 
+
 # def main():
 print("Loaded Tree Topology Library...")
 
@@ -285,16 +304,9 @@ print("Loaded Tree Topology Library...")
 #-----------------Main Program-----------------------------------
 #----------------------------------------------------------------
 
-import scipy.linalg as linalg
-import os, math
-import random
-import sys
-from scipy.sparse import csgraph
-import pandas as pd
-import argparse
-
 # Arguments Parser and help
-parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser = argparse.ArgumentParser(
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('Filename', help='Matrix with "cells" x "genes" dimensions. \
                     Fields shout be delimited by tabs')
 parser.add_argument('-NBranches', type=int, default=(-1), help='Number of desired \
@@ -324,8 +336,7 @@ BranchMinLengthSensitive = args.BranchMinLengthSensitive
 plot = args.showplot
 
 #---Read Manifold Coordinates (DMs, t-SNE, etc)
-Coordinates = pd.read_csv(DMCoordinates, sep = "\t", header=None)
-Coordinates = np.array(Coordinates)
+Coordinates = np.genfromtxt(DMCoordinates, delimiter="\t")
 DataDimensions = Coordinates.shape
 print("Data Dimensions", DataDimensions)
 
@@ -343,7 +354,7 @@ DijkstraMatrix, DijkstraSteps, DijkstraPredecesors = spm.shortest_path(InputMatr
                                                                         method="D",
                                                                         return_predecessors=True,
                                                                         directed=False)
-DijkstraSteps = DijkstraSteps-1
+DijkstraSteps = DijkstraSteps - 1
 
 #Calculate Endpoints in the tree
 EndPoints = calc_extreme_endpoints(DijkstraSteps)
@@ -351,12 +362,11 @@ Epsilons = calculate_secondary_endpoints(EndPoints, DijkstraMatrix, DijkstraStep
                                             NBranches, BranchMinLength, BranchMinLengthSensitive)
 
 if len(EndPoints) <= 2: 
-    print ("Only 2 Endpoints detected.")
-    EndPointsPrint = [x+1 for x in EndPoints]
+    print("Only 2 Endpoints detected.")
+    EndPointsPrint = [x + 1 for x in EndPoints]
     print("Endpoints:", len(EndPoints), *EndPointsPrint)
     print("Branchpoints:", 0, 0)
-    print("Tree_Branch: ",str(EndPoints[0]), str(EndPoints[1]))
-
+    print("Tree_Branch: ", str(EndPoints[0]), str(EndPoints[1]))
 
     TreeTopologyDat = DMCoordinates + "_TreeTopology.dat"
     with open(TreeTopologyDat, 'w') as out:
@@ -365,7 +375,8 @@ if len(EndPoints) <= 2:
                         + ' '.join(map(str, EndPoints)) + "\n"
         out.write(EndPointsLine)
 
-        BranchpointsLine = "Branchpoints:" + "\t" + str(0) + "\t" + ' ' + str(0) + "\n"
+        BranchpointsLine = "Branchpoints:" + "\t" + \
+            str(0) + "\t" + ' ' + str(0) + "\n"
         out.write(BranchpointsLine)
 
         TopologyLine = "Tree_Branch" + "\t" + str(EndPoints[0]) \
@@ -387,17 +398,17 @@ else:
     branching, TreeConnectivity = calculate_branchpoints(EndPoints, DijkstraMatrix,
                                                             DijkstraPredecesors, DijkstraSteps)
     # print(TreeConnectivity)
-    EndPointsPrint = [x+1 for x in EndPoints]
+    EndPointsPrint = [x + 1 for x in EndPoints]
     print("Endpoints:", len(EndPoints), *EndPointsPrint)
 
-    TreeTopologyDat = DMCoordinates+"_TreeTopology.dat"
+    TreeTopologyDat = DMCoordinates + "_TreeTopology.dat"
     with open(TreeTopologyDat, 'w') as out:
         EndPointsLine = "Endpoints:" + "\t" + str(len(EndPoints)) + "\t" \
                         + ' '.join(map(str, EndPoints)) + "\n"
         out.write(EndPointsLine)
 
         branching = set(branching)
-        branchingPrint = [x+1 for x in branching]
+        branchingPrint = [x + 1 for x in branching]
         print("Branchpoints:", len(branching), *branchingPrint)
         BranchpointsLine = "Branchpoints:" + "\t" + str(len(branching)) + "\t" \
                             + ' '.join(map(str, branching)) + "\n"
@@ -415,16 +426,16 @@ else:
                 out.write(TopologyLine)
     out.close()
 
-    DijkstraStepsDat = DMCoordinates+"_DijkstraSteps.dat"
-    DijkstraDistancesDat = DMCoordinates+"_DijkstraDistances.dat"
-    DijkstraPredecesorsDat = DMCoordinates+"_DijkstraPredecesors.dat"
+    DijkstraStepsDat = DMCoordinates + "_DijkstraSteps.dat"
+    DijkstraDistancesDat = DMCoordinates + "_DijkstraDistances.dat"
+    DijkstraPredecesorsDat = DMCoordinates + "_DijkstraPredecesors.dat"
 
     np.savetxt(DijkstraDistancesDat, DijkstraMatrix)
     np.savetxt(DijkstraStepsDat, DijkstraSteps)
     np.savetxt(DijkstraPredecesorsDat, DijkstraPredecesors)
 
 end_dijkstra = time.time()
-print("Finished Scaffold Tree...", end_dijkstra-start_dijkstra, "seconds")
+print("Finished Scaffold Tree...", end_dijkstra - start_dijkstra, "seconds")
 
 
 # if __name__ == "__main__":
