@@ -8,13 +8,34 @@
 #' @return ScaffoldTre object with the structure and connectivity of the Scaffold Tree
 #' @export
 
+get_os <- function(){
+  sysinf <- Sys.info()
+  if (!is.null(sysinf)){
+    os <- sysinf['sysname']
+    if (os == 'Darwin')
+      os <- "osx"
+  } else { ## mystery machine
+    os <- .Platform$OS.type
+    if (grepl("^darwin", R.version$os))
+      os <- "osx"
+    if (grepl("linux-gnu", R.version$os))
+      os <- "linux"
+  }
+  tolower(os)
+}
+
 CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLength=-1, BranchMinLengthSensitive=-1)
 {
+  os_info <- get_os()
+  if (os_info == "windows") {
+    print("The scaffold tree operation is not supported on Windows yet. We are sorry.")
+    quit(status = 42)
+  }
   CellCoordinates=as.matrix(CellCoordinates)
   CoordinatesFile=tempfile()
   write.table(CellCoordinates, file = CoordinatesFile, sep="\t", col.names = F, row.names = F)
   BranchMinLengthSensitive=floor(BranchMinLengthSensitive)
-  ScaffoldTreeScript=paste(find.package("merlot"), "/python/ScaffoldTree/ScaffoldTree", sep="")
+  ScaffoldTreeScript=paste(find.package("merlot"), "/python/", os_info, "_ScaffoldTree/ScaffoldTree", sep="")
   if(BranchMinLengthSensitive==-1 && is.null(NEndpoints))
   {
     BranchMinLengthSensitive=round(sqrt(dim(CellCoordinates)[1]))
