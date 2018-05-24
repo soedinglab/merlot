@@ -5,10 +5,11 @@
 #' @param N_yk number of nodes for the elastic principal tree
 #' @param lambda_0 principal elastic tree energy function parameter.
 #' @param mu_0 principal elastic tree energy function parameter.
+#' @param NCores number of cpu cores to be used for the calculation
 #' @return ElasticTree
 #' @export
 #'
-CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambda_0=0.80e-09, mu_0=0.00250, FixEndpoints=F, plot=F, NBranchScaffoldNodes = 1)
+CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambda_0=0.80e-09, mu_0=0.00250, FixEndpoints=F, plot=F, NBranchScaffoldNodes = 1, NCores=1)
 {
   # Testing
   # Default parameters taken from adjustment in real datasets with 100 N_yks
@@ -84,7 +85,7 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambd
   ElasticTree=computeElasticPrincipalCurve(X = ScaffoldTree$CellCoordinates, NumNodes = N_yk,
                                            InitNodePositions = TopologyCoordsAux, InitEdges = TopologyEdgesAux,
                                            Lambda = lambda, Mu = mu, Do_PCA = F, verbose = F, drawAccuracyComplexity = F,
-                                           drawPCAView = F, drawEnergy = F, Mode = 1)
+                                           drawPCAView = F, drawEnergy = F, Mode = 1, n.cores = NCores)
 
   # Unlist the ElasticTree structure
   ElasticTree=ElasticTree[[1]]
@@ -256,7 +257,7 @@ DuplicateTreeNodes <- function(ElasticTree)
 #' @param increaseFactor factor by which the principal elastic tree energy function parameters will be increased for the embedding. By default this number is 10.
 #' @export
 
-GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-09, mu_0=0.00625, increaseFactor_mu=10, increaseFactor_lambda=10)
+GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-09, mu_0=0.00625, increaseFactor_mu=10, increaseFactor_lambda=10, NCores=1)
 {
   # The number of nodes for the embedding tree is the same as the ones for the input low dimensional one
   N_yk=dim(ElasticTree$Nodes)[1]
@@ -302,7 +303,7 @@ GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-0
   EmbeddedTree=computeElasticPrincipalCurve(X = CellCoordinates, NumNodes = N_yk,
                                             InitNodePositions = InitialNodesCoordinates, InitEdges = InitialEdges,
                                             Do_PCA = F, verbose = T, drawAccuracyComplexity = F,
-                                            drawPCAView = F, drawEnergy = F, Lambda = lambda, Mu = mu, Mode = 1)
+                                            drawPCAView = F, drawEnergy = F, Lambda = lambda, Mu = mu, Mode = 1, n.cores = NCores)
 
   # Unlist EmbeddedTree structure
   EmbeddedTree=EmbeddedTree[[1]]
