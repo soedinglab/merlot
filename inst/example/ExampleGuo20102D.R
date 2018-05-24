@@ -76,12 +76,11 @@ DifferentiallyExpressedGenes=subpopulations_differential_expression(SubPopulatio
 Branch1Genes=branch_differential_expression(Branch =1, EmbeddedTree, mode="cells")
 Branch2Genes=branch_differential_expression(Branch =2, EmbeddedTree, mode="cells")
 
-GetGeneCorrelationNetwork(EmbeddedTree$Nodes, cor_threshold = 0.7)
-GetGeneCorrelationNetwork(Dataset$ExpressionMatrix, cor_threshold = 0.2)
-
 # Differentially Expressed Genes among two subpopulations in the tree
 Group1=EmbeddedTree$Branches[[4]]
 Group2=EmbeddedTree$Branches[[5]]
 
 DifferentiallyExpressedGenes=subpopulations_differential_expression(SubPopulation1 = Group1, SubPopulation2 = Group2, EmbeddedTree = EmbeddedTree, mode = "cells")
 
+GetGeneCorrelationNetwork(EmbeddedTree$Nodes, cor_threshold = 0.7)
+GetGeneCorrelationNetwork(Dataset$ExpressionMatrix, cor_threshold = 0.2)
