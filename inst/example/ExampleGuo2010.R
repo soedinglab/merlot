@@ -38,6 +38,8 @@ NumberOfNodes=100
 ElasticTree= CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes)
 plot_elastic_tree(ElasticTree, colorcells=guo_colorcells)
 
+# This function plots a flattened 2D version of the nodes in the elastic tree. Useful for when
+# more than 3 dimensions are used to reconstruct complex trees.
 plot_flattened_tree(ElasticTree)
 
 # Embedd the principal elastic tree into the gene expression space from which it was calculated.

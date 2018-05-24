@@ -257,7 +257,7 @@ DuplicateTreeNodes <- function(ElasticTree)
 #' @param increaseFactor factor by which the principal elastic tree energy function parameters will be increased for the embedding. By default this number is 10.
 #' @export
 
-GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-09, mu_0=0.00625, increaseFactor_mu=10, increaseFactor_lambda=10, NCores=1)
+GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-09, mu_0=0.00625, increaseFactor_mu=20, increaseFactor_lambda=20, NCores=1)
 {
   # The number of nodes for the embedding tree is the same as the ones for the input low dimensional one
   N_yk=dim(ElasticTree$Nodes)[1]
