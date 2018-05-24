@@ -478,6 +478,8 @@ plot_gene_on_map <-function(GeneName,
 plot_flattened_tree <- function(ElasticTree)
 {
 
+  EdgesTree=matrix(0, dim(ElasticTree$Nodes)[1], dim(ElasticTree$Nodes)[1])
+
   for(i in (1: dim(ElasticTree$Edges)[1]))
   {
     EdgesTree[ElasticTree$Edges[i, 1], ElasticTree$Edges[i, 2]]=1

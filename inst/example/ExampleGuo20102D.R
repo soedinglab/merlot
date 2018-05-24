@@ -59,9 +59,14 @@ plot_elastic_tree(ElasticTree)
 # Embedd the principal elastic tree on the gene expression space from which it was calculated.
 EmbeddedTree= GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = ElasticTree, increaseFactor_mu = 10, increaseFactor_lambda = 10)
 
+
 # Calculate Pseudotimes for the nodes in the Tree in the full gene expression space
 Pseudotimes=CalculatePseudotimes(EmbeddedTree, T0=1)
 plot_pseudotimes(CellCoordinates, Pseudotimes)
+
+OrderedMatrix=plot_heatmaps_embedding(Pseudotimes, EmbeddedTree, log_tranform=F)
+plot_gene_on_map("Sox2", ExpressionMatrix=OrderedMatrix$InterpolatedMatrix, CellCoordinates = CellCoordinates)
+
 
 # Plot gene expression profile as a function of pseudotime
 plot_pseudotime_expression_gene(GeneName = "Gata4" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
