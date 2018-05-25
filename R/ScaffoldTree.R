@@ -38,7 +38,7 @@ CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLen
     commands <- paste(python_location, " ", ScaffoldTreeScript, CoordinatesFile, " -NBranches ", NEndpoints)
   }
 
-  output <- dynutils::run_until_exit(commands)
+  system(commands)
 
   # --------Read the topology elements from the TreeTopology.py output---------------
   ScaffoldTree=read_topology(CoordinatesFile, CellCoordinates)

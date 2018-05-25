@@ -16,4 +16,4 @@ Depends:
   scales,
   car
 Remotes:
-  Albluca/rpgraph
+  Albluca/ElPiGraph.R
