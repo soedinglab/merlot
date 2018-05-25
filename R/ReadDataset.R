@@ -19,3 +19,19 @@ ReadDataset <- function(file, featuresfile=c())
 
   return (Dataset)
 }
+
+#' LoadExprMatrix
+#'
+#' @param ExprMatrix matrix object with n rows as cells and m columns as genes.
+#' @return Dataset an object with the Expression Matrix, cell names and gene names
+#' @usage LoadExprMatrix(file)
+#' @export
+LoadExprMatrix <-function(ExprMatrix)
+{
+  ExpressionMatrix=as.matrix(ExprMatrix)
+  Descriptions=rownames(ExpressionMatrix)
+  GeneNames=colnames(ExpressionMatrix)
+
+  Dataset= list(ExpressionMatrix=ExpressionMatrix, Descriptions=Descriptions, GeneNames=GeneNames)
+  return (Dataset)
+}

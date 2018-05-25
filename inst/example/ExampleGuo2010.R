@@ -20,7 +20,7 @@ guo_colorcells[which(CellTypes=="64C")]="darkblue"
 
 # Embed Cells into their manifold, in this case we use Diffusion Maps as calculated by Destiny
 library(destiny)
-DatasetDM <- DiffusionMap(Dataset$ExpressionMatrix, density_norm = T, verbose = F)
+DatasetDM <- DiffusionMap(Dataset$ExpressionMatrix)
 
 # The first 3 diffusion map components will be used for this example
 CellCoordinates=DatasetDM@eigenvectors[,1:3]
@@ -38,13 +38,17 @@ NumberOfNodes=100
 ElasticTree= CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes)
 plot_elastic_tree(ElasticTree, colorcells=guo_colorcells)
 
+# This function plots a flattened 2D version of the nodes in the elastic tree. Useful for when
+# more than 3 dimensions are used to reconstruct complex trees.
+plot_flattened_tree(ElasticTree)
+
 # Embedd the principal elastic tree into the gene expression space from which it was calculated.
 EmbeddedTree= GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = ElasticTree)
 
 # Calculate Pseudotimes for the nodes in the Tree in the full gene expression space.
 # T0=3 means that the Endpoint number 3 in the Endpoints list corresponds to the zygote fate and is used as initial pseudotime t0
 # Any given cell can be used as t0 by specifying its index using the parameter C0=cell_index
-Pseudotimes=CalculatePseudotimes(EmbeddedTree, T0=3)
+Pseudotimes=CalculatePseudotimes(ElasticTree, T0=3)
 plot_pseudotimes(CellCoordinates, Pseudotimes)
 
 # Plot gene expression profile as a function of pseudotime
@@ -57,6 +61,7 @@ plot_pseudotime_expression_gene(GeneName = "Klf2" , EmbeddedTree = EmbeddedTree,
 
 # Check the heatmaps for the gene expression values
 OrderedMatrix=plot_heatmaps_embedding(Pseudotimes, EmbeddedTree, log_tranform=F)
+plot_gene_on_map("Sox2", ExpressionMatrix=OrderedMatrix$InterpolatedMatrix, CellCoordinates = CellCoordinates)
 
 # Differentially Expressed Genes among two subpopulations in the tree
 # Selecting cells in branch 1

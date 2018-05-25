@@ -2,7 +2,7 @@ Package: merlot
 Type: Package
 Title: MERLoT
 Description: A method for reconstructing lineage-tree topologies from scRNA-seq data
-Version: 0.1.1
+Version: 0.1.2
 Author: R. Gonzalo Parra <gparra@mpibpc.mpg.de>
 Maintainer: R. Gonzalo Parra <gparra@mpibpc.mpg.de>
 License: GPL
@@ -10,8 +10,7 @@ LazyData: TRUE
 RoxygenNote: 6.0.1
 Depends:
   rgl,
-  rJava,
-  rpgraph,
+  ElPiGraph.R,
   igraph,
   fields,
   scales,

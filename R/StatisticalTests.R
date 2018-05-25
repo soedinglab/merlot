@@ -26,6 +26,7 @@ subpopulations_differential_expression<-function(SubPopulation1, SubPopulation2,
   # vectors for the expression values
   GenePopulation1=c()
   GenePopulation2=c()
+  MeanDifferences=c()
 
   for (i in 1:dim(EmbeddedTree$Nodes)[2])
   {
@@ -63,13 +64,17 @@ subpopulations_differential_expression<-function(SubPopulation1, SubPopulation2,
       }
 
     }
+    MeanDifferences=c(MeanDifferences,mean(GenePopulation1-GenePopulation2))
+
   }
 
+  MeanDifferences=MeanDifferences[order(statistic_vector)]
   genes_significances=sort(statistic_vector, index.return=T)
   names(genes_significances)[names(genes_significances)=="x"] <- "pvals"
   names(genes_significances)[names(genes_significances)=="ix"] <- "indexes"
   genes_significances$GeneName <- colnames(EmbeddedTree$Nodes)[genes_significances$indexes]
   genes_significances$evals <- genes_significances$pvals * length(genes_significances$pvals)
+  genes_significances$MeanDifference <- MeanDifferences
 
   return(genes_significances)
 }

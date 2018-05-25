@@ -5,7 +5,7 @@ Dataset=ReadDataset(DataFile)
 
 # Embed Cells into their manifold, in this case we use Diffusion Maps as calculated by Destiny
 library(destiny)
-DatasetDM <- DiffusionMap(Dataset$ExpressionMatrix, density.norm = T, verbose = F, sigma="global")
+DatasetDM <- DiffusionMap(Dataset$ExpressionMatrix)
 
 CellCoordinates=DatasetDM@eigenvectors[,1:2]
 
@@ -26,3 +26,26 @@ Pseudotimes=CalculatePseudotimes(EmbeddedTree, T0=1)
 plot_pseudotimes(CellCoordinates, Pseudotimes)
 
 plot_pseudotime_expression_gene(GeneName = "Marcks" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
+
+Dataset$Descriptions
+
+# Load the cell types
+CellInfo=read.table(file="/home/gonzalo/Desktop/Postdoc/Colabs/Niko/Papers/PreparingDatasets/BarbraCellTimes.txt", sep=" ", header=T, stringsAsFactors = F)
+CellTypes=CellInfo[,1]
+CellTimes=CellInfo[,2]
+
+# selected colors for the cells
+selected_colors=c("lightblue", "blue", "lightgreen", "skyblue", "seagreen", "darkblue", "cyan", "darkgreen")
+# selected_colors=c("lightblue", "blue", "lightgreen", "violet", "magenta", "yellow", "green", "red")
+treutlein_colorcells=c()
+Types=sort(unique(CellTypes))
+for(i in 1:length(Types))
+{
+  treutlein_colorcells[which(CellTypes==Types[i])]=selected_colors[i]
+}
+
+svg("/home/gonzalo/Desktop/Treutlein.svg", width = 8, height = 6)
+plot(CellCoordinates, col=treutlein_colorcells, pch=16)
+legend(x="topright", legend=Types, col = selected_colors, pch=16)
+box(lwd=2)
+dev.off()
