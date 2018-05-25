@@ -9,6 +9,6 @@ if [ ! -d $install_dir ]; then
   cd $install_dir
   source bin/activate
 
-  pip install scipy pandas python3-tk numpy
+  pip install scipy pandas numpy cython
   pip install git+https://github.com/soedinglab/csgraph_mod
 fi
