@@ -64,12 +64,14 @@ plot_pseudotime_expression_gene(GeneName = "Fgf4" , EmbeddedTree = EmbeddedTree,
 plot_pseudotime_expression_gene(GeneName = "Fgfr2" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
 plot_pseudotime_expression_gene(GeneName = "Klf2" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
 
-# Downstream analysis -------------
-OrderedMatrix=plot_heatmaps_embedding(Pseudotimes, EmbeddedTree, log_tranform=F)
+# Downstream analysis
 
 # Differentially Expressed Genes among two subpopulations in the tree
+# Take cells in branch 1
 Group1=EmbeddedTree$Branches[[1]]
+# Take cells in branch 2
 Group2=EmbeddedTree$Branches[[2]]
+# Calculate differentially expressed genes betweeen the two populations
 DifferentiallyExpressedGenes=subpopulations_differential_expression(SubPopulation1 = Group1, SubPopulation2 = Group2, EmbeddedTree = EmbeddedTree, mode = "cells")
 
 # Differentially Expressed Genes in a specific branch
