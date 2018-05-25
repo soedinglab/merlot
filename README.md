@@ -21,9 +21,10 @@ MERLoT depends on certain R packages in order to work properly. Most of the pack
 
 * car
 * rgl
-* rpgraph
 * igraph
 * fields
+* ElPiGraph.R
+
 
 The Destiny package for creating diffusion maps was one of the dinmensionality reduction techniques we used in order to reconstruct lineage tree topologies in a low dimensional manifold.
 
@@ -33,16 +34,15 @@ Optional packages:
 * energy (needed for finding differentially expressed genes)
 * VGAM
 
-Rpgraph can be installed following the instructions from the [developer's site](https://github.com/Albluca/rpgraph/wiki).
+ElPiGraph can be installed following the instructions from the [developer's site](https://github.com/Albluca/ElPiGraph.R).
 
-The steps can be summarized in:
-`install.packages(pkgs = "rJava", repos="http://rforge.net", type = 'source')`
+`The steps can be summarized in:
+if(!require("devtools")){
+  install.packages("devtools")
+}
+devtools::install_github("Albluca/distutils")`
 
-For rJava **you have to have Java installed** in your system. You can install **default-jre, open jdk**
-
-`install.packages("devtools")`
-`library(devtools)`
-`install.packages(c("bigpca", "irlba", "nsprcomp", "plotly","fields", "igraph", "rgl", "tictoc"))`
+`devtools::install_github("Albluca/ElPiGraph.R")`
 
 
 ## 3) Download
