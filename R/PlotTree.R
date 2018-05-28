@@ -475,8 +475,10 @@ plot_gene_on_map <-function(GeneName,
 #' @export
 #'
 
-plot_flattened_tree <- function(ElasticTree)
+plot_flattened_tree <- function(ElasticTree, legend_position="topright")
 {
+
+  selected_colors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue", "aquamarine", "magenta", "brown", "gray", "wheat1", "azure4", "lightsalmon4", "navy", "sienna1", "gold4", "red4", "violetred")
 
   EdgesTree=matrix(0, dim(ElasticTree$Nodes)[1], dim(ElasticTree$Nodes)[1])
 
@@ -487,15 +489,26 @@ plot_flattened_tree <- function(ElasticTree)
 
   graph_yk=graph_from_adjacency_matrix(EdgesTree, mode = "undirected")
   l=layout_with_kk(graph_yk, dim = 2)
-  nodes_colors= c(
-    rep("red", length(ElasticTree$Topology$Endpoints)),
-    rep("skyblue", length(ElasticTree$Topology$Branchpoints)),
-    rep("black", NumberOfNodes -length(ElasticTree$Topology$Endpoints)-length(ElasticTree$Topology$Branchpoints))
-  )
+
+  nodes_colors=rep("black", dim(ElasticTree$Nodes)[1])
+
+  for(i in 1:length(ElasticTree$Branches))
+  {
+    nodes_colors[ElasticTree$Branches[[i]]]=selected_colors[i]
+  }
+
+  nodes_colors[1:length(ElasticTree$Topology$Endpoints)]="red"
+  nodes_colors[(length(ElasticTree$Topology$Endpoints)+1):(length(ElasticTree$Topology$Endpoints)+length(ElasticTree$Topology$Branchpoints))]="skyblue"
+  # nodes_colors= c(
+  #   rep("red", length(ElasticTree$Topology$Endpoints)),
+  #   rep("skyblue", length(ElasticTree$Topology$Branchpoints)),
+  #   rep("black", NumberOfNodes -length(ElasticTree$Topology$Endpoints)-length(ElasticTree$Topology$Branchpoints))
+  # )
 
   nodes_labels=c(seq(1, length(ElasticTree$Topology$Endpoints) + length(ElasticTree$Topology$Branchpoints)), rep(NA, NumberOfNodes -length(ElasticTree$Topology$Endpoints)-length(ElasticTree$Topology$Branchpoints)))
   nodes_sizes=c(rep(6, length(ElasticTree$Topology$Endpoints) + length(ElasticTree$Topology$Branchpoints)), rep(4, NumberOfNodes -length(ElasticTree$Topology$Endpoints)-length(ElasticTree$Topology$Branchpoints)))
 
   plot(graph_yk, layout=l, vertex.label=nodes_labels, vertex.size=nodes_sizes, vertex.color=nodes_colors, vertex.label.cex=0.6)
-  legend(x="topright", legend=c("endpoints", "branchpoints"), col=c("red", "skyblue"), pch=16 )
+  legend(x=legend_position, legend=c("Endpoints", "Branchpoints", paste("Branch ", 1:length(ElasticTree$Branches))), col=c("red", "skyblue", selected_colors[1:length(ElasticTree$Branches)]), pch=16 )
+  # legend(x="bottomright", inset=c(-0.16,0), legend=paste("Branch ", 1:length(ElasticTree$Branches)), col = selected_colors[1:length(ElasticTree$Branches)], pch=c(16))
 }
