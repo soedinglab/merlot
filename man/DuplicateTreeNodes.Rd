@@ -2,25 +2,18 @@
 % Please edit documentation in R/ElasticPrincipalTree.R
 \name{DuplicateTreeNodes}
 \alias{DuplicateTreeNodes}
-\alias{DuplicateTreeNodes}
-\title{Duplicate Elastic Tree Nodes}
+\title{Duplicate Elastic Tree Nodes
+Introduces intermediate nodes in between nodes being part of an edge in the ElasticTree structure}
 \usage{
-DuplicateTreeNodes(ElasticTree)
-
 DuplicateTreeNodes(ElasticTree)
 }
 \arguments{
 \item{ElasticTree}{Elastic Tree to which nodes will be added}
-
-\item{ElasticTree}{Elastic Tree to which nodes will be added}
 }
 \value{
 ElasticTree
-
-ElasticTree
 }
 \description{
-Introduces intermediate nodes in between nodes being part of an edge in the ElasticTree structure
-
+Duplicate Elastic Tree Nodes
 Introduces intermediate nodes in between nodes being part of an edge in the ElasticTree structure
 }

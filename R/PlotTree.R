@@ -2,16 +2,20 @@
 #'
 #' Plots the scaffold tree on top of the distribution of cells in 2 or 3 coordinates.
 #'
-#'@param CellCoordinates coordinates for the cells. This are the same coordinates that were used in the Scaffold Tree Calculation
-#'@export
-
-
+#' @param ScaffoldTree scaffoldTree calculated by the CalculateScaffoldTree function.
+#' @param colorcells The colours to use for the cells
+#' @param dims The number of dimensions to plot
+#'
+#' @export
+#' @importFrom graphics plot box lines points legend
+#' @importFrom rgl plot3d points3d legend3d lines3d open3d
+#' @importFrom scales alpha
 plot_scaffold_tree <- function(ScaffoldTree, colorcells="gray", dims=dim(ScaffoldTree$CellCoordinates)[2])
 {
   if(dims==2)
   {
     # Plot 2d Dijkstra's tree
-    plot(ScaffoldTree$CellCoordinates[,1], ScaffoldTree$CellCoordinates[,2], pch=16, col=alpha(colorcells, 0.6), xlab="Component 1", ylab="Component 2", cex=1.5)
+    plot(ScaffoldTree$CellCoordinates[,1], ScaffoldTree$CellCoordinates[,2], pch=16, col=scales::alpha(colorcells, 0.6), xlab="Component 1", ylab="Component 2", cex=1.5)
 
     if(length(ScaffoldTree$Endpoints)==2)
     {
@@ -77,8 +81,13 @@ plot_scaffold_tree <- function(ScaffoldTree, colorcells="gray", dims=dim(Scaffol
 #'
 #' @param ElasticTree Principal Elastic Tree calculated with the CalculateElasticTreeFunction
 #' @param colorcells vector of colors for the cells
+#' @param legend Whether or not to plot the legend
+#' @param legend_names The names to use for the legend
 #' @export
-
+#'
+#' @importFrom graphics par plot points lines box legend
+#' @importFrom rgl plot3d points3d legend3d lines3d open3d
+#' @importFrom scales alpha
 plot_elastic_tree <- function(ElasticTree, colorcells=NULL, legend=F, legend_names=c())
 {
   if(legend==T)
@@ -103,7 +112,7 @@ plot_elastic_tree <- function(ElasticTree, colorcells=NULL, legend=F, legend_nam
   if(dim(ElasticTree$CellCoords)[2]==2)
   {
     # Plot 2d elastic Tree
-    plot(ElasticTree$CellCoords[,1], ElasticTree$CellCoords[,2], pch=16, col=alpha(colorcells, 0.6), xlab="Component 1", ylab="Component 2", cex=1.5)
+    plot(ElasticTree$CellCoords[,1], ElasticTree$CellCoords[,2], pch=16, col=scales::alpha(colorcells, 0.6), xlab="Component 1", ylab="Component 2", cex=1.5)
     for(i in 1:length(ElasticTree$Branches)[1])
     {
       points(ElasticTree$Nodes[1:length(ElasticTree$Topology$Endpoints),1], ElasticTree$Nodes[1:length(ElasticTree$Topology$Endpoints),2], col="black", pch=16, cex=2)
@@ -152,19 +161,24 @@ plot_elastic_tree <- function(ElasticTree, colorcells=NULL, legend=F, legend_nam
 #'
 #' Plot Gene Expression Profile as a function of pseudotime
 #'
-#'@param GeneName an element from the Datasets$GeneNames object.
-#'@param EmbeddedTree High dimensional principal elastic tree.
-#'@param Pseudotimes object calculated by CalculatePseudotimes()
+#' @param GeneName an element from the Datasets$GeneNames object.
+#' @param EmbeddedTree High dimensional principal elastic tree.
+#' @param Pseudotimes object calculated by CalculatePseudotimes()
+#' @param selectedcolors The colors to use for the branches
+#' @param branch_tags The tags to use for the branches
+#' @param addlegend Whether or not to add a legend
+#' @param range_y Must be either "cells" or "tree"
 #'
 #'
 #' @export
-
-plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes, selectedcolors=rainbow(length(Pseudotimes$Branches)), branch_tags=c(), addlegend=F,  range_y="tree")
+#' @importFrom grDevices rgb col2rgb rainbow
+#' @importFrom graphics par plot points lines box legend
+plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes, selectedcolors=grDevices::rainbow(length(Pseudotimes$Branches)), branch_tags=c(), addlegend=F,  range_y="tree")
 {
   # GeneName: element from the GeneNames list in the Dataset object
   # EmbeddedTree: Embedded tree used to interpolate the genetic profiles for the tree nodes
   # Pseudotimes: Calculated for the tree nodes
-  # selectedcolors: colors for the branches, by defaul the rainbow palette is used.
+  # selectedcolors: colors for the branches, by default the rainbow palette is used.
 
   # # Testing--------
   # GeneName="Fgf4"
@@ -185,7 +199,7 @@ plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes
 
   # Mapping colors for cells and making them semi transparent
   CellColors=selected_colors[Pseudotimes$Cells2Branches]
-  CellColors <- rgb(t(col2rgb(CellColors)), alpha=50, maxColorValue=255)
+  CellColors <- grDevices::rgb(t(grDevices::col2rgb(CellColors)), alpha=50, maxColorValue=255)
 
   if(range_y=="cells")
   {
@@ -281,19 +295,23 @@ map2color<-function(x,pal,limits=NULL){
 #'
 #' Plot pseudotime for the cells in the given cell coordinatges
 #'
-#'@param CellCoordinates matrix containing up to 3 coordinates for cells in the manifold space
-#'@param Pseudotimes object calculated by CalculatePseudotimes()
+#' @param CellCoordinates matrix containing up to 3 coordinates for cells in the manifold space
+#' @param Pseudotimes object calculated by CalculatePseudotimes()
 #'
 #'
 #' @export
+#'
+#' @importFrom grDevices colorRampPalette
+#' @importFrom graphics plot legend
+#' @importFrom rgl plot3d legend3d
 plot_pseudotimes <- function (CellCoordinates, Pseudotimes)
 {
   if(dim(CellCoordinates)[2]==3)
   {
-    # paleta<-colorRampPalette(colors=c("yellow", "orange", "red", "black"))
+    # paleta<-grDevices::colorRampPalette(colors=c("yellow", "orange", "red", "black"))
     # color<-paleta(200)
     # col1<-numbers2colors(Pseudotimes$Times_cells , colors=color)
-    mypal <- colorRampPalette( c( "yellow", "orange", "darkorange", "red", "black" ) )( length(Pseudotimes$Times_cells) )
+    mypal <- grDevices::colorRampPalette( c( "yellow", "orange", "darkorange", "red", "black" ) )( length(Pseudotimes$Times_cells) )
     col1=map2color(Pseudotimes$Times_cells, mypal)
     plot3d(CellCoordinates[,1], CellCoordinates[,2], CellCoordinates[,3], col=col1, pch=16, size = 7, xlab = "DC1", ylab="DC2", zlab="DC3")
     legend3d()
@@ -301,9 +319,9 @@ plot_pseudotimes <- function (CellCoordinates, Pseudotimes)
   }
   else if(dim(CellCoordinates)[2]==2)
   {
-    mypal <- colorRampPalette( c( "yellow", "orange", "darkorange", "red", "black" ) )( length(Pseudotimes$Times_cells) )
+    mypal <- grDevices::colorRampPalette( c( "yellow", "orange", "darkorange", "red", "black" ) )( length(Pseudotimes$Times_cells) )
     col1=map2color(Pseudotimes$Times_cells, mypal)
-    # paleta<-colorRampPalette(colors=c("yellow", "orange", "red", "black"))
+    # paleta<-grDevices::colorRampPalette(colors=c("yellow", "orange", "red", "black"))
     # color<-paleta(200)
     # col1<-numbers2colors(Pseudotimes$Times_cells , colors=color)
     plot(CellCoordinates[,1], CellCoordinates[,2], col=col1, pch=16, cex=1.5, ylab="Cooordinate 1", xlab="Coordinate 2")
@@ -324,7 +342,10 @@ plot_pseudotimes <- function (CellCoordinates, Pseudotimes)
 #' @param cluster_genes wheter or not gene columns in the matrix will be clustered according to their expression values
 #' @export
 #'
-plot_heatmaps_embedding <-function(Pseudotimes, EmbeddedTree, log_tranform=F, cluster_genes=T)
+#' @importFrom grDevices colorRampPalette
+#' @importFrom fields image.plot
+#' @importFrom stats as.dist cor hclust
+plot_heatmaps_embedding <-function(Pseudotimes, EmbeddedTree, log_transform=F, cluster_genes=T)
 {
 
   # # Testing
@@ -364,7 +385,7 @@ plot_heatmaps_embedding <-function(Pseudotimes, EmbeddedTree, log_tranform=F, cl
   OrderedAverageNodes=EmbeddedTree$AveragedNodes[CellByBranchTimes,]
   OrderedInterpoaltedNodes=EmbeddedTree$Nodes[CellByBranchTimes,]
 
-  if(log_tranform==T)
+  if(log_transform==T)
   {
     MaxNegValue=min(OrderedAverageNodes)
     # if(min(OrderedAverageNodes)<0)
@@ -384,16 +405,16 @@ plot_heatmaps_embedding <-function(Pseudotimes, EmbeddedTree, log_tranform=F, cl
   if(cluster_genes==T)
   {
     # Cluster the matrixes by genes in the interpolated matrix
-    OrderedInterpoaltedNodes.hc <- hclust(as.dist(1-cor(OrderedInterpoaltedNodes)))
+    OrderedInterpoaltedNodes.hc <- stats::hclust(stats::as.dist(1-stats::cor(OrderedInterpoaltedNodes)))
     OrderedInterpoaltedNodes=OrderedInterpoaltedNodes[, OrderedInterpoaltedNodes.hc$labels[OrderedInterpoaltedNodes.hc$order]]
     OrderedAverageNodes=OrderedAverageNodes[, OrderedInterpoaltedNodes.hc$labels[OrderedInterpoaltedNodes.hc$order]]
   }
 
 
-  my.colors = colorRampPalette(c("black", "red","orange", "yellow", "white"))
+  my.colors = grDevices::colorRampPalette(c("black", "red","orange", "yellow", "white"))
   range_heatmap= c(min(c(range(OrderedAverageNodes)[1], range(OrderedInterpoaltedNodes)[1])), max(c(range(OrderedAverageNodes)[2], range(OrderedInterpoaltedNodes)[2])))
-  image.plot(t(OrderedAverageNodes), xlab="Genes", ylab="PseudoCells", col =my.colors(300) , zlim=range_heatmap, xaxt='n', yaxt='n', main="Averaged Gene Expression Profiles")
-  image.plot(t(OrderedInterpoaltedNodes), xlab="Genes", ylab="PseudoCells", col =my.colors(300) , zlim=range_heatmap, xaxt='n', yaxt='n', main="Imputed Gene Expression Profiles")
+  fields::image.plot(t(OrderedAverageNodes), xlab="Genes", ylab="PseudoCells", col =my.colors(300) , zlim=range_heatmap, xaxt='n', yaxt='n', main="Averaged Gene Expression Profiles")
+  fields::image.plot(t(OrderedInterpoaltedNodes), xlab="Genes", ylab="PseudoCells", col =my.colors(300) , zlim=range_heatmap, xaxt='n', yaxt='n', main="Imputed Gene Expression Profiles")
 
   EmbeddedMatrices= list(AveragedMatrix=OrderedAverageNodes, InterpolatedMatrix=OrderedInterpoaltedNodes)
 
@@ -408,19 +429,25 @@ plot_heatmaps_embedding <-function(Pseudotimes, EmbeddedTree, log_tranform=F, cl
 #'
 #' @param GeneName One of the elements in the Dataset$GeneNames object.
 #' @param CellCoordinates Matrix with 2 or 3 coordinates per cell.
-#' @param Dataset Dataset as generated by the ReadDataset() function
+#' @param ExpressionMatrix Expression matrix
+#' @param CoordLabels Which coordinate labels to use
 #' @param Average wheter or not expression for cells will be averaged over the nearest knn neighbors. Default Average=FALSE
 #' @param knn number of neighbors over which expression for the cells will be averaged in case Average=TRUE. Default: knn=5
 #' @param Palette colors that will be used for the cells by default= Palette=colorRampPalette(colors=c("yellow", "orange", "red","black")))
 #' @export
 #'
-plot_gene_on_map <-function(GeneName,
-                            CellCoordinates,
-                            ExpressionMatrix,
-                            CoordLabels=c("Component 1", "Component 2", "Component 3"),
-                            Average=F,
-                            knn=5,
-                            Palette=colorRampPalette(colors=c("yellow", "orange", "red","black")))
+#' @importFrom grDevices colorRampPalette
+#' @importFrom stats dist
+#' @importFrom graphics plot
+#' @importFrom rgl plot3d
+plot_gene_on_map <- function(
+  GeneName,
+  CellCoordinates,
+  ExpressionMatrix,
+  CoordLabels=c("Component 1", "Component 2", "Component 3"),
+  Average=F,
+  knn=5,
+  Palette=grDevices::colorRampPalette(colors=c("yellow", "orange", "red","black")))
 {
   if (!dim(CellCoordinates)[2] %in% c(2,3)) {
     stop("Dimensions of CellCoordinates need to be 2 or 3.")
@@ -438,7 +465,7 @@ plot_gene_on_map <-function(GeneName,
   {
     ExpressionGeneAveraged=c()
     knn=5
-    Distances=as.matrix(dist(CellCoordinates, method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+    Distances=as.matrix(stats::dist(CellCoordinates, method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
 
     for (i in  1:length(ExpressionGene))
     {
@@ -472,11 +499,16 @@ plot_gene_on_map <-function(GeneName,
 #' Given an Elastic Tree it plots a 2 dimensional version of the Elastic Tree.
 #'
 #' @param ElasticTree One of the elements in the Dataset$GeneNames object.
+#' @param legend_position The position of the legend.
 #' @export
 #'
-
-plot_flattened_tree <- function(ElasticTree)
+#' @importFrom igraph graph_from_adjacency_matrix layout_with_kk
+#' @importFrom graphics plot legend
+plot_flattened_tree <- function(ElasticTree, legend_position="topright")
 {
+  NumberOfNodes=dim(ElasticTree$Nodes)[1]
+
+  selected_colors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue", "aquamarine", "magenta", "brown", "gray", "wheat1", "azure4", "lightsalmon4", "navy", "sienna1", "gold4", "red4", "violetred")
 
   EdgesTree=matrix(0, dim(ElasticTree$Nodes)[1], dim(ElasticTree$Nodes)[1])
 
@@ -485,17 +517,28 @@ plot_flattened_tree <- function(ElasticTree)
     EdgesTree[ElasticTree$Edges[i, 1], ElasticTree$Edges[i, 2]]=1
   }
 
-  graph_yk=graph_from_adjacency_matrix(EdgesTree, mode = "undirected")
-  l=layout_with_kk(graph_yk, dim = 2)
-  nodes_colors= c(
-    rep("red", length(ElasticTree$Topology$Endpoints)),
-    rep("skyblue", length(ElasticTree$Topology$Branchpoints)),
-    rep("black", NumberOfNodes -length(ElasticTree$Topology$Endpoints)-length(ElasticTree$Topology$Branchpoints))
-  )
+  graph_yk=igraph::graph_from_adjacency_matrix(EdgesTree, mode = "undirected")
+  l=igraph::layout_with_kk(graph_yk, dim = 2)
+
+  nodes_colors=rep("black", dim(ElasticTree$Nodes)[1])
+
+  for(i in 1:length(ElasticTree$Branches))
+  {
+    nodes_colors[ElasticTree$Branches[[i]]]=selected_colors[i]
+  }
+
+  nodes_colors[1:length(ElasticTree$Topology$Endpoints)]="red"
+  nodes_colors[(length(ElasticTree$Topology$Endpoints)+1):(length(ElasticTree$Topology$Endpoints)+length(ElasticTree$Topology$Branchpoints))]="skyblue"
+  # nodes_colors= c(
+  #   rep("red", length(ElasticTree$Topology$Endpoints)),
+  #   rep("skyblue", length(ElasticTree$Topology$Branchpoints)),
+  #   rep("black", NumberOfNodes -length(ElasticTree$Topology$Endpoints)-length(ElasticTree$Topology$Branchpoints))
+  # )
 
   nodes_labels=c(seq(1, length(ElasticTree$Topology$Endpoints) + length(ElasticTree$Topology$Branchpoints)), rep(NA, NumberOfNodes -length(ElasticTree$Topology$Endpoints)-length(ElasticTree$Topology$Branchpoints)))
   nodes_sizes=c(rep(6, length(ElasticTree$Topology$Endpoints) + length(ElasticTree$Topology$Branchpoints)), rep(4, NumberOfNodes -length(ElasticTree$Topology$Endpoints)-length(ElasticTree$Topology$Branchpoints)))
 
   plot(graph_yk, layout=l, vertex.label=nodes_labels, vertex.size=nodes_sizes, vertex.color=nodes_colors, vertex.label.cex=0.6)
-  legend(x="topright", legend=c("endpoints", "branchpoints"), col=c("red", "skyblue"), pch=16 )
+  legend(x=legend_position, legend=c("Endpoints", "Branchpoints", paste("Branch ", 1:length(ElasticTree$Branches))), col=c("red", "skyblue", selected_colors[1:length(ElasticTree$Branches)]), pch=16 )
+  # legend(x="bottomright", inset=c(-0.16,0), legend=paste("Branch ", 1:length(ElasticTree$Branches)), col = selected_colors[1:length(ElasticTree$Branches)], pch=c(16))
 }

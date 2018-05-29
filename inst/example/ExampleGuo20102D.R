@@ -48,6 +48,10 @@ NumberOfNodes=100
 ElasticTree= CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes)
 plot_elastic_tree(ElasticTree)
 
+# The flattened version of the tree allows to indentify the numbering for
+# the endpoints and branchpoints in the data
+plot_flattened_tree(ElasticTree)
+
 # Embedd the principal elastic tree on the gene expression space from which it was calculated.
 EmbeddedTree= GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = ElasticTree)
 
