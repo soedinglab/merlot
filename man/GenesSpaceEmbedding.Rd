@@ -13,7 +13,15 @@ GenesSpaceEmbedding(ExpressionMatrix, ElasticTree, lambda_0 = 2.03e-09,
 
 \item{ElasticTree}{elastic tree to be embedded on the gene expression space}
 
-\item{increaseFactor}{factor by which the principal elastic tree energy function parameters will be increased for the embedding. By default this number is 10.}
+\item{lambda_0}{principal elastic tree energy function parameter.}
+
+\item{mu_0}{principal elastic tree energy function parameter.}
+
+\item{increaseFactor_mu}{factor by which the principal elastic tree energy function parameters will be increased for the embedding.}
+
+\item{increaseFactor_lambda}{factor by which the principal elastic tree energy function parameters will be increased for the embedding.}
+
+\item{NCores}{number of cpu cores to be used for the calculation}
 }
 \description{
 Embeds an elastic principal tree on the gene expression space from which the initial cell coordinates were calculated. The function receives the original Expression Matrix from which a lowe dimensional manifold was calculated and the coordinates from the low-dimensional manifold.

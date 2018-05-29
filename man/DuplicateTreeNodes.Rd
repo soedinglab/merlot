@@ -3,7 +3,8 @@
 \name{DuplicateTreeNodes}
 \alias{DuplicateTreeNodes}
 \alias{DuplicateTreeNodes}
-\title{Duplicate Elastic Tree Nodes}
+\title{Duplicate Elastic Tree Nodes
+Introduces intermediate nodes in between nodes being part of an edge in the ElasticTree structure}
 \usage{
 DuplicateTreeNodes(ElasticTree)
 
@@ -20,6 +21,7 @@ ElasticTree
 ElasticTree
 }
 \description{
+Duplicate Elastic Tree Nodes
 Introduces intermediate nodes in between nodes being part of an edge in the ElasticTree structure
 
 Introduces intermediate nodes in between nodes being part of an edge in the ElasticTree structure

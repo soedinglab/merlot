@@ -3,13 +3,14 @@
 #' Calculates pseudotime for the cells either on the low dimensional space or the full gene expression space. Users can define which is the endpoint or cell that will be used as the initial time (t0) respect to which the pseudotimes to all cells will be calculated.
 #'
 #' @param InputTree elastic tree according to which the pseudotime will be calculated. It can be a low dimensional elastic tree as the one calculated by CalculateElasticTree() or a high dimensional elastic tree like the one calculated by GeneSpaceEmbedding()
+#' @param plot whether or not this function will produce plots
 #' @param T0 which endpoint will be used at time zero
 #' @param C0 which cell will be used as time zero
 #' @export
 #'
 #' @importFrom stats dist
 #' @importFrom igraph graph_from_adjacency_matrix shortest.paths
-CalculatePseudotimes <- function (InputTree, plot=F, plotdim, T0=1, C0=NULL)
+CalculatePseudotimes <- function (InputTree, plot=F, T0=1, C0=NULL)
 {
   # Testing
   # InputTree=ElasticTree3DTopology

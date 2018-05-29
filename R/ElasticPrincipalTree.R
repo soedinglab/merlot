@@ -1,10 +1,13 @@
 #' Calculate Elastic Tree
 #'
 #'Calculates an elastic tree using a scaffold tree to initialize it. A set of N_yk nodes are included one byone into a tree structure that minimizes an error and an energetic functions to the cell coordinates. The initialization with the scaffold tree ensures that the correct number of endpoints and branchpoints and their connectivity are preserved in the elastic tree interpolation.
-#' @param Scaffoldtree scaffoldTree calculated by the CalculateScaffoldTree function.
+#' @param ScaffoldTree scaffoldTree calculated by the CalculateScaffoldTree function.
 #' @param N_yk number of nodes for the elastic principal tree
 #' @param lambda_0 principal elastic tree energy function parameter.
 #' @param mu_0 principal elastic tree energy function parameter.
+#' @param FixEndpoints Whether or not the end points coordinates are fixed
+#' @param plot Whether or not plots are produced
+#' @param NBranchScaffoldNodes Whether or not to add middle scaffold nodes
 #' @param NCores number of cpu cores to be used for the calculation
 #' @return ElasticTree
 #' @export
@@ -12,7 +15,7 @@
 #' @importFrom stats dist
 #' @importFrom ElPiGraph.R computeElasticPrincipalCurve
 #' @importFrom igraph graph_from_adjacency_matrix get.shortest.paths
-CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambda_0=0.80e-09, mu_0=0.00250, FixEndpoints=F, plot=F, NBranchScaffoldNodes = 1, NCores=1)
+CalculateElasticTree <- function(ScaffoldTree, N_yk=100, lambda_0=0.80e-09, mu_0=0.00250, FixEndpoints=F, plot=F, NBranchScaffoldNodes = 1, NCores=1)
 {
   # Testing
   # Default parameters taken from adjustment in real datasets with 100 N_yks
@@ -186,9 +189,10 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambd
 }
 
 #' Duplicate Elastic Tree Nodes
+#' Introduces intermediate nodes in between nodes being part of an edge in the ElasticTree structure
 #'
-#'Introduces intermediate nodes in between nodes being part of an edge in the ElasticTree structure
 #' @param ElasticTree Elastic Tree to which nodes will be added
+#'
 #' @return ElasticTree
 #' @export
 #'
@@ -259,7 +263,10 @@ DuplicateTreeNodes <- function(ElasticTree)
 #'
 #' @param ExpressionMatrix Gene expression matrix on which the tree will be embedded
 #' @param ElasticTree elastic tree to be embedded on the gene expression space
-#' @param increaseFactor factor by which the principal elastic tree energy function parameters will be increased for the embedding. By default this number is 10.
+#' @inheritParams CalculateElasticTree
+#' @param increaseFactor_mu factor by which the principal elastic tree energy function parameters will be increased for the embedding.
+#' @param increaseFactor_lambda factor by which the principal elastic tree energy function parameters will be increased for the embedding.
+#'
 #' @export
 #'
 #' @importFrom stats dist
@@ -377,18 +384,15 @@ GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-0
 #' Calculate elastic tree with iterative constraints
 #'
 #'Calculates an elastic tree using a scaffold tree to initialize it. A set of N_yk nodes are included one by one into a tree structure that minimizes an error and an energetic functions to the cell coordinates. The initialization with the scaffold tree ensures that the correct number of endpoints and branchpoints and their connectivity are preserved in the elastic tree interpolation.
-#' @param Scaffoldtree scaffoldTree calculated by the CalculateScaffoldTree function.
-#' @param N_yk total number of nodes for the elastic principal tree
 #' @param start_N_yk initial number of nodes with which the elastic tree will be calculated on top of which additional constraints will be added
 #' @param step_N_yk number of nodes that will be interatively added to the elastic tree until the N_yk nodes are added. After each iteration the nodes will be added as additional constraints to the next iteration.
-#' @param lambda_0 principal elastic tree energy function parameter.
-#' @param mu_0 principal elastic tree energy function parameter.
+#' @inheritParams CalculateElasticTree
 #' @return ElasticTree
 #' @export
 #'
 #' @importFrom stats dist
 #' @importFrom ElPiGraph.R computeElasticPrincipalGraph
-CalculateElasticTreeConstrained <- function(ScaffoldTree, N_yk=150, start_N_yk=100, step_N_yk=50,  input="topology", lambda_0=2.03e-09, mu_0=0.00625, FixEndpoints=F, plot=F)
+CalculateElasticTreeConstrained <- function(ScaffoldTree, N_yk=150, start_N_yk=100, step_N_yk=50, lambda_0=2.03e-09, mu_0=0.00625, FixEndpoints=F, plot=F)
 {
   # Testing
   # Default parameters taken from adjustment in real datasets with 100 N_yks

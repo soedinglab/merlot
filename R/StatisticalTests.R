@@ -2,8 +2,8 @@
 #'
 #' Given an elastic tree it calculates genes that are differentially expressed between two given populations in the tree. It applies a Kruskal-Wallis test.
 #'
-#' @param Subpopulation1 It is a vector containing the indexes of cells to be part of the first Subpopulation
-#' @param Subpopulation2 It is a vector containing the indexes of cells to be part of the second Subpopulation
+#' @param SubPopulation1 It is a vector containing the indexes of cells to be part of the first Subpopulation
+#' @param SubPopulation2 It is a vector containing the indexes of cells to be part of the second Subpopulation
 #' @param EmbeddedTree Embedded Elastic Tree as calculated by GenesSpaceEmbedding()
 #' @param mode whether the cell expression profiles or the tree nodes expression profiles will be taken into account for the test. "cells" uses the expression values from the cells. "tree"
 #'
