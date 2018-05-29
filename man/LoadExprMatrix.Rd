@@ -4,7 +4,7 @@
 \alias{LoadExprMatrix}
 \title{LoadExprMatrix}
 \usage{
-LoadExprMatrix(file)
+LoadExprMatrix(ExprMatrix)
 }
 \arguments{
 \item{ExprMatrix}{matrix object with n rows as cells and m columns as genes.}

@@ -2,15 +2,16 @@
 #'
 #' Given an elastic tree it calculates genes that are differentially expressed between two given populations in the tree. It applies a Kruskal-Wallis test.
 #'
-#' @param Subpopulation1 It is a vector containing the indexes of cells to be part of the first Subpopulation
-#' @param Subpopulation2 It is a vector containing the indexes of cells to be part of the second Subpopulation
+#' @param SubPopulation1 It is a vector containing the indexes of cells to be part of the first Subpopulation
+#' @param SubPopulation2 It is a vector containing the indexes of cells to be part of the second Subpopulation
 #' @param EmbeddedTree Embedded Elastic Tree as calculated by GenesSpaceEmbedding()
 #' @param mode whether the cell expression profiles or the tree nodes expression profiles will be taken into account for the test. "cells" uses the expression values from the cells. "tree"
 #'
 #' @return genes_significances list object containing the p-values ($pvals) and e-values ($evals) vectors for the kruskall wallis test ordered from the highest significance to the lowest one. A vector containing the gene names ($GeneName) ordered as the significances vector is also provided. Another vector ($indexes) containing the original index order for genes in the columns from the expression matrix is also provided.
 #'
-#'
 #' @export
+#'
+#' @importFrom stats dist sd
 subpopulations_differential_expression<-function(SubPopulation1, SubPopulation2,  EmbeddedTree, mode=c("tree", "cells"))
 {
   # for testing
@@ -44,7 +45,7 @@ subpopulations_differential_expression<-function(SubPopulation1, SubPopulation2,
       GenePopulation2=EmbeddedTree$CellCoords[MappedPopulation2, i]
     }
 
-    if(sd(EmbeddedTree$Nodes[, i])==0)
+    if(stats::sd(EmbeddedTree$Nodes[, i])==0)
     {
       # the gene has sd==0 and hence no differences can be observed
       statistic_vector=c(statistic_vector, 200)
@@ -52,7 +53,7 @@ subpopulations_differential_expression<-function(SubPopulation1, SubPopulation2,
     else
     {
       BothPopulations <- data.frame(Y=c(GenePopulation1, GenePopulation2), group=c(rep("Population1", length(GenePopulation1)), rep("Population2", length(GenePopulation2))))
-      KruskalResult=kruskal.test(Y~group, data=BothPopulations)
+      KruskalResult=stats::kruskal.test(Y~group, data=BothPopulations)
       if(!is.na(KruskalResult$p.value))
       {
         statistic_vector=c(statistic_vector, KruskalResult$p.value)
@@ -114,17 +115,19 @@ branch_differential_expression<-function(Branch, EmbeddedTree, mode=c("tree", "c
 #'
 #'
 #' @export
+#'
+#' @importFrom igraph plot.igraph layout.fruchterman.reingold graph.adjacency
 GetGeneCorrelationNetwork <-function(ExpressionMatrix, cor_threshold=0.4, plot=T)
 {
   GeneCorrelations<- cor(ExpressionMatrix, use="pair")
   GeneCorrelationsPlot=GeneCorrelations
   GeneCorrelationsPlot[GeneCorrelationsPlot < cor_threshold] <- 0
   diag(GeneCorrelationsPlot) <- 0
-  graph <- graph.adjacency(GeneCorrelationsPlot, weighted=TRUE, mode="lower")
+  graph <- igraph::graph.adjacency(GeneCorrelationsPlot, weighted=TRUE, mode="lower")
   set.seed(2)
   if(plot)
   {
-    plot.igraph(graph, vertex.size=6, edge.width=0.5, vertex.label=rownames(GeneCorrelationsPlot), layout=layout.fruchterman.reingold(graph))
+    igraph::plot.igraph(graph, vertex.size=6, edge.width=0.5, vertex.label=rownames(GeneCorrelationsPlot), layout=igraph::layout.fruchterman.reingold(graph))
   }
   return(GeneCorrelations)
 }

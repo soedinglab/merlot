@@ -4,10 +4,12 @@
 \alias{plot_flattened_tree}
 \title{Plots a flattened 2 dimensional version of the Elastic Tree Nodes}
 \usage{
-plot_flattened_tree(ElasticTree)
+plot_flattened_tree(ElasticTree, legend_position = "topright")
 }
 \arguments{
 \item{ElasticTree}{One of the elements in the Dataset$GeneNames object.}
+
+\item{legend_position}{The position of the legend.}
 }
 \description{
 Given an Elastic Tree it plots a 2 dimensional version of the Elastic Tree.

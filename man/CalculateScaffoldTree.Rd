@@ -15,6 +15,8 @@ CalculateScaffoldTree(CellCoordinates, NEndpoints = NULL,
 
 \item{BranchMinLength}{Minimum number of nodes a branch has to contain in order to be included in the 3 structure. By default this value is set to sqrt(N/2) with N being the total number of cells in the dataset.}
 
+\item{BranchMinLengthSensitive}{Minimum length for a branch to be included in the tree. It reconstructs the topology of the tree and maps cells to the potential new branch to decide if the branch will be added or not. Suggested value: sqrt(N) with N being the number of cells in the dataset}
+
 \item{python_location}{url to the python3 executable binary. In case it is not specified a default call to python3 will be used.}
 }
 \value{

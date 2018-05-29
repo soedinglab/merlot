@@ -35,12 +35,12 @@ legend(x="bottomright", legend=c("2C", "4C", "8C", "16C", "32C", "64C"), col=sel
 NumberOfNodes=100
 
 # We calculate the elastic principal tree using the scaffold tree for its initialization
-ElasticTree= CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes)
+ElasticTree= CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes, NBranchScaffoldNodes = T)
 plot_elastic_tree(ElasticTree, colorcells=guo_colorcells)
 
 # This function plots a flattened 2D version of the nodes in the elastic tree. Useful for when
 # more than 3 dimensions are used to reconstruct complex trees.
-plot_flattened_tree(ElasticTree)
+plot_flattened_tree(ElasticTree, legend_position="topright")
 
 # Embedd the principal elastic tree into the gene expression space from which it was calculated.
 EmbeddedTree= GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = ElasticTree)
