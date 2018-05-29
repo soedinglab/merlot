@@ -136,15 +136,14 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, lambda_0=0.80e-09, mu_0
 
   cell2yk=c()
 
-  if(length(ScaffoldTree$Endpoints)==2)
+  if (length(ScaffoldTree$Endpoints)==2)
   {
     cell_i=matrix(ScaffoldTree$CellCoordinates[1,], nrow=1)
     dist_cell_i=as.matrix(stats::dist(rbind(cell_i, ElasticTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
     #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
     closest_yk=sort(dist_cell_i[,1], index.return=T)$ix[2]-1
     cell2yk=rbind(cell2yk, c(1, closest_yk))
-  }else
-  {
+  } else {
     for (i in 1:dim(ScaffoldTree$CellCoordinates)[1])
     {
       cell_i=matrix(ScaffoldTree$CellCoordinates[i,], nrow=1)
