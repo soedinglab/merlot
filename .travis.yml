@@ -3,6 +3,7 @@ sudo: required
 dist: trusty
 cache: packages
 warnings_are_errors: true
-before_install:
-    - sudo apt-get update -qq
-    - sudo apt-get install -qq freeglut3-dev xorg openbox
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3
