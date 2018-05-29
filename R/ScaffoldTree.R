@@ -7,7 +7,8 @@
 #' @param python_location url to the python3 executable binary. In case it is not specified a default call to python3 will be used.
 #' @return ScaffoldTre object with the structure and connectivity of the Scaffold Tree
 #' @export
-
+#'
+#' @importFrom glue glue
 CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLength=-1, BranchMinLengthSensitive=-1, python_location="python3")
 {
   CellCoordinates=as.matrix(CellCoordinates)
