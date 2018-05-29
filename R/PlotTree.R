@@ -2,10 +2,10 @@
 #'
 #' Plots the scaffold tree on top of the distribution of cells in 2 or 3 coordinates.
 #'
-#'@param CellCoordinates coordinates for the cells. This are the same coordinates that were used in the Scaffold Tree Calculation
-#'@export
-
-
+#' @param CellCoordinates coordinates for the cells. This are the same coordinates that were used in the Scaffold Tree Calculation
+#' @export
+#' @importFrom graphics plot box lines points legend
+#' @importFrom rgl plot3d points3d legend3d lines3d open3d
 plot_scaffold_tree <- function(ScaffoldTree, colorcells="gray", dims=dim(ScaffoldTree$CellCoordinates)[2])
 {
   if(dims==2)
@@ -78,7 +78,9 @@ plot_scaffold_tree <- function(ScaffoldTree, colorcells="gray", dims=dim(Scaffol
 #' @param ElasticTree Principal Elastic Tree calculated with the CalculateElasticTreeFunction
 #' @param colorcells vector of colors for the cells
 #' @export
-
+#'
+#' @importFrom graphics par plot points lines box legend
+#' @importFrom rgl plot3d points3d legend3d lines3d open3d
 plot_elastic_tree <- function(ElasticTree, colorcells=NULL, legend=F, legend_names=c())
 {
   if(legend==T)
@@ -158,13 +160,14 @@ plot_elastic_tree <- function(ElasticTree, colorcells=NULL, legend=F, legend_nam
 #'
 #'
 #' @export
-
-plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes, selectedcolors=rainbow(length(Pseudotimes$Branches)), branch_tags=c(), addlegend=F,  range_y="tree")
+#' @importFrom grDevices rgb col2rgb rainbow
+#' @importFrom graphics par plot points lines box legend
+plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes, selectedcolors=grDevices::rainbow(length(Pseudotimes$Branches)), branch_tags=c(), addlegend=F,  range_y="tree")
 {
   # GeneName: element from the GeneNames list in the Dataset object
   # EmbeddedTree: Embedded tree used to interpolate the genetic profiles for the tree nodes
   # Pseudotimes: Calculated for the tree nodes
-  # selectedcolors: colors for the branches, by defaul the rainbow palette is used.
+  # selectedcolors: colors for the branches, by default the rainbow palette is used.
 
   # # Testing--------
   # GeneName="Fgf4"
@@ -185,7 +188,7 @@ plot_pseudotime_expression_gene <- function (GeneName, EmbeddedTree, Pseudotimes
 
   # Mapping colors for cells and making them semi transparent
   CellColors=selected_colors[Pseudotimes$Cells2Branches]
-  CellColors <- rgb(t(col2rgb(CellColors)), alpha=50, maxColorValue=255)
+  CellColors <- grDevices::rgb(t(grDevices::col2rgb(CellColors)), alpha=50, maxColorValue=255)
 
   if(range_y=="cells")
   {
@@ -281,19 +284,23 @@ map2color<-function(x,pal,limits=NULL){
 #'
 #' Plot pseudotime for the cells in the given cell coordinatges
 #'
-#'@param CellCoordinates matrix containing up to 3 coordinates for cells in the manifold space
-#'@param Pseudotimes object calculated by CalculatePseudotimes()
+#' @param CellCoordinates matrix containing up to 3 coordinates for cells in the manifold space
+#' @param Pseudotimes object calculated by CalculatePseudotimes()
 #'
 #'
 #' @export
+#'
+#' @importFrom grDevices colorRampPalette
+#' @importFrom graphics plot legend
+#' @importFrom rgl plot3d legend3d
 plot_pseudotimes <- function (CellCoordinates, Pseudotimes)
 {
   if(dim(CellCoordinates)[2]==3)
   {
-    # paleta<-colorRampPalette(colors=c("yellow", "orange", "red", "black"))
+    # paleta<-grDevices::colorRampPalette(colors=c("yellow", "orange", "red", "black"))
     # color<-paleta(200)
     # col1<-numbers2colors(Pseudotimes$Times_cells , colors=color)
-    mypal <- colorRampPalette( c( "yellow", "orange", "darkorange", "red", "black" ) )( length(Pseudotimes$Times_cells) )
+    mypal <- grDevices::colorRampPalette( c( "yellow", "orange", "darkorange", "red", "black" ) )( length(Pseudotimes$Times_cells) )
     col1=map2color(Pseudotimes$Times_cells, mypal)
     plot3d(CellCoordinates[,1], CellCoordinates[,2], CellCoordinates[,3], col=col1, pch=16, size = 7, xlab = "DC1", ylab="DC2", zlab="DC3")
     legend3d()
@@ -301,9 +308,9 @@ plot_pseudotimes <- function (CellCoordinates, Pseudotimes)
   }
   else if(dim(CellCoordinates)[2]==2)
   {
-    mypal <- colorRampPalette( c( "yellow", "orange", "darkorange", "red", "black" ) )( length(Pseudotimes$Times_cells) )
+    mypal <- grDevices::colorRampPalette( c( "yellow", "orange", "darkorange", "red", "black" ) )( length(Pseudotimes$Times_cells) )
     col1=map2color(Pseudotimes$Times_cells, mypal)
-    # paleta<-colorRampPalette(colors=c("yellow", "orange", "red", "black"))
+    # paleta<-grDevices::colorRampPalette(colors=c("yellow", "orange", "red", "black"))
     # color<-paleta(200)
     # col1<-numbers2colors(Pseudotimes$Times_cells , colors=color)
     plot(CellCoordinates[,1], CellCoordinates[,2], col=col1, pch=16, cex=1.5, ylab="Cooordinate 1", xlab="Coordinate 2")
@@ -324,6 +331,9 @@ plot_pseudotimes <- function (CellCoordinates, Pseudotimes)
 #' @param cluster_genes wheter or not gene columns in the matrix will be clustered according to their expression values
 #' @export
 #'
+#' @importFrom grDevices colorRampPalette
+#' @importFrom fields image.plot
+#' @importFrom stats as.dist cor hclust
 plot_heatmaps_embedding <-function(Pseudotimes, EmbeddedTree, log_tranform=F, cluster_genes=T)
 {
 
@@ -384,16 +394,16 @@ plot_heatmaps_embedding <-function(Pseudotimes, EmbeddedTree, log_tranform=F, cl
   if(cluster_genes==T)
   {
     # Cluster the matrixes by genes in the interpolated matrix
-    OrderedInterpoaltedNodes.hc <- hclust(as.dist(1-cor(OrderedInterpoaltedNodes)))
+    OrderedInterpoaltedNodes.hc <- stats::hclust(stats::as.dist(1-stats::cor(OrderedInterpoaltedNodes)))
     OrderedInterpoaltedNodes=OrderedInterpoaltedNodes[, OrderedInterpoaltedNodes.hc$labels[OrderedInterpoaltedNodes.hc$order]]
     OrderedAverageNodes=OrderedAverageNodes[, OrderedInterpoaltedNodes.hc$labels[OrderedInterpoaltedNodes.hc$order]]
   }
 
 
-  my.colors = colorRampPalette(c("black", "red","orange", "yellow", "white"))
+  my.colors = grDevices::colorRampPalette(c("black", "red","orange", "yellow", "white"))
   range_heatmap= c(min(c(range(OrderedAverageNodes)[1], range(OrderedInterpoaltedNodes)[1])), max(c(range(OrderedAverageNodes)[2], range(OrderedInterpoaltedNodes)[2])))
-  image.plot(t(OrderedAverageNodes), xlab="Genes", ylab="PseudoCells", col =my.colors(300) , zlim=range_heatmap, xaxt='n', yaxt='n', main="Averaged Gene Expression Profiles")
-  image.plot(t(OrderedInterpoaltedNodes), xlab="Genes", ylab="PseudoCells", col =my.colors(300) , zlim=range_heatmap, xaxt='n', yaxt='n', main="Imputed Gene Expression Profiles")
+  fields::image.plot(t(OrderedAverageNodes), xlab="Genes", ylab="PseudoCells", col =my.colors(300) , zlim=range_heatmap, xaxt='n', yaxt='n', main="Averaged Gene Expression Profiles")
+  fields::image.plot(t(OrderedInterpoaltedNodes), xlab="Genes", ylab="PseudoCells", col =my.colors(300) , zlim=range_heatmap, xaxt='n', yaxt='n', main="Imputed Gene Expression Profiles")
 
   EmbeddedMatrices= list(AveragedMatrix=OrderedAverageNodes, InterpolatedMatrix=OrderedInterpoaltedNodes)
 
@@ -414,13 +424,15 @@ plot_heatmaps_embedding <-function(Pseudotimes, EmbeddedTree, log_tranform=F, cl
 #' @param Palette colors that will be used for the cells by default= Palette=colorRampPalette(colors=c("yellow", "orange", "red","black")))
 #' @export
 #'
+#' @importFrom grDevices colorRampPalette
+#' @importFrom stats dist
 plot_gene_on_map <-function(GeneName,
                             CellCoordinates,
                             ExpressionMatrix,
                             CoordLabels=c("Component 1", "Component 2", "Component 3"),
                             Average=F,
                             knn=5,
-                            Palette=colorRampPalette(colors=c("yellow", "orange", "red","black")))
+                            Palette=grDevices::colorRampPalette(colors=c("yellow", "orange", "red","black")))
 {
   if (!dim(CellCoordinates)[2] %in% c(2,3)) {
     stop("Dimensions of CellCoordinates need to be 2 or 3.")
@@ -438,7 +450,7 @@ plot_gene_on_map <-function(GeneName,
   {
     ExpressionGeneAveraged=c()
     knn=5
-    Distances=as.matrix(dist(CellCoordinates, method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+    Distances=as.matrix(stats::dist(CellCoordinates, method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
 
     for (i in  1:length(ExpressionGene))
     {

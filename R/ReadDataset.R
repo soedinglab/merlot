@@ -6,9 +6,11 @@
 #' @return Dataset an object with the Expression Matrix, cell names and gene names
 #' @usage ReadDataset(file)
 #' @export
+#'
+#' @importFrom utils read.table
 ReadDataset <- function(file, featuresfile=c())
 {
-  X=read.table(file=file, sep="\t", header = T, stringsAsFactors = F, check.names = F, row.names = 1)
+  X=utils::read.table(file=file, sep="\t", header = T, stringsAsFactors = F, check.names = F, row.names = 1)
   ExpressionMatrix=as.matrix(X)
   dim(ExpressionMatrix)
   Descriptions=rownames(ExpressionMatrix)

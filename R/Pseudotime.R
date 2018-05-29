@@ -6,6 +6,8 @@
 #' @param T0 which endpoint will be used at time zero
 #' @param C0 which cell will be used as time zero
 #' @export
+#'
+#' @importFrom stats dist
 CalculatePseudotimes <- function (InputTree, plot=F, plotdim, T0=1, C0=NULL)
 {
   # Testing
@@ -40,7 +42,7 @@ CalculatePseudotimes <- function (InputTree, plot=F, plotdim, T0=1, C0=NULL)
   for (i in 1:dim(InputTree$CellCoords)[1])
   {
     cell_i=matrix(InputTree$CellCoords[i,], nrow=1)
-    dist_cell_i=as.matrix(dist(rbind(cell_i, InputTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+    dist_cell_i=as.matrix(stats::dist(rbind(cell_i, InputTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
 
     #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
     closest_yk=sort(dist_cell_i[,1], index.return=T)$ix[2]-1
@@ -50,7 +52,7 @@ CalculatePseudotimes <- function (InputTree, plot=F, plotdim, T0=1, C0=NULL)
     # x= (c^2+a^2+b^2 )/ 2*a
     b=sort(dist_cell_i[,1], index.return=T)$x[2]
     c=sort(dist_cell_i[,1], index.return=T)$x[3]
-    a=dist(rbind(matrix(InputTree$Nodes[closest_yk,], nrow=1), matrix(InputTree$Nodes[second_closest_yk,], nrow=1)),  method = "euclidean", diag=F, p=2)
+    a=stats::dist(rbind(matrix(InputTree$Nodes[closest_yk,], nrow=1), matrix(InputTree$Nodes[second_closest_yk,], nrow=1)),  method = "euclidean", diag=F, p=2)
     x= (a^2+b^2-c^2 )/ (2*a)
     extra_time=x/a
 

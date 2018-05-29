@@ -5,8 +5,8 @@
 \title{Plot pseudotime expression gene}
 \usage{
 plot_pseudotime_expression_gene(GeneName, EmbeddedTree, Pseudotimes,
-  selectedcolors = rainbow(length(Pseudotimes$Branches)), branch_tags = c(),
-  addlegend = F, range_y = "tree")
+  selectedcolors = grDevices::rainbow(length(Pseudotimes$Branches)),
+  branch_tags = c(), addlegend = F, range_y = "tree")
 }
 \arguments{
 \item{GeneName}{an element from the Datasets$GeneNames object.}

@@ -9,6 +9,7 @@
 #' @return ElasticTree
 #' @export
 #'
+#' @importFrom stats dist
 CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambda_0=0.80e-09, mu_0=0.00250, FixEndpoints=F, plot=F, NBranchScaffoldNodes = 1, NCores=1)
 {
   # Testing
@@ -132,7 +133,7 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambd
   if(length(ScaffoldTree$Endpoints)==2)
   {
     cell_i=matrix(ScaffoldTree$CellCoordinates[1,], nrow=1)
-    dist_cell_i=as.matrix(dist(rbind(cell_i, ElasticTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+    dist_cell_i=as.matrix(stats::dist(rbind(cell_i, ElasticTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
     #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
     closest_yk=sort(dist_cell_i[,1], index.return=T)$ix[2]-1
     cell2yk=rbind(cell2yk, c(1, closest_yk))
@@ -141,7 +142,7 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambd
     for (i in 1:dim(ScaffoldTree$CellCoordinates)[1])
     {
       cell_i=matrix(ScaffoldTree$CellCoordinates[i,], nrow=1)
-      dist_cell_i=as.matrix(dist(rbind(cell_i, ElasticTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+      dist_cell_i=as.matrix(stats::dist(rbind(cell_i, ElasticTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
       #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
       closest_yk=sort(dist_cell_i[,1], index.return=T)$ix[2]-1
       cell2yk=rbind(cell2yk, c(i, closest_yk))
@@ -188,6 +189,7 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambd
 #' @return ElasticTree
 #' @export
 #'
+#' @importFrom stats dist
 DuplicateTreeNodes <- function(ElasticTree)
 {
   ElasticTree2=ElasticTree
@@ -237,7 +239,7 @@ DuplicateTreeNodes <- function(ElasticTree)
   for (i in 1:dim(ElasticTree2$CellCoords)[1])
   {
     cell_i= matrix(ElasticTree2$CellCoords[i,], nrow=1)
-    dist_cell_i=as.matrix(dist(rbind(cell_i, ElasticTree2$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+    dist_cell_i=as.matrix(stats::dist(rbind(cell_i, ElasticTree2$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
     #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
     closest_yk=sort(dist_cell_i[,1], index.return=T)$ix[2]-1
     cell2yk_post=rbind(cell2yk_post, c(i, closest_yk))
@@ -256,7 +258,8 @@ DuplicateTreeNodes <- function(ElasticTree)
 #' @param ElasticTree elastic tree to be embedded on the gene expression space
 #' @param increaseFactor factor by which the principal elastic tree energy function parameters will be increased for the embedding. By default this number is 10.
 #' @export
-
+#'
+#' @importFrom stats dist
 GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-09, mu_0=0.00625, increaseFactor_mu=20, increaseFactor_lambda=20, NCores=1)
 {
   # The number of nodes for the embedding tree is the same as the ones for the input low dimensional one
@@ -271,7 +274,7 @@ GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-0
   for (i in 1:dim(ExpressionMatrix)[1])
   {
     cell_i=matrix(ElasticTree$CellCoords[i,], nrow = 1)
-    dist_cell_i=as.matrix(dist(rbind(cell_i, ElasticTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+    dist_cell_i=as.matrix(stats::dist(rbind(cell_i, ElasticTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
     #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
     closest_yk=sort(dist_cell_i[,1], index.return=T)$ix[2]-1
     cell2yk=rbind(cell2yk, c(i, closest_yk))
@@ -315,7 +318,7 @@ GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-0
   for (i in 1:dim(ExpressionMatrix)[1])
   {
     cell_i= matrix(ExpressionMatrix[i,], nrow=1)
-    dist_cell_i=as.matrix(dist(rbind(cell_i, EmbeddedTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+    dist_cell_i=as.matrix(stats::dist(rbind(cell_i, EmbeddedTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
     #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
     closest_yk=sort(dist_cell_i[,1], index.return=T)$ix[2]-1
     cell2yk_post=rbind(cell2yk_post, c(i, closest_yk))
@@ -377,7 +380,8 @@ GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-0
 #' @param mu_0 principal elastic tree energy function parameter.
 #' @return ElasticTree
 #' @export
-
+#'
+#' @importFrom stats dist
 CalculateElasticTreeConstrained <- function(ScaffoldTree, N_yk=150, start_N_yk=100, step_N_yk=50,  input="topology", lambda_0=2.03e-09, mu_0=0.00625, FixEndpoints=F, plot=F)
 {
   # Testing
@@ -494,7 +498,7 @@ CalculateElasticTreeConstrained <- function(ScaffoldTree, N_yk=150, start_N_yk=1
   if(length(ScaffoldTree$Endpoints)==2)
   {
     cell_i=matrix(ScaffoldTree$CellCoordinates[1,], nrow=1)
-    dist_cell_i=as.matrix(dist(rbind(cell_i, ElasticTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+    dist_cell_i=as.matrix(stats::dist(rbind(cell_i, ElasticTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
     #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
     closest_yk=sort(dist_cell_i[,1], index.return=T)$ix[2]-1
     cell2yk=rbind(cell2yk, c(1, closest_yk))
@@ -503,7 +507,7 @@ CalculateElasticTreeConstrained <- function(ScaffoldTree, N_yk=150, start_N_yk=1
     for (i in 1:dim(ScaffoldTree$CellCoordinates)[1])
     {
       cell_i=matrix(ScaffoldTree$CellCoordinates[i,], nrow=1)
-      dist_cell_i=as.matrix(dist(rbind(cell_i, ElasticTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+      dist_cell_i=as.matrix(stats::dist(rbind(cell_i, ElasticTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
       #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
       closest_yk=sort(dist_cell_i[,1], index.return=T)$ix[2]-1
       cell2yk=rbind(cell2yk, c(i, closest_yk))
@@ -617,7 +621,7 @@ DuplicateTreeNodes <- function(ElasticTree)
   for (i in 1:dim(ElasticTree2$CellCoords)[1])
   {
     cell_i= matrix(ElasticTree2$CellCoords[i,], nrow=1)
-    dist_cell_i=as.matrix(dist(rbind(cell_i, ElasticTree2$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+    dist_cell_i=as.matrix(stats::dist(rbind(cell_i, ElasticTree2$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
     #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
     closest_yk=sort(dist_cell_i[,1], index.return=T)$ix[2]-1
     cell2yk_post=rbind(cell2yk_post, c(i, closest_yk))

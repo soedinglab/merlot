@@ -9,11 +9,13 @@
 #' @export
 #'
 #' @importFrom glue glue
+#' @importFrom stats dist
+#' @importFrom utils write.table
 CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLength=-1, BranchMinLengthSensitive=-1, python_location="python3")
 {
   CellCoordinates=as.matrix(CellCoordinates)
   CoordinatesFile=tempfile()
-  write.table(CellCoordinates, file = CoordinatesFile, sep="\t", col.names = F, row.names = F)
+  utils::write.table(CellCoordinates, file = CoordinatesFile, sep="\t", col.names = F, row.names = F)
   BranchMinLengthSensitive=floor(BranchMinLengthSensitive)
   ScaffoldTreeScript=paste(find.package("merlot"), "/python/ScaffoldTree.py", sep="")
 
@@ -47,9 +49,10 @@ CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLen
   return(ScaffoldTree)
 }
 
+#' @importFrom utils read.table
 read_topology <-function (DataFile, CellCoordinates)
 {
-  TopologyData=read.table(file=paste(DataFile, "_TreeTopology.dat", sep=""), sep="\t", header=F, stringsAsFactors = F)
+  TopologyData=utils::read.table(file=paste(DataFile, "_TreeTopology.dat", sep=""), sep="\t", header=F, stringsAsFactors = F)
   # ----- We add 1 to the vectors because python numbers indexes from 0 instead of 1
 
   Endpoints=as.integer(unlist(strsplit(x=TopologyData[1,3], split=" "))) + 1
@@ -63,10 +66,10 @@ read_topology <-function (DataFile, CellCoordinates)
   }
 
 
-  DijkstraPredecesors=read.table(file=paste(DataFile, "_DijkstraPredecesors.dat", sep=""), sep=" ", header=F, stringsAsFactors = F)
+  DijkstraPredecesors=utils::read.table(file=paste(DataFile, "_DijkstraPredecesors.dat", sep=""), sep=" ", header=F, stringsAsFactors = F)
   DijkstraPredecesors= DijkstraPredecesors + 1
-  DijkstraDistances=read.table(file=paste(DataFile, "_DijkstraDistances.dat", sep=""), sep=" ", header=F, stringsAsFactors = F)
-  DijkstraSteps=read.table(file=paste(DataFile, "_DijkstraSteps.dat", sep=""), sep=" ", header=F, stringsAsFactors = F)
+  DijkstraDistances=utils::read.table(file=paste(DataFile, "_DijkstraDistances.dat", sep=""), sep=" ", header=F, stringsAsFactors = F)
+  DijkstraSteps=utils::read.table(file=paste(DataFile, "_DijkstraSteps.dat", sep=""), sep=" ", header=F, stringsAsFactors = F)
 
   # Reading the branches information
   Branches=as.matrix(TopologyData[3:dim(TopologyData)[1], 2:3])
@@ -127,7 +130,7 @@ read_topology <-function (DataFile, CellCoordinates)
     {
       cell_i=matrix(CellCoordinates[i,], nrow=1)
       # Calculate which is the closest cell in the scaffold to cell i
-      dist_cell_i=as.matrix(dist(rbind(cell_i, CellCoordinates[ScaffoldCells,]), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+      dist_cell_i=as.matrix(stats::dist(rbind(cell_i, CellCoordinates[ScaffoldCells,]), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
       #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
       min_cell_dist=ScaffoldCells[sort(dist_cell_i[,1], index.return=T)$ix[2]-1]
       min_branch_dist=sort(dist_cell_i[,1], index.return=T)$x[2]
@@ -154,7 +157,7 @@ read_topology <-function (DataFile, CellCoordinates)
     #
     #   for(j in 1:length(BranchesNodes))
     #   {
-    #     dist_cell_i=as.matrix(dist(rbind(cell_i, CellCoordinates[BranchesNodes[[j]],]), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+    #     dist_cell_i=as.matrix(stats::dist(rbind(cell_i, CellCoordinates[BranchesNodes[[j]],]), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
     #     #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
     #     min_cell_dist=c(min_cell_dist, BranchesNodes[[j]][sort(dist_cell_i[,1], index.return=T)$ix[2]-1])
     #     min_branch_dist=c(min_branch_dist, sort(dist_cell_i[,1], index.return=T)$x[2])[1]
