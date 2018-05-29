@@ -385,7 +385,7 @@ plot_heatmaps_embedding <-function(Pseudotimes, EmbeddedTree, log_transform=F, c
   OrderedAverageNodes=EmbeddedTree$AveragedNodes[CellByBranchTimes,]
   OrderedInterpoaltedNodes=EmbeddedTree$Nodes[CellByBranchTimes,]
 
-  if(log_tranform==T)
+  if(log_transform==T)
   {
     MaxNegValue=min(OrderedAverageNodes)
     # if(min(OrderedAverageNodes)<0)
