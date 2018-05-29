@@ -15,8 +15,7 @@ Imports:
   igraph,
   fields,
   glue,
-  scales,
-  car
+  scales
 Suggests:
   car,
   rgl,
