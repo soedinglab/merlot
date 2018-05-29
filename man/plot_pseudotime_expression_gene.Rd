@@ -5,8 +5,8 @@
 \title{Plot pseudotime expression gene}
 \usage{
 plot_pseudotime_expression_gene(GeneName, EmbeddedTree, Pseudotimes,
-  selectedcolors = rainbow(length(Pseudotimes$Branches)), branch_tags = c(),
-  addlegend = F, range_y = "tree")
+  selectedcolors = grDevices::rainbow(length(Pseudotimes$Branches)),
+  branch_tags = c(), addlegend = F, range_y = "tree")
 }
 \arguments{
 \item{GeneName}{an element from the Datasets$GeneNames object.}
@@ -14,6 +14,14 @@ plot_pseudotime_expression_gene(GeneName, EmbeddedTree, Pseudotimes,
 \item{EmbeddedTree}{High dimensional principal elastic tree.}
 
 \item{Pseudotimes}{object calculated by CalculatePseudotimes()}
+
+\item{selectedcolors}{The colors to use for the branches}
+
+\item{branch_tags}{The tags to use for the branches}
+
+\item{addlegend}{Whether or not to add a legend}
+
+\item{range_y}{Must be either "cells" or "tree"}
 }
 \description{
 Plot Gene Expression Profile as a function of pseudotime

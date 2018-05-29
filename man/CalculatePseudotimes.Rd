@@ -4,10 +4,12 @@
 \alias{CalculatePseudotimes}
 \title{Calculate Pseudotime}
 \usage{
-CalculatePseudotimes(InputTree, plot = F, plotdim, T0 = 1, C0 = NULL)
+CalculatePseudotimes(InputTree, plot = F, T0 = 1, C0 = NULL)
 }
 \arguments{
 \item{InputTree}{elastic tree according to which the pseudotime will be calculated. It can be a low dimensional elastic tree as the one calculated by CalculateElasticTree() or a high dimensional elastic tree like the one calculated by GeneSpaceEmbedding()}
+
+\item{plot}{whether or not this function will produce plots}
 
 \item{T0}{which endpoint will be used at time zero}
 

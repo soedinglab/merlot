@@ -9,12 +9,18 @@ License: GPL
 LazyData: TRUE
 RoxygenNote: 6.0.1
 Depends:
+  R (>= 3.4.0)
+Imports:
   ElPiGraph.R,
   igraph,
   fields,
+  glue,
   scales,
-  car
-Suggests:
-  rgl
+  car,
+  rgl,
+  stats,
+  utils,
+  grDevices,
+  graphics
 Remotes:
   dynverse/ElPiGraph.R
