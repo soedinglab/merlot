@@ -2,3 +2,7 @@
 ^\.Rproj\.user$
 ^\.git$
 ^\.travis
+^Dependencies$
+^LICENSE\.md$
+^WikiImages$
+^drawing\.svg$
