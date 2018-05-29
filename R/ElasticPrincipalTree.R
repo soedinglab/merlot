@@ -10,6 +10,8 @@
 #' @export
 #'
 #' @importFrom stats dist
+#' @importFrom ElPiGraph.R computeElasticPrincipalCurve
+#' @importFrom igraph graph_from_adjacency_matrix get.shortest.paths
 CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambda_0=0.80e-09, mu_0=0.00250, FixEndpoints=F, plot=F, NBranchScaffoldNodes = 1, NCores=1)
 {
   # Testing
@@ -83,10 +85,11 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambd
     }
   }
 
-  ElasticTree=computeElasticPrincipalCurve(X = ScaffoldTree$CellCoordinates, NumNodes = N_yk,
-                                           InitNodePositions = TopologyCoordsAux, InitEdges = TopologyEdgesAux,
-                                           Lambda = lambda, Mu = mu, Do_PCA = F, verbose = F, drawAccuracyComplexity = F,
-                                           drawPCAView = F, drawEnergy = F, Mode = 1, n.cores = NCores)
+  ElasticTree=ElPiGraph.R::computeElasticPrincipalCurve(
+    X = ScaffoldTree$CellCoordinates, NumNodes = N_yk,
+    InitNodePositions = TopologyCoordsAux, InitEdges = TopologyEdgesAux,
+    Lambda = lambda, Mu = mu, Do_PCA = F, verbose = F, drawAccuracyComplexity = F,
+    drawPCAView = F, drawEnergy = F, Mode = 1, n.cores = NCores)
 
   # Unlist the ElasticTree structure
   ElasticTree=ElasticTree[[1]]
@@ -121,10 +124,10 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, input="topology", lambd
     EdgesTree[ElasticTree$Edges[i, 1], ElasticTree$Edges[i, 2]]=1
     EdgesTree[ElasticTree$Edges[i, 2], ElasticTree$Edges[i, 1]]=1
   }
-  Graph_yk=graph_from_adjacency_matrix(EdgesTree)
+  Graph_yk=igraph::graph_from_adjacency_matrix(EdgesTree)
   for(i in 1:dim(TopologyEdges)[1])
   {
-    path_brach_i=get.shortest.paths(Graph_yk,from = TopologyEdges[i,1], to = TopologyEdges[i,2])
+    path_brach_i=igraph::get.shortest.paths(Graph_yk,from = TopologyEdges[i,1], to = TopologyEdges[i,2])
     BranchesNodes[[i]]=path_brach_i$vpath[[1]]
   }
 
@@ -260,6 +263,7 @@ DuplicateTreeNodes <- function(ElasticTree)
 #' @export
 #'
 #' @importFrom stats dist
+#' @importFrom ElPiGraph.R computeElasticPrincipalCurve
 GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-09, mu_0=0.00625, increaseFactor_mu=20, increaseFactor_lambda=20, NCores=1)
 {
   # The number of nodes for the embedding tree is the same as the ones for the input low dimensional one
@@ -303,10 +307,11 @@ GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-0
   InitialNodesCoordinates=yk_profiles
   InitialEdges= ElasticTree$Edges
 
-  EmbeddedTree=computeElasticPrincipalCurve(X = CellCoordinates, NumNodes = N_yk,
-                                            InitNodePositions = InitialNodesCoordinates, InitEdges = InitialEdges,
-                                            Do_PCA = F, verbose = T, drawAccuracyComplexity = F,
-                                            drawPCAView = F, drawEnergy = F, Lambda = lambda, Mu = mu, Mode = 1, n.cores = NCores)
+  EmbeddedTree=ElPiGraph.R::computeElasticPrincipalCurve(
+    X = CellCoordinates, NumNodes = N_yk,
+    InitNodePositions = InitialNodesCoordinates, InitEdges = InitialEdges,
+    Do_PCA = F, verbose = T, drawAccuracyComplexity = F,
+    drawPCAView = F, drawEnergy = F, Lambda = lambda, Mu = mu, Mode = 1, n.cores = NCores)
 
   # Unlist EmbeddedTree structure
   EmbeddedTree=EmbeddedTree[[1]]
@@ -382,6 +387,7 @@ GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-0
 #' @export
 #'
 #' @importFrom stats dist
+#' @importFrom ElPiGraph.R computeElasticPrincipalGraph
 CalculateElasticTreeConstrained <- function(ScaffoldTree, N_yk=150, start_N_yk=100, step_N_yk=50,  input="topology", lambda_0=2.03e-09, mu_0=0.00625, FixEndpoints=F, plot=F)
 {
   # Testing
@@ -422,9 +428,10 @@ CalculateElasticTreeConstrained <- function(ScaffoldTree, N_yk=150, start_N_yk=1
   mu=(N_yk_limits[1]-1)*mu_0
   lambda=((N_yk_limits[1]-2)**3)*lambda_0
 
-  ElasticTree <- computeElasticPrincipalGraph(Data = ScaffoldTree$CellCoordinates, NumNodes = N_yk_limits[1],
-                                              NodesPositions = TopologyCoords, Edges = TopologyEdges,
-                                              Method = 'CurveConfiguration', EP=lambda, RP=mu)
+  ElasticTree <- ElPiGraph.R::computeElasticPrincipalGraph(
+    Data = ScaffoldTree$CellCoordinates, NumNodes = N_yk_limits[1],
+    NodesPositions = TopologyCoords, Edges = TopologyEdges,
+    Method = 'CurveConfiguration', EP=lambda, RP=mu)
 
   for( i in N_yk_limits[2:length(N_yk_limits)])
   {
@@ -434,9 +441,10 @@ CalculateElasticTreeConstrained <- function(ScaffoldTree, N_yk=150, start_N_yk=1
     mu=(i-1)*mu_0
     lambda=((i-2)**3)*lambda_0
 
-    ElasticTree <- computeElasticPrincipalGraph(Data = ScaffoldTree$CellCoordinates, NumNodes = i,
-                                                NodesPositions = InitCoords, Edges = InitEdges,
-                                                Method = 'CurveConfiguration', EP=lambda, RP=mu)
+    ElasticTree <- ElPiGraph.R::computeElasticPrincipalGraph(
+      Data = ScaffoldTree$CellCoordinates, NumNodes = i,
+      NodesPositions = InitCoords, Edges = InitEdges,
+      Method = 'CurveConfiguration', EP=lambda, RP=mu)
   }
 
   # Unlist the ElasticTree structure
@@ -648,7 +656,7 @@ DuplicateTreeNodes <- function(ElasticTree)
 #' @param Pseudotimes pseudotime object to provide also the pseudotimes for the cells and nodes in the trajectory
 #' @return Trajectory
 #' @export
-
+#' @importFrom igraph get.shortest.paths graph_from_adjacency_matrix
 GetTrajectory <- function(ElasticTree, Start, End, Pseudotimes=NULL)
 {
   # TrajectoryEPI=GetTrajectory(ElasticTree, Start=ElasticTree$Topology$Endpoints[1], End=ElasticTree$Topology$Endpoints[4], Pseudotimes = Pseudotimes)
@@ -668,9 +676,9 @@ GetTrajectory <- function(ElasticTree, Start, End, Pseudotimes=NULL)
     EdgesTopology[ ElasticTree$Connectivity[i, 1],  ElasticTree$Connectivity[i, 2]]=1
     EdgesTopology[ ElasticTree$Connectivity[i, 2],  ElasticTree$Connectivity[i, 1]]=1
   }
-  Graph_yk=graph_from_adjacency_matrix(EdgesTopology)
+  Graph_yk=igraph::graph_from_adjacency_matrix(EdgesTopology)
 
-  path_brach_i=get.shortest.paths(Graph_yk,from = Start, to = End)
+  path_brach_i=igraph::get.shortest.paths(Graph_yk,from = Start, to = End)
   TrajectoryBranchesPath=path_brach_i$vpath[[1]]
 
   NodesTrajectory=c()

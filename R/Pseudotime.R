@@ -8,6 +8,7 @@
 #' @export
 #'
 #' @importFrom stats dist
+#' @importFrom igraph graph_from_adjacency_matrix shortest.paths
 CalculatePseudotimes <- function (InputTree, plot=F, plotdim, T0=1, C0=NULL)
 {
   # Testing
@@ -24,8 +25,8 @@ CalculatePseudotimes <- function (InputTree, plot=F, plotdim, T0=1, C0=NULL)
     Distances_yk[InputTree$Edges[i, 2], InputTree$Edges[i, 1]]=1
   }
 
-  Graph_yk=graph_from_adjacency_matrix(Distances_yk)
-  Times_yk=shortest.paths(Graph_yk)
+  Graph_yk=igraph::graph_from_adjacency_matrix(Distances_yk)
+  Times_yk=igraph::shortest.paths(Graph_yk)
   # shortest path distances from the 1st Endpoint to all the other cells. The first endpoint is always the first element in the array
   if(!is.null(C0))
   {

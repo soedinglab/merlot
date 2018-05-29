@@ -115,17 +115,19 @@ branch_differential_expression<-function(Branch, EmbeddedTree, mode=c("tree", "c
 #'
 #'
 #' @export
+#'
+#' @importFrom igraph plot.igraph layout.fruchterman.reingold graph.adjacency
 GetGeneCorrelationNetwork <-function(ExpressionMatrix, cor_threshold=0.4, plot=T)
 {
   GeneCorrelations<- cor(ExpressionMatrix, use="pair")
   GeneCorrelationsPlot=GeneCorrelations
   GeneCorrelationsPlot[GeneCorrelationsPlot < cor_threshold] <- 0
   diag(GeneCorrelationsPlot) <- 0
-  graph <- graph.adjacency(GeneCorrelationsPlot, weighted=TRUE, mode="lower")
+  graph <- igraph::graph.adjacency(GeneCorrelationsPlot, weighted=TRUE, mode="lower")
   set.seed(2)
   if(plot)
   {
-    plot.igraph(graph, vertex.size=6, edge.width=0.5, vertex.label=rownames(GeneCorrelationsPlot), layout=layout.fruchterman.reingold(graph))
+    igraph::plot.igraph(graph, vertex.size=6, edge.width=0.5, vertex.label=rownames(GeneCorrelationsPlot), layout=igraph::layout.fruchterman.reingold(graph))
   }
   return(GeneCorrelations)
 }

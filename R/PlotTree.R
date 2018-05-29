@@ -6,12 +6,13 @@
 #' @export
 #' @importFrom graphics plot box lines points legend
 #' @importFrom rgl plot3d points3d legend3d lines3d open3d
+#' @importFrom scales alpha
 plot_scaffold_tree <- function(ScaffoldTree, colorcells="gray", dims=dim(ScaffoldTree$CellCoordinates)[2])
 {
   if(dims==2)
   {
     # Plot 2d Dijkstra's tree
-    plot(ScaffoldTree$CellCoordinates[,1], ScaffoldTree$CellCoordinates[,2], pch=16, col=alpha(colorcells, 0.6), xlab="Component 1", ylab="Component 2", cex=1.5)
+    plot(ScaffoldTree$CellCoordinates[,1], ScaffoldTree$CellCoordinates[,2], pch=16, col=scales::alpha(colorcells, 0.6), xlab="Component 1", ylab="Component 2", cex=1.5)
 
     if(length(ScaffoldTree$Endpoints)==2)
     {
@@ -81,6 +82,7 @@ plot_scaffold_tree <- function(ScaffoldTree, colorcells="gray", dims=dim(Scaffol
 #'
 #' @importFrom graphics par plot points lines box legend
 #' @importFrom rgl plot3d points3d legend3d lines3d open3d
+#' @importFrom scales alpha
 plot_elastic_tree <- function(ElasticTree, colorcells=NULL, legend=F, legend_names=c())
 {
   if(legend==T)
@@ -105,7 +107,7 @@ plot_elastic_tree <- function(ElasticTree, colorcells=NULL, legend=F, legend_nam
   if(dim(ElasticTree$CellCoords)[2]==2)
   {
     # Plot 2d elastic Tree
-    plot(ElasticTree$CellCoords[,1], ElasticTree$CellCoords[,2], pch=16, col=alpha(colorcells, 0.6), xlab="Component 1", ylab="Component 2", cex=1.5)
+    plot(ElasticTree$CellCoords[,1], ElasticTree$CellCoords[,2], pch=16, col=scales::alpha(colorcells, 0.6), xlab="Component 1", ylab="Component 2", cex=1.5)
     for(i in 1:length(ElasticTree$Branches)[1])
     {
       points(ElasticTree$Nodes[1:length(ElasticTree$Topology$Endpoints),1], ElasticTree$Nodes[1:length(ElasticTree$Topology$Endpoints),2], col="black", pch=16, cex=2)
@@ -426,6 +428,8 @@ plot_heatmaps_embedding <-function(Pseudotimes, EmbeddedTree, log_tranform=F, cl
 #'
 #' @importFrom grDevices colorRampPalette
 #' @importFrom stats dist
+#' @importFrom graphics plot
+#' @importFrom rgl plot3d
 plot_gene_on_map <-function(GeneName,
                             CellCoordinates,
                             ExpressionMatrix,
@@ -486,9 +490,11 @@ plot_gene_on_map <-function(GeneName,
 #' @param ElasticTree One of the elements in the Dataset$GeneNames object.
 #' @export
 #'
-
+#' @importFrom igraph graph_from_adjacency_matrix layout_with_kk
+#' @importFrom graphics plot legend
 plot_flattened_tree <- function(ElasticTree)
 {
+  NumberOfNodes=dim(ElasticTree$Nodes)[1]
 
   EdgesTree=matrix(0, dim(ElasticTree$Nodes)[1], dim(ElasticTree$Nodes)[1])
 
@@ -497,8 +503,8 @@ plot_flattened_tree <- function(ElasticTree)
     EdgesTree[ElasticTree$Edges[i, 1], ElasticTree$Edges[i, 2]]=1
   }
 
-  graph_yk=graph_from_adjacency_matrix(EdgesTree, mode = "undirected")
-  l=layout_with_kk(graph_yk, dim = 2)
+  graph_yk=igraph::graph_from_adjacency_matrix(EdgesTree, mode = "undirected")
+  l=igraph::layout_with_kk(graph_yk, dim = 2)
   nodes_colors= c(
     rep("red", length(ElasticTree$Topology$Endpoints)),
     rep("skyblue", length(ElasticTree$Topology$Branchpoints)),
