@@ -42,7 +42,7 @@ CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLen
     commands <- paste(python_location, " ", ScaffoldTreeScript, CoordinatesFile, " -NBranches ", NEndpoints)
   }
 
-  system(commands)
+  system(glue::glue("bash -c '{commands}'"))
 
   # --------Read the topology elements from the TreeTopology.py output---------------
   ScaffoldTree=read_topology(CoordinatesFile, CellCoordinates)
