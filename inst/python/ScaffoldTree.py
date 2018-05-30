@@ -156,11 +156,8 @@ def calculate_secondary_endpoints(Endpoints, DijkstraMatrix, NumberNodes, NBranc
                             else:
                                 EndPoints.append(new_endpoint)
 
-                if R_epsilon[new_endpoint] >= BranchMinLength:
+                elif R_epsilon[new_endpoint] >= BranchMinLength:
                         EndPoints.append(new_endpoint)
-
-                else:
-                        TryEndpoint=False
 
     return (R_epsilon_todos)
 

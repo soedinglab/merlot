@@ -13,12 +13,14 @@ CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLen
   CellCoordinates=as.matrix(CellCoordinates)
   CoordinatesFile=tempfile()
   write.table(CellCoordinates, file = CoordinatesFile, sep="\t", col.names = F, row.names = F)
+  BranchMinLength=round(BranchMinLength)
   BranchMinLengthSensitive=floor(BranchMinLengthSensitive)
   ScaffoldTreeScript=paste(find.package("merlot"), "/python/ScaffoldTree.py", sep="")
   if(BranchMinLengthSensitive==-1 && is.null(NEndpoints))
   {
     BranchMinLengthSensitive=round(sqrt(dim(CellCoordinates)[1]))
   }
+
 
   if(is.null(NEndpoints))
   {
