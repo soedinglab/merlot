@@ -4,6 +4,10 @@ library(merlot)
 DataFile= paste(find.package("merlot"), "/example/Guo2010.txt", sep="")
 Dataset=ReadDataset(DataFile)
 
+# Dataset$ExpressionMatrix = seurat_normalize(Dataset$ExpressionMatrix)
+# variable_genes <- seurat_variable_genes(Dataset$ExpressionMatrix)
+
+
 # Load the cell types
 CellTypes=read.table(file=paste(find.package("merlot"), "/example/GuoFeatures.txt", sep=""), sep="\t", header = F, stringsAsFactors = F)
 CellTypes=CellTypes[,2]
