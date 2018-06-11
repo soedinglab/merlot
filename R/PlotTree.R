@@ -557,6 +557,7 @@ plot_flattened_tree <- function(ElasticTree, legend_position="topright")
 
 plot_flattened_tree_gene_expression <- function(ElasticTree, GeneName, legend_position="topright")
 {
+  NumberOfNodes=dim(ElasticTree$Nodes)[1]
 
   selected_colors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue", "aquamarine", "magenta", "brown", "gray", "wheat1", "azure4", "lightsalmon4", "navy", "sienna1", "gold4", "red4", "violetred")
 
