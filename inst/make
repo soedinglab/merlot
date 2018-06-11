@@ -2,7 +2,6 @@
 install_dir="$1"
 if [ ! -d $install_dir ]; then
   mkdir $install_dir
-  module load python/x86_64/3.5.1
 
   virtualenv -p python3 $install_dir --system-site-packages
 

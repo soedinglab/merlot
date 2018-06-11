@@ -16,12 +16,12 @@ Imports:
   fields,
   glue,
   Matrix,
-  scales
-Suggests:
-  car,
+  scales,
   rgl,
   stats,
-  utils,
+  utils
+Suggests:
+  car,
   grDevices,
   graphics
 Remotes:
