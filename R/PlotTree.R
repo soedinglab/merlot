@@ -542,3 +542,51 @@ plot_flattened_tree <- function(ElasticTree, legend_position="topright")
   legend(x=legend_position, legend=c("Endpoints", "Branchpoints", paste("Branch ", 1:length(ElasticTree$Branches))), col=c("red", "skyblue", selected_colors[1:length(ElasticTree$Branches)]), pch=16 )
   # legend(x="bottomright", inset=c(-0.16,0), legend=paste("Branch ", 1:length(ElasticTree$Branches)), col = selected_colors[1:length(ElasticTree$Branches)], pch=c(16))
 }
+
+
+#' Plots the gene expression level of a gene on a flattened 2 dimensional version of the Elastic Tree Nodes
+#'
+#' Given an Elastic Tree it plots a 2 dimensional version of the Elastic Tree.
+#'
+#' @param ElasticTree One of the elements in the Dataset$GeneNames object.
+#' @param GeneName Name of the gene to be visualized. The gene name is one of the colnames in the EmbeddedTree$Nodes object
+#' @param legend_position The position of the legend.
+#'
+#' @export
+#'
+
+plot_flattened_tree_gene_expression <- function(ElasticTree, GeneName, legend_position="topright")
+{
+
+  selected_colors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue", "aquamarine", "magenta", "brown", "gray", "wheat1", "azure4", "lightsalmon4", "navy", "sienna1", "gold4", "red4", "violetred")
+
+  EdgesTree=matrix(0, dim(ElasticTree$Nodes)[1], dim(ElasticTree$Nodes)[1])
+
+  for(i in (1: dim(ElasticTree$Edges)[1]))
+  {
+    EdgesTree[ElasticTree$Edges[i, 1], ElasticTree$Edges[i, 2]]=1
+  }
+
+  graph_yk=graph_from_adjacency_matrix(EdgesTree, mode = "undirected")
+  l=layout_with_kk(graph_yk, dim = 2)
+
+  nodes_colors=rep("black", dim(ElasticTree$Nodes)[1])
+
+  for(i in 1:length(ElasticTree$Branches))
+  {
+    nodes_colors[ElasticTree$Branches[[i]]]=selected_colors[i]
+  }
+
+  nodes_colors[1:length(ElasticTree$Topology$Endpoints)]="red"
+  nodes_colors[(length(ElasticTree$Topology$Endpoints)+1):(length(ElasticTree$Topology$Endpoints)+length(ElasticTree$Topology$Branchpoints))]="skyblue"
+
+  nodes_labels=c(seq(1, length(ElasticTree$Topology$Endpoints) + length(ElasticTree$Topology$Branchpoints)), rep(NA, NumberOfNodes -length(ElasticTree$Topology$Endpoints)-length(ElasticTree$Topology$Branchpoints)))
+  nodes_sizes=c(rep(6, length(ElasticTree$Topology$Endpoints) + length(ElasticTree$Topology$Branchpoints)), rep(4, NumberOfNodes -length(ElasticTree$Topology$Endpoints)-length(ElasticTree$Topology$Branchpoints)))
+
+  colnames(EmbeddedTree$Nodes)
+  Gene = EmbeddedTree$Nodes[, GeneName]
+  mypal <- colorRampPalette( c( "yellow", "orange", "darkorange", "red", "black" ) )( length(Gene) )
+  nodes_colors=map2color(Gene, mypal)
+  plot(graph_yk, layout=l, vertex.label=nodes_labels, vertex.size=nodes_sizes, vertex.color=nodes_colors, vertex.label.cex=0.6, main=paste("gene expression: ", GeneName))
+}
+
