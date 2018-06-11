@@ -4,6 +4,10 @@ library(merlot)
 DataFile= paste(find.package("merlot"), "/example/Guo2010.txt", sep="")
 Dataset=ReadDataset(DataFile)
 
+# Dataset$ExpressionMatrix = seurat_normalize(Dataset$ExpressionMatrix)
+# variable_genes <- seurat_variable_genes(Dataset$ExpressionMatrix)
+
+
 # Load the cell types
 CellTypes=read.table(file=paste(find.package("merlot"), "/example/GuoFeatures.txt", sep=""), sep="\t", header = F, stringsAsFactors = F)
 CellTypes=CellTypes[,2]
@@ -40,7 +44,7 @@ plot_elastic_tree(ElasticTree, colorcells=guo_colorcells)
 
 # This function plots a flattened 2D version of the nodes in the elastic tree. Useful for when
 # more than 3 dimensions are used to reconstruct complex trees.
-plot_flattened_tree(ElasticTree, legend_position="topright")
+plot_flattened_tree(ElasticTree, legend_position="bottomright")
 
 # Embedd the principal elastic tree into the gene expression space from which it was calculated.
 EmbeddedTree= GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = ElasticTree)
