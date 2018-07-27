@@ -54,13 +54,13 @@ For rJava **you have to have Java installed** in your system. You can install **
 
 
 ## 3) Download
-Download the [merlot](https://github.com/soedinglab/merlot/archive/master.zip) file.
+Download an archive from github (for example the [zip](https://github.com/soedinglab/merlot/archive/master.zip) file) and unpack it, or pull the repository directly.
 
 
 ## 4) Install MERLoT
 Install from source:
 
-`install.packages("/url_in_your_computer/merlot-master.zip",  types="source", repos = NULL)`
+`install.packages("/path/to/merlot/directory/",  types="source", repos = NULL)`
 
 Install from github:
 
