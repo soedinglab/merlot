@@ -75,7 +75,7 @@ read_topology <-function (DataFile, CellCoordinates)
   DijkstraSteps=utils::read.table(file=paste(DataFile, "_DijkstraSteps.dat", sep=""), sep=" ", header=F, stringsAsFactors = F)
 
   # Reading the branches information
-  Branches=as.matrix(TopologyData[3:dim(TopologyData)[1], 2:3])
+  Branches=as.matrix(TopologyData[3:dim(TopologyData)[1], 2:3, drop = FALSE])
   Branches=apply(Branches, 2, as.numeric)
   Branches=Branches+1
   rownames(Branches)=c()
