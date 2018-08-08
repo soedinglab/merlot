@@ -14,7 +14,6 @@ Imports:
   ElPiGraph.R,
   igraph,
   fields,
-  glue,
   Matrix,
   scales,
   rgl,
@@ -25,4 +24,4 @@ Suggests:
   grDevices,
   graphics
 Remotes:
-  dynverse/ElPiGraph.R
+  Albluca/ElPiGraph.R
