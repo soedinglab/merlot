@@ -584,8 +584,8 @@ plot_flattened_tree_gene_expression <- function(ElasticTree, GeneName, legend_po
   nodes_labels=c(seq(1, length(ElasticTree$Topology$Endpoints) + length(ElasticTree$Topology$Branchpoints)), rep(NA, NumberOfNodes -length(ElasticTree$Topology$Endpoints)-length(ElasticTree$Topology$Branchpoints)))
   nodes_sizes=c(rep(6, length(ElasticTree$Topology$Endpoints) + length(ElasticTree$Topology$Branchpoints)), rep(4, NumberOfNodes -length(ElasticTree$Topology$Endpoints)-length(ElasticTree$Topology$Branchpoints)))
 
-  colnames(EmbeddedTree$Nodes)
-  Gene = EmbeddedTree$Nodes[, GeneName]
+  colnames(ElasticTree$Nodes)
+  Gene = ElasticTree$Nodes[, GeneName]
   mypal <- colorRampPalette( c( "yellow", "orange", "darkorange", "red", "black" ) )( length(Gene) )
   nodes_colors=map2color(Gene, mypal)
   plot(graph_yk, layout=l, vertex.label=nodes_labels, vertex.size=nodes_sizes, vertex.color=nodes_colors, vertex.label.cex=0.6, main=paste("gene expression: ", GeneName))
