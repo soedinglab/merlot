@@ -9,7 +9,6 @@
 #' @return ScaffoldTre object with the structure and connectivity of the Scaffold Tree
 #' @export
 #'
-#' @importFrom glue glue
 #' @importFrom stats dist
 #' @importFrom utils write.table
 CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLength=-1, BranchMinLengthSensitive=-1, python_location="python3")
@@ -20,13 +19,6 @@ CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLen
   BranchMinLength=round(BranchMinLength)
   BranchMinLengthSensitive=floor(BranchMinLengthSensitive)
   ScaffoldTreeScript=paste(find.package("merlot"), "/python/ScaffoldTree.py", sep="")
-
-  python_location <- glue::glue(
-    "cd {find.package('merlot')}/venv",
-    "source bin/activate",
-    python_location,
-    .sep = ";"
-  )
 
   if(BranchMinLengthSensitive==-1 && is.null(NEndpoints))
   {
@@ -44,7 +36,7 @@ CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLen
     commands <- paste(python_location, " ", ScaffoldTreeScript, CoordinatesFile, " -NBranches ", NEndpoints)
   }
 
-  system(glue::glue("bash -c '{commands}'"))
+  system(commands, wait = TRUE)
 
   # --------Read the topology elements from the TreeTopology.py output---------------
   ScaffoldTree=read_topology(CoordinatesFile, CellCoordinates)
