@@ -1,0 +1,13 @@
+language: r
+sudo: required
+dist: trusty
+cache: packages
+warnings_are_errors: true
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3
+addons:
+  apt:
+    packages:
+    - libudunits2-dev                     # units > ggforce > ElpiGraph.R

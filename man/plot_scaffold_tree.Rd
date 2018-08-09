@@ -8,7 +8,11 @@ plot_scaffold_tree(ScaffoldTree, colorcells = "gray",
   dims = dim(ScaffoldTree$CellCoordinates)[2])
 }
 \arguments{
-\item{CellCoordinates}{coordinates for the cells. This are the same coordinates that were used in the Scaffold Tree Calculation}
+\item{ScaffoldTree}{scaffoldTree calculated by the CalculateScaffoldTree function.}
+
+\item{colorcells}{The colours to use for the cells}
+
+\item{dims}{The number of dimensions to plot}
 }
 \description{
 Plots the scaffold tree on top of the distribution of cells in 2 or 3 coordinates.

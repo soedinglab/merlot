@@ -4,7 +4,7 @@
 \alias{plot_heatmaps_embedding}
 \title{Plot Expression Matrix Embedding}
 \usage{
-plot_heatmaps_embedding(Pseudotimes, EmbeddedTree, log_tranform = F,
+plot_heatmaps_embedding(Pseudotimes, EmbeddedTree, log_transform = F,
   cluster_genes = T)
 }
 \arguments{
@@ -12,9 +12,9 @@ plot_heatmaps_embedding(Pseudotimes, EmbeddedTree, log_tranform = F,
 
 \item{EmbeddedTree}{elastic principal tree embedded in the full gene expression space as calculated by GenesSpaceEmbedding()}
 
-\item{cluster_genes}{wheter or not gene columns in the matrix will be clustered according to their expression values}
-
 \item{log_transform}{whether or not gene expression values should be log-transformed to improve visualization. By default it is equal to False.}
+
+\item{cluster_genes}{wheter or not gene columns in the matrix will be clustered according to their expression values}
 }
 \description{
 Plots two heapmaps one for the averaged gene expression calculated by assigning cells to their closest tree nodes and one for the expression matrix after the elastic principal tree interpolation is performed. Both matrices are returned as part of a list object

@@ -11,6 +11,10 @@ plot_elastic_tree(ElasticTree, colorcells = NULL, legend = F,
 \item{ElasticTree}{Principal Elastic Tree calculated with the CalculateElasticTreeFunction}
 
 \item{colorcells}{vector of colors for the cells}
+
+\item{legend}{Whether or not to plot the legend}
+
+\item{legend_names}{The names to use for the legend}
 }
 \description{
 Plots an elastic tree on top of the cell coordinates on which it was calculated

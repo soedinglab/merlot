@@ -1,5 +1,6 @@
+#' @importFrom stats var
 LogVMR <- function(x) {
-  return(log(x = var(x = exp(x = x) - 1) / mean(x = exp(x = x) - 1)))
+  return(log(x = stats::var(x = exp(x = x) - 1) / mean(x = exp(x = x) - 1)))
 }
 
 ExpMean <- function(x) {
@@ -48,6 +49,7 @@ seurat_normalize <- function(ExprMatrix, scale.factor = 1e4) {
 #' @return ScaffoldTre object with the structure and connectivity of the Scaffold Tree
 #' @export
 #'
+#' @importFrom Matrix Matrix
 seurat_variable_genes <- function(ExprMatrix,
                                   bin.size = 1000,
                                   x.low.cutoff = 0.1,
@@ -63,7 +65,7 @@ seurat_variable_genes <- function(ExprMatrix,
   gene.dispersion.scaled <- gene.mean
   max.bin <- floor(x = length(x = genes.use) / bin.size) + 1
 
-  data <- Matrix(t(ExprMatrix), sparse=TRUE)
+  data <- Matrix::Matrix(t(ExprMatrix), sparse=TRUE)
   for (i in 1:max.bin) {
     my.inds <- ((bin.size * (i - 1)):(bin.size * i - 1)) + 1
     my.inds <- my.inds[my.inds <= length(x = genes.use)]

@@ -4,7 +4,7 @@
 \alias{ReadDataset}
 \title{ReadDataset}
 \usage{
-ReadDataset(file)
+ReadDataset(file, featuresfile = c())
 }
 \arguments{
 \item{file}{filename including the path to where the expression matrix is contained. The file needs to have the cells as rows and the genes as columns.}
