@@ -214,15 +214,13 @@ def euclidean(v1, v2):
     return distance
 
 def calc_distances(X):
-    distances = np.zeros((X.shape[0], X.shape[0]))
+    average = np.zeros((X.shape[0], X.shape[0]))
     
-    for i in range(X.shape[0]):
-        for j in range(X.shape[0]):
-            if (i < j):
-                d = euclidean(X[i], X[j])
-                distances[i][j] = d
-                distances[j][i] = d
-    return(distances)
+    for d in range(X.shape[1]):
+        tmp = sp.spatial.distance.pdist(X[:, 0:d])
+        tmp = sp.spatial.distance.squareform(tmp)
+        average = average + tmp
+    return(average)
 
 def LengthPath(DijkstraPredecesors, i, j):
     length=0
