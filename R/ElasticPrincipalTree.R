@@ -187,6 +187,36 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, lambda_0=0.80e-09, mu_0
   return (ElasticTree)
 }
 
+
+inflate_elastic_tree <- function(ElasticTree, FullCoordinates) {
+  ElasticTree$CellCoords <- FullCoordinates
+  # map the cells to nodes
+  cell2yk=c()
+  for (i in 1:dim(ElasticTree$CellCoords)[1]) {
+    cell_i=matrix(ElasticTree$CellCoords[i,], nrow=1)
+    dist_cell_i=as.matrix(stats::dist(rbind(cell_i, ElasticTree$Nodes), method = "euclidean", diag = FALSE, upper = TRUE, p = 2))
+    #find the closest yk index. Decrease the index in 1, since the 1 element is the element itself
+    closest_yk=sort(dist_cell_i[,1], index.return=T)$ix[2]-1
+    cell2yk=rbind(cell2yk, c(i, closest_yk))
+  }
+  ElasticTree$Cells2TreeNodes <- cell2yk
+
+  # now map cells to branches based on their node assignment
+  newbranches <- rep(0, dim(ElasticTree$CellCoords)[1])
+
+  for (i in seq_along(ElasticTree$Branches)) {
+    # take branch i and all the nodes that belong to it
+    nodes_i <- unlist(ElasticTree$Branches[i])
+    # take all cells that map to any of these nodes
+    cells_i <- ElasticTree$Cells2TreeNodes[,2] %in% nodes_i
+    newbranches[cells_i] <- i
+  }
+  ElasticTree$Cells2Branches <- newbranches
+
+  return(ElasticTree)
+}
+
+
 #' Duplicate Elastic Tree Nodes
 #' Introduces intermediate nodes in between nodes being part of an edge in the ElasticTree structure
 #'
