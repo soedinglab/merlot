@@ -11,7 +11,12 @@
 #'
 #' @importFrom stats dist
 #' @importFrom utils write.table
-CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLength=-1, BranchMinLengthSensitive=-1, python_location="python3")
+CalculateScaffoldTree <- function(CellCoordinates,
+                                  NEndpoints=NULL,
+                                  BranchMinLength=-1,
+                                  BranchMinLengthSensitive=-1,
+                                  reduced=0,
+                                  python_location="python3")
 {
   CellCoordinates=as.matrix(CellCoordinates)
   CoordinatesFile=tempfile()
@@ -29,17 +34,27 @@ CalculateScaffoldTree <- function(CellCoordinates, NEndpoints=NULL, BranchMinLen
   if(is.null(NEndpoints))
   {
     #-------------------------------------------Execute TreeTopology.py-------------
-    commands <- paste(python_location, " ",ScaffoldTreeScript, CoordinatesFile, "-BranchMinLength ", BranchMinLength, "-BranchMinLengthSensitive", BranchMinLengthSensitive)
+    commands <- paste(python_location, " ", ScaffoldTreeScript, CoordinatesFile,
+                      "-BranchMinLength ", BranchMinLength,
+                      "-BranchMinLengthSensitive", BranchMinLengthSensitive,
+                      "--reduced", reduced)
   }  else
   {
     #-------------------------------------------Execute TreeTopology.py-------------
-    commands <- paste(python_location, " ", ScaffoldTreeScript, CoordinatesFile, " -NBranches ", NEndpoints)
+    commands <- paste(python_location, " ", ScaffoldTreeScript, CoordinatesFile,
+                      " -NBranches ", NEndpoints,
+                      "--reduced", reduced)
   }
 
   system(commands, wait = TRUE)
 
   # --------Read the topology elements from the TreeTopology.py output---------------
-  ScaffoldTree=read_topology(CoordinatesFile, CellCoordinates)
+  if (reduced > 0) {
+    ReducedCoordinates <- read.csv(paste(CoordinatesFile, "_reduced.csv", sep=""), header=FALSE)
+    ScaffoldTree <- read_topology(CoordinatesFile, ReducedCoordinates)
+  } else {
+    ScaffoldTree <- read_topology(CoordinatesFile, CellCoordinates)
+  }
 
   return(ScaffoldTree)
 }

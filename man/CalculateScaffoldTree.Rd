@@ -5,7 +5,7 @@
 \title{Calculate Scaffold tree}
 \usage{
 CalculateScaffoldTree(CellCoordinates, NEndpoints = NULL,
-  BranchMinLength = -1, BranchMinLengthSensitive = -1,
+  BranchMinLength = -1, BranchMinLengthSensitive = -1, reduced = 0,
   python_location = "python3")
 }
 \arguments{

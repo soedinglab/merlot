@@ -338,6 +338,7 @@ if reduced > 0:
     kmeans = estimator.fit(Coordinates)
     Coordinates = kmeans.cluster_centers_
     df = pd.DataFrame(Coordinates)
+    print(DMCoordinates + "_reduced.csv")
     df.to_csv(DMCoordinates + "_reduced.csv",
               index=False, index_label=False, header=False)
     del df
