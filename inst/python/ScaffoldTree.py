@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import scipy
 from scipy.spatial import distance
+from sklearn.cluster import KMeans
 
 import csgraph_mod
 from csgraph_mod import shortest_path_mod as spm
@@ -296,25 +297,51 @@ print("Loaded Tree Topology Library...")
 # Arguments Parser and help
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument(
-    'Filename', help='Matrix with "cells" x "genes" dimensions. Fields shout be delimited by tabs')
+parser.add_argument('Filename',
+                    help='Matrix with "cells" x "genes" dimensions. Fields \
+                    should be delimited by tabs')
 parser.add_argument('-NBranches', type=int, default=(-1),
-                    help='Number of desired branches for the resulting tree. By default the value is set to -1, meaning that all branches longer than sqrt(N/2) will be considered')
-parser.add_argument('-BranchMinLength', type=int, default=(-1), help='Minimum length for a branch to be included in the tree. Considers only cells in the scaffold as length. This threshold is quite strict. For a more sensitive detection a second threshold can be used with the option BranchMinLengthSensitive. Default minimum length: sqrt(N/2) with N being the number of cells in the dataset')
+                    help='Number of desired branches for the resulting tree. \
+                    By default the value is set to -1, meaning that all \
+                    branches longer than sqrt(N/2) will be considered')
+parser.add_argument('-BranchMinLength', type=int, default=(-1),
+                    help='Minimum length for a branch to be included in the \
+                    tree. Considers only cells in the scaffold as length. This \
+                    threshold is quite strict. For a more sensitive detection \
+                    a second threshold can be used with the option \
+                    BranchMinLengthSensitive. Default minimum length: \
+                    sqrt(N/2) with N being the number of cells in the dataset')
 parser.add_argument('-BranchMinLengthSensitive', type=int, default=(-1),
-                    help='Minimum length for a branch to be included in the tree. It reconstructs the topology of the tree and maps cells to the potential new branch to decide if the branch will be added or not. Suggested value: sqrt(N) with N being the number of cells in the dataset')
-parser.add_argument('-showplot', type=str, default="no",
-                    help='Weather or not 2D/3D plots should be shown. Options are "yes" and "no". By default it is not activated')
+                    help='Minimum length for a branch to be included in the \
+                    tree. It reconstructs the topology of the tree and maps \
+                    cells to the potential new branch to decide if the branch \
+                    will be added or not. Suggested value: sqrt(N) with N \
+                    being the number of cells in the dataset')
+parser.add_argument('-r', '--reduced', dest='reduced', default=0, type=int,
+                    help='Number of clusters for k-means reduction of the \
+                    dataset')
+
 args = parser.parse_args()
 DMCoordinates = args.Filename
 NBranches = args.NBranches
 BranchMinLength = args.BranchMinLength
 BranchMinLengthSensitive = args.BranchMinLengthSensitive
-plot = args.showplot
+reduced = args.reduced
 
 #---Read Manifold Coordinates (DMs, t-SNE, etc)
 Coordinates = pd.read_csv(DMCoordinates, sep="\t", header=None)
 Coordinates = np.array(Coordinates)
+
+#---Group together similar cells into clusters to reduce computational burden
+if reduced > 0:
+    estimator = KMeans(n_clusters=1000)
+    kmeans = estimator.fit(Coordinates)
+    Coordinates = kmeans.cluster_centers_
+    df = pd.DataFrame(Coordinates)
+    df.to_csv(DMCoordinates + "_reduced.csv",
+              index=False, index_label=False, header=False)
+    del df
+
 DataDimensions = Coordinates.shape
 print("Data Dimensions", DataDimensions)
 
