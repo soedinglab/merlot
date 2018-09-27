@@ -1,19 +1,12 @@
 #------Libraries needed for Tree Topology Functions ------
-import sys
 import time
-import os
-import math
-import random
 import collections
 import argparse
 
 import numpy as np
 import pandas as pd
-import scipy as sp
-import scipy.stats
-import scipy.spatial
-import scipy.linalg as linalg
-from scipy.sparse import csgraph
+import scipy
+from scipy.spatial import distance
 
 import csgraph_mod
 from csgraph_mod import shortest_path_mod as spm
@@ -237,16 +230,16 @@ def calculate_branchpoints(EndPoints, DijkstraMatrix, DijkstraPredecesors, Numbe
         VBranchpoints.append(branchpoint)
         Branchpoints.append(branchpoint)
 
-	#Here we add as a new connection the one corresponding to the root and the last detected branchpoint.
+    #Here we add as a new connection the one corresponding to the root and the last detected branchpoint.
         if len(VBranchpoints) == 2:
-        	TreeConnectivity.append([VBranchpoints[0], VBranchpoints[1]])
-        	TreeConnectivity = np.array(TreeConnectivity)
+            TreeConnectivity.append([VBranchpoints[0], VBranchpoints[1]])
+            TreeConnectivity = np.array(TreeConnectivity)
 
     return Branchpoints, TreeConnectivity
 
 
 def euclidean(v1, v2):
-    distance = sp.spatial.distance.euclidean(v1, v2)
+    distance = scipy.spatial.distance.euclidean(v1, v2)
     return distance
 
 
@@ -345,76 +338,76 @@ Epsilons = calculate_secondary_endpoints(
     EndPoints, DijkstraMatrix, DijkstraSteps, NBranches, BranchMinLength, BranchMinLengthSensitive)
 
 if len(EndPoints) <= 2:
-	print("Only 2 Endpoints detected.")
-	EndPointsPrint = [x + 1 for x in EndPoints]
-	print("Endpoints:", len(EndPoints), *EndPointsPrint)
-	print("Branchpoints:", 0, 0)
-	print("Tree_Branch: ", str(EndPoints[0]), str(EndPoints[1]))
+    print("Only 2 Endpoints detected.")
+    EndPointsPrint = [x + 1 for x in EndPoints]
+    print("Endpoints:", len(EndPoints), *EndPointsPrint)
+    print("Branchpoints:", 0, 0)
+    print("Tree_Branch: ", str(EndPoints[0]), str(EndPoints[1]))
 
-	TreeTopologyDat = DMCoordinates + "_TreeTopology.dat"
-	with open(TreeTopologyDat, 'w') as out:
-		print("Endpoints:", len(EndPoints), *EndPoints)
-		EndPointsLine = "Endpoints:" + "\t" + \
-		    str(len(EndPoints)) + "\t" + ' '.join(map(str, EndPoints)) + "\n"
-		out.write(EndPointsLine)
+    TreeTopologyDat = DMCoordinates + "_TreeTopology.dat"
+    with open(TreeTopologyDat, 'w') as out:
+        print("Endpoints:", len(EndPoints), *EndPoints)
+        EndPointsLine = "Endpoints:" + "\t" + \
+            str(len(EndPoints)) + "\t" + ' '.join(map(str, EndPoints)) + "\n"
+        out.write(EndPointsLine)
 
-		BranchpointsLine = "Branchpoints:" + "\t" + \
-		    str(0) + "\t" + ' ' + str(0) + "\n"
-		out.write(BranchpointsLine)
+        BranchpointsLine = "Branchpoints:" + "\t" + \
+            str(0) + "\t" + ' ' + str(0) + "\n"
+        out.write(BranchpointsLine)
 
-		TopologyLine = "Tree_Branch" + "\t" + \
-		    str(EndPoints[0]) + "\t" + str(EndPoints[1]) + "\n"
-		out.write(TopologyLine)
+        TopologyLine = "Tree_Branch" + "\t" + \
+            str(EndPoints[0]) + "\t" + str(EndPoints[1]) + "\n"
+        out.write(TopologyLine)
 
-	out.close()
+    out.close()
 
-	DijkstraStepsDat = DMCoordinates + "_DijkstraSteps.dat"
-	DijkstraDistancesDat = DMCoordinates + "_DijkstraDistances.dat"
-	DijkstraPredecesorsDat = DMCoordinates + "_DijkstraPredecesors.dat"
+    DijkstraStepsDat = DMCoordinates + "_DijkstraSteps.dat"
+    DijkstraDistancesDat = DMCoordinates + "_DijkstraDistances.dat"
+    DijkstraPredecesorsDat = DMCoordinates + "_DijkstraPredecesors.dat"
 
-	np.savetxt(DijkstraDistancesDat, DijkstraMatrix)
-	np.savetxt(DijkstraStepsDat, DijkstraSteps)
-	np.savetxt(DijkstraPredecesorsDat, DijkstraPredecesors)
+    np.savetxt(DijkstraDistancesDat, DijkstraMatrix)
+    np.savetxt(DijkstraStepsDat, DijkstraSteps)
+    np.savetxt(DijkstraPredecesorsDat, DijkstraPredecesors)
 
 else:
-	#Calculate branchpoints and tree topology
-	branching, TreeConnectivity = calculate_branchpoints(
-	    EndPoints, DijkstraMatrix, DijkstraPredecesors, DijkstraSteps)
-	EndPointsPrint = [x + 1 for x in EndPoints]
-	print("Endpoints:", len(EndPoints), *EndPointsPrint)
+    #Calculate branchpoints and tree topology
+    branching, TreeConnectivity = calculate_branchpoints(
+        EndPoints, DijkstraMatrix, DijkstraPredecesors, DijkstraSteps)
+    EndPointsPrint = [x + 1 for x in EndPoints]
+    print("Endpoints:", len(EndPoints), *EndPointsPrint)
 
-	TreeTopologyDat = DMCoordinates + "_TreeTopology.dat"
-	with open(TreeTopologyDat, 'w') as out:
-		EndPointsLine = "Endpoints:" + "\t" + \
-		    str(len(EndPoints)) + "\t" + ' '.join(map(str, EndPoints)) + "\n"
-		out.write(EndPointsLine)
+    TreeTopologyDat = DMCoordinates + "_TreeTopology.dat"
+    with open(TreeTopologyDat, 'w') as out:
+        EndPointsLine = "Endpoints:" + "\t" + \
+            str(len(EndPoints)) + "\t" + ' '.join(map(str, EndPoints)) + "\n"
+        out.write(EndPointsLine)
 
-		branching = set(branching)
-		branchingPrint = [x + 1 for x in branching]
-		print("Branchpoints:", len(branching), *branchingPrint)
-		BranchpointsLine = "Branchpoints:" + "\t" + \
-		    str(len(branching)) + "\t" + ' '.join(map(str, branching)) + "\n"
-		out.write(BranchpointsLine)
+        branching = set(branching)
+        branchingPrint = [x + 1 for x in branching]
+        print("Branchpoints:", len(branching), *branchingPrint)
+        BranchpointsLine = "Branchpoints:" + "\t" + \
+            str(len(branching)) + "\t" + ' '.join(map(str, branching)) + "\n"
+        out.write(BranchpointsLine)
 
-		#Shows tree connectivity:
-		for i in range(TreeConnectivity.shape[0]):
-			# In case of trifurcations or higher order connections it avoids printing branches in between the same node
-			if TreeConnectivity[i][0] != TreeConnectivity[i][1]:
-				TreeConnectivityPrint = TreeConnectivity + 1
-				print("Tree_Branch",
-				      TreeConnectivityPrint[i][0], TreeConnectivityPrint[i][1])
-				TopologyLine = "Tree_Branch" + "\t" + \
-				    str(TreeConnectivity[i][0]) + "\t" + str(TreeConnectivity[i][1]) + "\n"
-				out.write(TopologyLine)
-	out.close()
+        #Shows tree connectivity:
+        for i in range(TreeConnectivity.shape[0]):
+            # In case of trifurcations or higher order connections it avoids printing branches in between the same node
+            if TreeConnectivity[i][0] != TreeConnectivity[i][1]:
+                TreeConnectivityPrint = TreeConnectivity + 1
+                print("Tree_Branch",
+                      TreeConnectivityPrint[i][0], TreeConnectivityPrint[i][1])
+                TopologyLine = "Tree_Branch" + "\t" + \
+                    str(TreeConnectivity[i][0]) + "\t" + str(TreeConnectivity[i][1]) + "\n"
+                out.write(TopologyLine)
+    out.close()
 
-	DijkstraStepsDat = DMCoordinates + "_DijkstraSteps.dat"
-	DijkstraDistancesDat = DMCoordinates + "_DijkstraDistances.dat"
-	DijkstraPredecesorsDat = DMCoordinates + "_DijkstraPredecesors.dat"
+    DijkstraStepsDat = DMCoordinates + "_DijkstraSteps.dat"
+    DijkstraDistancesDat = DMCoordinates + "_DijkstraDistances.dat"
+    DijkstraPredecesorsDat = DMCoordinates + "_DijkstraPredecesors.dat"
 
-	np.savetxt(DijkstraDistancesDat, DijkstraMatrix)
-	np.savetxt(DijkstraStepsDat, DijkstraSteps)
-	np.savetxt(DijkstraPredecesorsDat, DijkstraPredecesors)
+    np.savetxt(DijkstraDistancesDat, DijkstraMatrix)
+    np.savetxt(DijkstraStepsDat, DijkstraSteps)
+    np.savetxt(DijkstraPredecesorsDat, DijkstraPredecesors)
 
 end_dijkstra = time.time()
 print("Finished Scaffold Tree...", end_dijkstra - start_dijkstra, "seconds")
