@@ -504,43 +504,134 @@ plot_gene_on_map <- function(
 #'
 #' @importFrom igraph graph_from_adjacency_matrix layout_with_kk
 #' @importFrom graphics plot legend
-plot_flattened_tree <- function(ElasticTree, legend_position="topright")
+plot_flattened_tree <- function(ElasticTree,
+                                cell_annot=NULL,
+                                layout=NULL,
+                                legend_position="topright",
+                                node_size=c("topology", "cells"),
+                                node_radius=12) 
 {
-  NumberOfNodes=dim(ElasticTree$Nodes)[1]
+  node_size <- match.arg(node_size)
+  NumberOfNodes <- dim(ElasticTree$Nodes)[1]
+  N <- length(ElasticTree$Topology$Endpoints)
+  B <- length(ElasticTree$Topology$Branchpoints)
 
-  selected_colors = c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid", "darkorange3", "orange", "blue", "aquamarine", "magenta", "brown", "gray", "wheat1", "azure4", "lightsalmon4", "navy", "sienna1", "gold4", "red4", "violetred")
+  selected_colors <- c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid",
+                       "darkorange3", "orange", "blue", "aquamarine", "magenta",
+                       "brown", "gray", "wheat1", "azure4", "lightsalmon4",
+                       "navy", "sienna1", "gold4", "red4", "violetred")
 
-  EdgesTree=matrix(0, dim(ElasticTree$Nodes)[1], dim(ElasticTree$Nodes)[1])
+  # build an adjacency matrix of the nodes and translate it to a graph
+  graph_yk <- get_node_graph(ElasticTree)
+  
+  # calculate a viewable layout, if not given
+  if (is.null(layout)) {
+    l <- igraph::layout_with_kk(graph_yk, dim = 2)
+  } else {
+    l <- layout
+  }  
 
-  for(i in (1: dim(ElasticTree$Edges)[1]))
-  {
+  # first decide what plot we are making
+  # if cell_annot is empty, we are making the normal plot
+  # if cell_annot has values we are making pie charts
+  # if we are making pie charts, their size is either uniform
+  # or it depends on how many cells belong to each pie
+  if (is.null(cell_annot)) {
+    nodes_colors=rep("black", dim(ElasticTree$Nodes)[1])
+
+    for(i in 1:length(ElasticTree$Branches)) {
+      nodes_colors[ElasticTree$Branches[[i]]]=selected_colors[i]
+    }
+    nodes_colors[1:N]="red"
+    nodes_colors[(N+1):(N+B)]="skyblue"
+    # nodes_colors= c(
+    #   rep("red", length(ElasticTree$Topology$Endpoints)),
+    #   rep("skyblue", length(ElasticTree$Topology$Branchpoints)),
+    #   rep("black", NumberOfNodes -length(ElasticTree$Topology$Endpoints)-length(ElasticTree$Topology$Branchpoints))
+    # )
+
+    nodes_labels=c(seq(1, N + B), rep(NA, NumberOfNodes - N - B))
+    nodes_sizes=c(rep(6, N + B), rep(4, NumberOfNodes - N - B))
+    legend_labs <- c("Endpoints",
+                      "Branchpoints",
+                      paste("Branch ", 1:length(ElasticTree$Branches)))
+    legend_cols <- c("red",
+                      "skyblue",
+                      selected_colors[1:length(ElasticTree$Branches)])
+
+    plot(graph_yk, layout=l,
+          vertex.label=nodes_labels,
+          vertex.size=nodes_sizes,
+          vertex.color=nodes_colors,
+          vertex.label.cex=0.6)
+    legend(x=legend_position,
+            legend=legend_labs,
+            col=legend_cols,
+            pch=16)
+  } else {
+    annot_levels <- levels(as.factor(cell_annot))
+    if (length(annot_levels) <= length(selected_colors)) {
+      pie_cols <- c("white", selected_colors[1:length(annot_levels)])
+    } else {
+      tmp <- LSD::distinctcolors(num_branches, show = FALSE, bw = TRUE)
+      pie_cols <- c("white", tmp)
+    }
+    annot_levels <- c("empty", annot_levels)
+    pie_values <- lapply(1:NumberOfNodes, function(x) table(annot_levels) - 2)
+    pie_cols <- pie_cols[order(annot_levels)]
+    annot_levels <- annot_levels[order(annot_levels)]
+
+    for (n in 1:NumberOfNodes) {
+      cells_n <- (ElasticTree$Cells2TreeNodes[, 2] == n)
+      for (real in annot_levels) {
+        pie_values[[n]][real] <- sum(cell_annot[cells_n] == real)
+      }
+      if (sum(pie_values[[n]]) == 0) {
+        pie_values[[n]]["empty"] <- 1
+      }
+    }
+
+    nodes_labels=c(seq(1, N + B), rep(NA, NumberOfNodes - N - B))
+
+    if (node_size == "topology") {
+      nodes_sizes=c(rep(node_radius + 3, N + B), rep(node_radius, NumberOfNodes - N - B))
+    } else if (node_size == "cells") {
+      avg_cells_per_node <- length(cell_annot) / NumberOfNodes
+      nodes_sizes = rep(5, NumberOfNodes)
+      for (n in 1:NumberOfNodes) {
+        cells_n <- sum((ElasticTree$Cells2TreeNodes[, 2] == n))
+        nodes_sizes[n] <- nodes_sizes[n] * (cells_n / avg_cells_per_node)
+      }
+    }
+
+    plot(graph_yk, layout=l,
+         vertex.label=nodes_labels,
+         vertex.size=nodes_sizes,
+         vertex.shape="pie",
+         vertex.pie=pie_values,
+         vertex.pie.color=list(pie_cols),
+         vertex.label.cex=0.6)
+    legend(x=legend_position,
+           legend=annot_levels,
+           col="black",
+           pt.bg=pie_cols,
+           pch=21)
+  }
+
+
+
+  # legend(x="bottomright", inset=c(-0.16,0), legend=paste("Branch ", 1:length(ElasticTree$Branches)), col = selected_colors[1:length(ElasticTree$Branches)], pch=c(16))
+}
+
+#' @export
+get_node_graph <- function(ElasticTree) {
+  NumberOfNodes <- dim(ElasticTree$Nodes)[1]
+  EdgesTree <- matrix(0, NumberOfNodes, NumberOfNodes)
+  for(i in (1: dim(ElasticTree$Edges)[1])) {
     EdgesTree[ElasticTree$Edges[i, 1], ElasticTree$Edges[i, 2]]=1
   }
-
-  graph_yk=igraph::graph_from_adjacency_matrix(EdgesTree, mode = "undirected")
-  l=igraph::layout_with_kk(graph_yk, dim = 2)
-
-  nodes_colors=rep("black", dim(ElasticTree$Nodes)[1])
-
-  for(i in 1:length(ElasticTree$Branches))
-  {
-    nodes_colors[ElasticTree$Branches[[i]]]=selected_colors[i]
-  }
-
-  nodes_colors[1:length(ElasticTree$Topology$Endpoints)]="red"
-  nodes_colors[(length(ElasticTree$Topology$Endpoints)+1):(length(ElasticTree$Topology$Endpoints)+length(ElasticTree$Topology$Branchpoints))]="skyblue"
-  # nodes_colors= c(
-  #   rep("red", length(ElasticTree$Topology$Endpoints)),
-  #   rep("skyblue", length(ElasticTree$Topology$Branchpoints)),
-  #   rep("black", NumberOfNodes -length(ElasticTree$Topology$Endpoints)-length(ElasticTree$Topology$Branchpoints))
-  # )
-
-  nodes_labels=c(seq(1, length(ElasticTree$Topology$Endpoints) + length(ElasticTree$Topology$Branchpoints)), rep(NA, NumberOfNodes -length(ElasticTree$Topology$Endpoints)-length(ElasticTree$Topology$Branchpoints)))
-  nodes_sizes=c(rep(6, length(ElasticTree$Topology$Endpoints) + length(ElasticTree$Topology$Branchpoints)), rep(4, NumberOfNodes -length(ElasticTree$Topology$Endpoints)-length(ElasticTree$Topology$Branchpoints)))
-
-  plot(graph_yk, layout=l, vertex.label=nodes_labels, vertex.size=nodes_sizes, vertex.color=nodes_colors, vertex.label.cex=0.6)
-  legend(x=legend_position, legend=c("Endpoints", "Branchpoints", paste("Branch ", 1:length(ElasticTree$Branches))), col=c("red", "skyblue", selected_colors[1:length(ElasticTree$Branches)]), pch=16 )
-  # legend(x="bottomright", inset=c(-0.16,0), legend=paste("Branch ", 1:length(ElasticTree$Branches)), col = selected_colors[1:length(ElasticTree$Branches)], pch=c(16))
+  graph_yk <- igraph::graph_from_adjacency_matrix(EdgesTree, mode = "undirected")
+  return(graph_yk)
 }
 
 

@@ -4,9 +4,9 @@
 \alias{CalculateElasticTreeConstrained}
 \title{Calculate elastic tree with iterative constraints}
 \usage{
-CalculateElasticTreeConstrained(ScaffoldTree, N_yk = 150, start_N_yk = 100,
-  step_N_yk = 50, lambda_0 = 2.03e-09, mu_0 = 0.00625, FixEndpoints = F,
-  plot = F)
+CalculateElasticTreeConstrained(ScaffoldTree, N_yk = 150,
+  start_N_yk = 100, step_N_yk = 50, lambda_0 = 2.03e-09,
+  mu_0 = 0.00625, FixEndpoints = F, plot = F)
 }
 \arguments{
 \item{ScaffoldTree}{scaffoldTree calculated by the CalculateScaffoldTree function.}

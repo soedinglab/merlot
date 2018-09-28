@@ -5,7 +5,8 @@
 \title{Seurat variable genes, according to the Seurat's package}
 \usage{
 seurat_variable_genes(ExprMatrix, bin.size = 1000, x.low.cutoff = 0.1,
-  x.high.cutoff = 8, y.cutoff = 1, y.high.cutoff = Inf, num.bin = 20)
+  x.high.cutoff = 8, y.cutoff = 1, y.high.cutoff = Inf,
+  num.bin = 20)
 }
 \arguments{
 \item{ExprMatrix}{cells x genes expression matrix to be normalized}

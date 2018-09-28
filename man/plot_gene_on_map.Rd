@@ -5,9 +5,9 @@
 \title{Plots Gene Expression on Cells Coordinates}
 \usage{
 plot_gene_on_map(GeneName, CellCoordinates, ExpressionMatrix,
-  CoordLabels = c("Component 1", "Component 2", "Component 3"), Average = F,
-  knn = 5, Palette = grDevices::colorRampPalette(colors = c("yellow",
-  "orange", "red", "black")))
+  CoordLabels = c("Component 1", "Component 2", "Component 3"),
+  Average = F, knn = 5, Palette = grDevices::colorRampPalette(colors
+  = c("yellow", "orange", "red", "black")))
 }
 \arguments{
 \item{GeneName}{One of the elements in the Dataset$GeneNames object.}

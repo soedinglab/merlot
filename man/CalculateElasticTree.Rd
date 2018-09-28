@@ -5,8 +5,8 @@
 \title{Calculate Elastic Tree}
 \usage{
 CalculateElasticTree(ScaffoldTree, N_yk = 100, lambda_0 = 8e-10,
-  mu_0 = 0.0025, FixEndpoints = F, plot = F, NBranchScaffoldNodes = 1,
-  NCores = 1)
+  mu_0 = 0.0025, FixEndpoints = F, plot = F,
+  NBranchScaffoldNodes = 1, NCores = 1)
 }
 \arguments{
 \item{ScaffoldTree}{scaffoldTree calculated by the CalculateScaffoldTree function.}

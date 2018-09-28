@@ -4,7 +4,9 @@
 \alias{plot_flattened_tree}
 \title{Plots a flattened 2 dimensional version of the Elastic Tree Nodes}
 \usage{
-plot_flattened_tree(ElasticTree, legend_position = "topright")
+plot_flattened_tree(ElasticTree, cell_annot = NULL, layout = NULL,
+  legend_position = "topright", node_size = c("topology", "cells"),
+  node_radius = 12)
 }
 \arguments{
 \item{ElasticTree}{One of the elements in the Dataset$GeneNames object.}

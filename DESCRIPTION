@@ -7,7 +7,7 @@ Author: R. Gonzalo Parra <parra.gonzalo@gmail.com>
 Maintainer: R. Gonzalo Parra <parra.gonzalo@gmail.com>
 License: GPL
 LazyData: TRUE
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 Depends:
   R (>= 3.4.0)
 Imports:
