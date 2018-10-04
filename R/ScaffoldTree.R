@@ -187,7 +187,19 @@ read_topology <-function (DataFile, CellCoordinates)
     SkeletonNodes=sort(unique(SkeletonNodes))
 
     # Joining all the elements together in a list
-    ScaffoldTree= list(Endpoints=Endpoints, Branchpoints=Branchpoints, DijkstraPredecesors=DijkstraPredecesors, DijkstraSteps=DijkstraSteps, DijkstraDistances= DijkstraDistances, Branches= Branches, SkeletonNodes=SkeletonNodes, SkeletonEdges= SkeletonEdges, CellCoordinates=CellCoordinates, Nodes2BranchesAssignments=BranchesNodes, Cells2BranchesAssignments=BranchesCells, Cells2Branches=Cells2Branches)
+    ScaffoldTree= list(Endpoints=Endpoints,
+                       Branchpoints=Branchpoints,
+                       DijkstraPredecesors=DijkstraPredecesors,
+                       DijkstraSteps=DijkstraSteps,
+                       DijkstraDistances= DijkstraDistances,
+                       Branches= Branches,
+                       SkeletonNodes=SkeletonNodes,
+                       SkeletonEdges= SkeletonEdges,
+                       CellCoordinates=CellCoordinates,
+                       Nodes2BranchesAssignments=BranchesNodes,
+                       Cells2BranchesAssignments=BranchesCells,
+                       Cells2Branches=Cells2Branches,
+                       DataFile=DataFile)
   }
 
   return(ScaffoldTree)
