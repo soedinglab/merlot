@@ -334,7 +334,7 @@ Coordinates = np.array(Coordinates)
 
 #---Group together similar cells into clusters to reduce computational burden
 if reduced > 0:
-    estimator = KMeans(n_clusters=1000)
+    estimator = KMeans(n_clusters=reduced)
     kmeans = estimator.fit(Coordinates)
     Coordinates = kmeans.cluster_centers_
     df = pd.DataFrame(Coordinates)
