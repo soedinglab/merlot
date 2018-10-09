@@ -494,22 +494,28 @@ plot_gene_on_map <- function(
   }
 }
 
-#' Plots a flattened 2 dimensional version of the Elastic Tree Nodes
+#' Plots a flattened 2 dimensional version of the Elastic Tree Nodes.
 #'
-#' Given an Elastic Tree it plots a 2 dimensional version of the Elastic Tree.
+#' Given an Elastic Tree it plots a 2 dimensional version of the Elastic Tree. If given annotation for each cell,
+#' each node of the elastic tree will be a pie chart of the different cell identities that were assigned to the node.
 #'
 #' @param ElasticTree One of the elements in the Dataset$GeneNames object.
+#' @param cell_annot Cell annotation to show in the nodes of the elastic tree. Default is the MERLoT branch identity.
+#' @param layout Layout for the visualization of the elastic tree. Default is to use the Kamada-Kawai algorithm.
 #' @param legend_position The position of the legend.
+#' @param node_size If annotation was provided, set if the size of each pie chart will be uniform ("topology") or depend on the number of cells assigned to the node ("cells")
+#' @param node_radius Sets the default node radius if \code{node_size = "topology"}
 #' @export
 #'
 #' @importFrom igraph graph_from_adjacency_matrix layout_with_kk
 #' @importFrom graphics plot legend
+#' @importFrom LSD distinctcolors
 plot_flattened_tree <- function(ElasticTree,
                                 cell_annot=NULL,
                                 layout=NULL,
                                 legend_position="topright",
                                 node_size=c("topology", "cells"),
-                                node_radius=12) 
+                                node_radius=12)
 {
   node_size <- match.arg(node_size)
   NumberOfNodes <- dim(ElasticTree$Nodes)[1]
@@ -519,17 +525,17 @@ plot_flattened_tree <- function(ElasticTree,
   selected_colors <- c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid",
                        "darkorange3", "orange", "blue", "aquamarine", "magenta",
                        "brown", "gray", "wheat1", "azure4", "lightsalmon4",
-                       "navy", "sienna1", "gold4", "red4", "violetred")
+                       "navy", "sienna1", "gold4", "red4", "violetred", "black")
 
   # build an adjacency matrix of the nodes and translate it to a graph
   graph_yk <- get_node_graph(ElasticTree)
-  
+
   # calculate a viewable layout, if not given
   if (is.null(layout)) {
     l <- igraph::layout_with_kk(graph_yk, dim = 2)
   } else {
     l <- layout
-  }  
+  }
 
   # first decide what plot we are making
   # if cell_annot is empty, we are making the normal plot
@@ -573,7 +579,7 @@ plot_flattened_tree <- function(ElasticTree,
     if (length(annot_levels) <= length(selected_colors)) {
       pie_cols <- c("white", selected_colors[1:length(annot_levels)])
     } else {
-      tmp <- LSD::distinctcolors(num_branches, show = FALSE, bw = TRUE)
+      tmp <- LSD::distinctcolors(length(annot_levels), show = FALSE, bw = TRUE)
       pie_cols <- c("white", tmp)
     }
     annot_levels <- c("empty", annot_levels)
@@ -623,12 +629,18 @@ plot_flattened_tree <- function(ElasticTree,
   # legend(x="bottomright", inset=c(-0.16,0), legend=paste("Branch ", 1:length(ElasticTree$Branches)), col = selected_colors[1:length(ElasticTree$Branches)], pch=c(16))
 }
 
+#' Calculates an adjacency matrix for the support nodes of an elastic tree and returns the corresponding graph.
+#'
+#' @param ElasticTree the tree to convert
+#'
+#' @return igraph graph
+#'
 #' @export
 get_node_graph <- function(ElasticTree) {
   NumberOfNodes <- dim(ElasticTree$Nodes)[1]
   EdgesTree <- matrix(0, NumberOfNodes, NumberOfNodes)
   for(i in (1: dim(ElasticTree$Edges)[1])) {
-    EdgesTree[ElasticTree$Edges[i, 1], ElasticTree$Edges[i, 2]]=1
+    EdgesTree[ElasticTree$Edges[i, 1], ElasticTree$Edges[i, 2]] <- 1
   }
   graph_yk <- igraph::graph_from_adjacency_matrix(EdgesTree, mode = "undirected")
   return(graph_yk)

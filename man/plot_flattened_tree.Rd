@@ -2,7 +2,7 @@
 % Please edit documentation in R/PlotTree.R
 \name{plot_flattened_tree}
 \alias{plot_flattened_tree}
-\title{Plots a flattened 2 dimensional version of the Elastic Tree Nodes}
+\title{Plots a flattened 2 dimensional version of the Elastic Tree Nodes.}
 \usage{
 plot_flattened_tree(ElasticTree, cell_annot = NULL, layout = NULL,
   legend_position = "topright", node_size = c("topology", "cells"),
@@ -11,8 +11,17 @@ plot_flattened_tree(ElasticTree, cell_annot = NULL, layout = NULL,
 \arguments{
 \item{ElasticTree}{One of the elements in the Dataset$GeneNames object.}
 
+\item{cell_annot}{Cell annotation to show in the nodes of the elastic tree. Default is the MERLoT branch identity.}
+
+\item{layout}{Layout for the visualization of the elastic tree. Default is to use the Kamada-Kawai algorithm.}
+
 \item{legend_position}{The position of the legend.}
+
+\item{node_size}{If annotation was provided, set if the size of each pie chart will be uniform ("topology") or depend on the number of cells assigned to the node ("cells")}
+
+\item{node_radius}{Sets the default node radius if \code{node_size = "topology"}}
 }
 \description{
-Given an Elastic Tree it plots a 2 dimensional version of the Elastic Tree.
+Given an Elastic Tree it plots a 2 dimensional version of the Elastic Tree. If given annotation for each cell,
+each node of the elastic tree will be a pie chart of the different cell identities that were assigned to the node.
 }

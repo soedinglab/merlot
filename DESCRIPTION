@@ -5,6 +5,7 @@ Description: A method for reconstructing lineage-tree topologies from scRNA-seq 
 Version: 0.1.2
 Author: R. Gonzalo Parra <parra.gonzalo@gmail.com>
 Maintainer: R. Gonzalo Parra <parra.gonzalo@gmail.com>
+Encoding: UTF-8
 License: GPL
 LazyData: TRUE
 RoxygenNote: 6.1.0
