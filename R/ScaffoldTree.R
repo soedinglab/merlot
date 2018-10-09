@@ -5,12 +5,14 @@
 #' @param NEndpoints Users can specify how many endpoints they want the algorithm to find. In case this variable is not defined all branches producing branches longer than sqrt(N/2) will be added to the tree structure
 #' @param BranchMinLength Minimum number of nodes a branch has to contain in order to be included in the 3 structure. By default this value is set to sqrt(N/2) with N being the total number of cells in the dataset.
 #' @param BranchMinLengthSensitive Minimum length for a branch to be included in the tree. It reconstructs the topology of the tree and maps cells to the potential new branch to decide if the branch will be added or not. Suggested value: sqrt(N) with N being the number of cells in the dataset
+#' @param reduced The number of clusters to group cells in. If set to 0, no clustering will be performed and the scaffold tree will be calculated on all cells (default).
 #' @param python_location url to the python3 executable binary. In case it is not specified a default call to python3 will be used.
-#' @return ScaffoldTre object with the structure and connectivity of the Scaffold Tree
+#' @return ScaffoldTree object with the structure and connectivity of the Scaffold Tree
 #' @export
 #'
 #' @importFrom stats dist
 #' @importFrom utils write.table
+#' @importFrom utils read.csv
 CalculateScaffoldTree <- function(CellCoordinates,
                                   NEndpoints=NULL,
                                   BranchMinLength=-1,
@@ -50,7 +52,7 @@ CalculateScaffoldTree <- function(CellCoordinates,
 
   # --------Read the topology elements from the TreeTopology.py output---------------
   if (reduced > 0) {
-    ReducedCoordinates <- read.csv(paste(CoordinatesFile, "_reduced.csv", sep=""), header=FALSE)
+    ReducedCoordinates <- utils::read.csv(paste(CoordinatesFile, "_reduced.csv", sep=""), header=FALSE)
     ScaffoldTree <- read_topology(CoordinatesFile, ReducedCoordinates)
   } else {
     ScaffoldTree <- read_topology(CoordinatesFile, CellCoordinates)
@@ -60,7 +62,7 @@ CalculateScaffoldTree <- function(CellCoordinates,
 }
 
 #' @importFrom utils read.table
-read_topology <-function (DataFile, CellCoordinates)
+read_topology <- function (DataFile, CellCoordinates)
 {
   TopologyData=utils::read.table(file=paste(DataFile, "_TreeTopology.dat", sep=""), sep="\t", header=F, stringsAsFactors = F)
   # ----- We add 1 to the vectors because python numbers indexes from 0 instead of 1

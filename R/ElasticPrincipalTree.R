@@ -1,21 +1,28 @@
 #' Calculate Elastic Tree
 #'
 #'Calculates an elastic tree using a scaffold tree to initialize it. A set of N_yk nodes are included one byone into a tree structure that minimizes an error and an energetic functions to the cell coordinates. The initialization with the scaffold tree ensures that the correct number of endpoints and branchpoints and their connectivity are preserved in the elastic tree interpolation.
-#' @param ScaffoldTree scaffoldTree calculated by the CalculateScaffoldTree function.
+#' @param ScaffoldTree scaffoldTree calculated by the CalculateScaffoldTree function
 #' @param N_yk number of nodes for the elastic principal tree
 #' @param lambda_0 principal elastic tree energy function parameter.
-#' @param mu_0 principal elastic tree energy function parameter.
+#' @param mu_0 principal elastic tree energy function parameter
 #' @param FixEndpoints Whether or not the end points coordinates are fixed
 #' @param plot Whether or not plots are produced
 #' @param NBranchScaffoldNodes Whether or not to add middle scaffold nodes
-#' @param NCores number of cpu cores to be used for the calculation
+#' @param NCores number of CPU cores to be used for the calculation
 #' @return ElasticTree
 #' @export
 #'
 #' @importFrom stats dist
 #' @importFrom ElPiGraph.R computeElasticPrincipalCurve
 #' @importFrom igraph graph_from_adjacency_matrix get.shortest.paths
-CalculateElasticTree <- function(ScaffoldTree, N_yk=100, lambda_0=0.80e-09, mu_0=0.00250, FixEndpoints=F, plot=F, NBranchScaffoldNodes = 1, NCores=1)
+CalculateElasticTree <- function(ScaffoldTree,
+                                 N_yk = 100,
+                                 lambda_0 = 0.80e-09,
+                                 mu_0 = 0.00250,
+                                 FixEndpoints = F,
+                                 plot = F,
+                                 NBranchScaffoldNodes = 1,
+                                 NCores = 1)
 {
   # Testing
   # Default parameters taken from adjustment in real datasets with 100 N_yks
@@ -88,11 +95,19 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, lambda_0=0.80e-09, mu_0
     }
   }
 
-  ElasticTree=ElPiGraph.R::computeElasticPrincipalCurve(
-    X = ScaffoldTree$CellCoordinates, NumNodes = N_yk,
-    InitNodePositions = TopologyCoordsAux, InitEdges = TopologyEdgesAux,
-    Lambda = lambda, Mu = mu, Do_PCA = F, verbose = F, drawAccuracyComplexity = F,
-    drawPCAView = F, drawEnergy = F, Mode = 1, n.cores = NCores)
+  ElasticTree=ElPiGraph.R::computeElasticPrincipalCurve(X = ScaffoldTree$CellCoordinates,
+                                                        NumNodes = N_yk,
+                                                        InitNodePositions = TopologyCoordsAux,
+                                                        InitEdges = TopologyEdgesAux,
+                                                        Lambda = lambda,
+                                                        Mu = mu,
+                                                        Do_PCA = F,
+                                                        verbose = F,
+                                                        drawAccuracyComplexity = F,
+                                                        drawPCAView = F,
+                                                        drawEnergy = F,
+                                                        Mode = 1,
+                                                        n.cores = NCores)
 
   # Unlist the ElasticTree structure
   ElasticTree=ElasticTree[[1]]
@@ -188,6 +203,15 @@ CalculateElasticTree <- function(ScaffoldTree, N_yk=100, lambda_0=0.80e-09, mu_0
 }
 
 
+#' Takes an elastic tree calculated on reduced coordinates and replaces the clusters with the real cells.
+#'
+#' This function will replace the CellCoords field of the elastic tree and reassign cells to branch nodes and branches.
+#' @param ElasticTree the elastic tree calculated by the CalculateElasticTree function with a reduced input from ScaffoldTree
+#' @param FullCoordinates the manifold coordinates of the cells
+#' @return ElasticTree
+#' @export
+#'
+#' @importFrom stats dist
 inflate_elastic_tree <- function(ElasticTree, FullCoordinates) {
   ElasticTree$CellCoords <- FullCoordinates
   # map the cells to nodes
@@ -295,8 +319,8 @@ DuplicateTreeNodes <- function(ElasticTree)
 #' @param ExpressionMatrix Gene expression matrix on which the tree will be embedded
 #' @param ElasticTree elastic tree to be embedded on the gene expression space
 #' @inheritParams CalculateElasticTree
-#' @param increaseFactor_mu factor by which the principal elastic tree energy function parameters will be increased for the embedding.
-#' @param increaseFactor_lambda factor by which the principal elastic tree energy function parameters will be increased for the embedding.
+#' @param increaseFactor_mu factor by which the principal elastic tree energy function parameters will be increased for the embedding
+#' @param increaseFactor_lambda factor by which the principal elastic tree energy function parameters will be increased for the embedding
 #'
 #' @export
 #'
@@ -423,7 +447,14 @@ GenesSpaceEmbedding <- function(ExpressionMatrix, ElasticTree,  lambda_0=2.03e-0
 #'
 #' @importFrom stats dist
 #' @importFrom ElPiGraph.R computeElasticPrincipalGraph
-CalculateElasticTreeConstrained <- function(ScaffoldTree, N_yk=150, start_N_yk=100, step_N_yk=50, lambda_0=2.03e-09, mu_0=0.00625, FixEndpoints=F, plot=F)
+CalculateElasticTreeConstrained <- function(ScaffoldTree,
+                                            N_yk=150,
+                                            start_N_yk=100,
+                                            step_N_yk=50,
+                                            lambda_0 = 0.80e-09,
+                                            mu_0 = 0.00250,
+                                            FixEndpoints=F,
+                                            plot=F)
 {
   # Testing
   # Default parameters taken from adjustment in real datasets with 100 N_yks
