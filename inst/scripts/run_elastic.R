@@ -28,7 +28,7 @@ option_list <- list(
                 dest = "mu",
                 default = 0.0025,
                 help = "Principal elastic tree energy function parameter (default: %default)."),
-    make_option(c("-f", "--FixEndpoints"),
+    make_option(c("-e", "--FixEndpoints"),
                 type = "logical",
                 dest = "fixed",
                 default = FALSE,
