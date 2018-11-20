@@ -41,7 +41,7 @@ opt <- parse_args(opt_parser);
 NEndpoints <- opt$endpoints
 if (opt$endpoints == -1) NEndpoints = NULL
 
-coordinates <- readRDS(opt$input)
+coordinates <- readRDS(paste("/data/", opt$input, sep=""))
 
 scaffold <- merlot::CalculateScaffoldTree(coordinates,
                                           NEndpoints = NEndpoints,

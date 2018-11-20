@@ -11,8 +11,8 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("destiny", version = "3.8")
 
 install.packages("fields")
-install.packages(c("impute", "preprocessCore", "GO.db", "AnnotationDbi"))
-install.packages("WGCNA")
+# install.packages(c("impute", "preprocessCore", "GO.db", "AnnotationDbi"))
+# install.packages("WGCNA")
 install.packages("rgl")
 install.packages("optparse")
 

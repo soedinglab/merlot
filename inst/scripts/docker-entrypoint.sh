@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 read -r -d '' helpstring << EOM
 Usage: docker run <merlot_container> [-h|--help] <mode> [mode options]
@@ -34,7 +34,7 @@ case $key in
     ;;
 esac
 
-Rscript "$script" "${@:2}"
+Rscript /app/"$script" "${@:2}"
 # # parse arguments again to figure out what to copy in and out
 # POSITIONAL=()
 # while [[ $# -gt 0 ]]
