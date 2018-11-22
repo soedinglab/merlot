@@ -1,31 +1,24 @@
-FROM python:3.6
+FROM alpine:3.8
 
 LABEL maintainer="npapado@mpibpc.mpg.de"
 
-# install python dependencies
-RUN pip install scipy
-RUN pip install cython
-RUN pip install git+https://github.com/soedinglab/csgraph_mod
+WORKDIR /code
 
-# Use R 3.4 since not all dependencies are updated to 3.5
-FROM rocker/tidyverse:3.5
+RUN apk add --no-cache --update\
+    python3-dev\
+    g++\
+    bash\
+    cmake\
+    make\
+    git\
+    openblas-dev
 
-# Set the working directory to /app
+RUN pip3 install --no-cache-dir numpy scipy cython pandas sklearn
+RUN pip3 install --no-cache-dir git+https://github.com/soedinglab/csgraph_mod.git
+
+# # make the directory that communicates with the outside world
 WORKDIR /data
 
-# Copy the current directory contents into the container at /app
-COPY . /app
-
-# install bash dependencies
-RUN apt-get update
-RUN apt-get install -y libudunits2-dev
-RUN apt-get install -y mesa-common-dev
-RUN apt-get install -y libglu1-mesa-dev
-
-# install R packages
-RUN ["Rscript", "/app/inst/scripts/install_R.R"]
-COPY inst/scripts/* /app/
-
+COPY inst/python/ScaffoldTree.py /code
 # run the selector script that will fire up other scripts
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
-CMD ["--help"]
+ENTRYPOINT ["python3", "/code/ScaffoldTree.py"]

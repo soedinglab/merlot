@@ -6,7 +6,7 @@
 \usage{
 CalculateScaffoldTree(CellCoordinates, NEndpoints = NULL,
   BranchMinLength = -1, BranchMinLengthSensitive = -1, reduced = 0,
-  python_location = "python3")
+  python_location = "python3", docker = NULL)
 }
 \arguments{
 \item{CellCoordinates}{file containing coordinates from the low dimensional manifold (e.g: first 3 diffusion components from a diffusion map)}
@@ -20,9 +20,11 @@ CalculateScaffoldTree(CellCoordinates, NEndpoints = NULL,
 \item{reduced}{The number of clusters to group cells in. If set to 0, no clustering will be performed and the scaffold tree will be calculated on all cells (default).}
 
 \item{python_location}{url to the python3 executable binary. In case it is not specified a default call to python3 will be used.}
+
+\item{docker}{name of the docker container that accompanies MERLoT (alternative to using a local python installation).}
 }
 \value{
-ScaffoldTree object with the structure and connectivity of the Scaffold Tree
+ScaffoldTree object with the structure and connectivity of the Scaffold Tree.
 }
 \description{
 creates the scaffold tree from the expression matrix in the Dataset object.

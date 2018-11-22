@@ -7,7 +7,8 @@
 #' @param BranchMinLengthSensitive Minimum length for a branch to be included in the tree. It reconstructs the topology of the tree and maps cells to the potential new branch to decide if the branch will be added or not. Suggested value: sqrt(N) with N being the number of cells in the dataset
 #' @param reduced The number of clusters to group cells in. If set to 0, no clustering will be performed and the scaffold tree will be calculated on all cells (default).
 #' @param python_location url to the python3 executable binary. In case it is not specified a default call to python3 will be used.
-#' @return ScaffoldTree object with the structure and connectivity of the Scaffold Tree
+#' @param docker name of the docker container that accompanies MERLoT (alternative to using a local python installation).
+#' @return ScaffoldTree object with the structure and connectivity of the Scaffold Tree.
 #' @export
 #'
 #' @importFrom stats dist
@@ -18,10 +19,13 @@ CalculateScaffoldTree <- function(CellCoordinates,
                                   BranchMinLength=-1,
                                   BranchMinLengthSensitive=-1,
                                   reduced=0,
-                                  python_location="python3")
+                                  python_location="python3",
+                                  docker=NULL)
 {
   CellCoordinates=as.matrix(CellCoordinates)
   CoordinatesFile=tempfile()
+  folder <- dirname(CoordinatesFile)
+  setwd(folder)
   utils::write.table(CellCoordinates, file = CoordinatesFile, sep="\t", col.names = F, row.names = F)
   BranchMinLength=round(BranchMinLength)
   BranchMinLengthSensitive=floor(BranchMinLengthSensitive)
@@ -36,16 +40,22 @@ CalculateScaffoldTree <- function(CellCoordinates,
   if(is.null(NEndpoints))
   {
     #-------------------------------------------Execute TreeTopology.py-------------
-    commands <- paste(python_location, " ", ScaffoldTreeScript, CoordinatesFile,
+    commands <- paste(basename(CoordinatesFile),
                       "-BranchMinLength ", BranchMinLength,
                       "-BranchMinLengthSensitive", BranchMinLengthSensitive,
                       "--reduced", reduced)
   }  else
   {
     #-------------------------------------------Execute TreeTopology.py-------------
-    commands <- paste(python_location, " ", ScaffoldTreeScript, CoordinatesFile,
+    commands <- paste(basename(CoordinatesFile),
                       " -NBranches ", NEndpoints,
                       "--reduced", reduced)
+  }
+
+  if (is.null(docker)) {
+    commands <- paste(python_location, " ", ScaffoldTreeScript, commands)
+  } else {
+    commands <- paste('docker run --rm -v "$(pwd):/data" -w /data', docker, commands)
   }
 
   system(commands, wait = TRUE)

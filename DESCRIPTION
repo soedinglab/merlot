@@ -8,7 +8,7 @@ Maintainer: R. Gonzalo Parra <parra.gonzalo@gmail.com>
 Encoding: UTF-8
 License: GPL
 LazyData: TRUE
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Depends:
   R (>= 3.4.0)
 Imports:
