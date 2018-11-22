@@ -19,7 +19,8 @@ Imports:
   scales,
   rgl,
   stats,
-  utils
+  utils,
+  LSD
 Suggests:
   car,
   grDevices,
