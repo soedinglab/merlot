@@ -18,7 +18,7 @@ guo_colorcells[which(CellTypes=="16C")]="green"
 guo_colorcells[which(CellTypes=="32C")]="cyan"
 guo_colorcells[which(CellTypes=="64C")]="darkblue"
 
-# # Embed Cells into their manifold
+# Embed Cells into their manifold
 # library(destiny)
 # DatasetDM <- DiffusionMap(Dataset$ExpressionMatrix, density.norm = T, verbose = F, sigma="global")
 #

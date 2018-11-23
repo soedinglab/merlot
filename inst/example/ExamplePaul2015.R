@@ -53,9 +53,8 @@ ElasticTree= CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNo
 plot_elastic_tree(ElasticTree, colorcells = paul_colorcells)
 legend(x="bottomright", legend=paste("Cluster ", 1:19 ), col=selected_colors, pch=16, cex=0.7)
 
-# We read the Expression Matrix for the Pau Dataset
-DataFile="/home/gonzalo/Desktop/Postdoc/TreeTopology_Parra2016/ProcessedDatasets/PaulDescription.txt"
-Dataset=ReadDataset(DataFile)
+# We read the Expression Matrix for the Paul Dataset
+Dataset=ReadDataset(ExpressionData)
 
 # We embed the elastic tree on the expression matrix
 EmbeddedTree= GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = ElasticTree, increaseFactor_mu = 10, increaseFactor_lambda=10)
