@@ -82,7 +82,7 @@ CalculateElasticTree <- function(ScaffoldTree,
       Distances2Nodes=ScaffoldTree$DijkstraDistances[ScaffoldTree$Branches[i,1],nodesBranchi]
 
       # New ScaffoldNode
-      NewScaffoldNode=which(abs(Distances2Nodes-(extremepointsDistance/2)) == min(abs(Distances2Nodes-extremepointsDistance/2)))
+      NewScaffoldNode=nodesBranchi[which(abs(Distances2Nodes-(extremepointsDistance/2)) == min(abs(Distances2Nodes-extremepointsDistance/2)))]
       TopologyCoordsAux=rbind(TopologyCoordsAux, ScaffoldTree$CellCoordinates[NewScaffoldNode,])
       NewScaffoldNodePosition=length(TopologyNodesAux)+1
       TopologyNodesAux=c(TopologyNodesAux, NewScaffoldNode)
