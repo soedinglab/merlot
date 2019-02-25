@@ -67,7 +67,9 @@ CalculateScaffoldTree <- function(CellCoordinates,
   } else {
     ScaffoldTree <- read_topology(CoordinatesFile, CellCoordinates)
   }
-
+  
+  # remove tmp directory so that we don't clog the system
+  print(unlink(folder, recursive=TRUE))
   return(ScaffoldTree)
 }
 
