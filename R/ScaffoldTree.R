@@ -69,7 +69,7 @@ CalculateScaffoldTree <- function(CellCoordinates,
   }
   
   # remove tmp directory so that we don't clog the system
-  print(unlink(folder, recursive=TRUE))
+  unlink(folder, recursive=TRUE)
   return(ScaffoldTree)
 }
 
