@@ -1,0 +1,155 @@
+---
+title: "The hyperparameter choice - pt. 2"
+output: html_notebook
+---
+
+In this notebook we will visualize the effect of the choice of elastic tree hyperparameters for the elastic and embedded tree. In the second part we will be working with the dataset by Paul _et al._, detailing mouse hematopoiesis. We will be needing MERLoT, Monocle 2, as well as some customized versions of the MERLoT functions.
+
+```{r, echo=FALSE}
+library(merlot)
+library(monocle)
+source("~/Documents/repos/merlot-scripts/scripts/niko_tree_funcs.R")
+```
+
+We will read the dataset and the annotation.
+
+```{r, echo=FALSE}
+CellTypes= paste(find.package("merlot"), "/example/PaulCellsMapping.csv", sep="")
+Types=read.table(file =CellTypes, header=F, stringsAsFactors = F, sep=",")
+paul_colorcells=c()
+selected_colors=c("cyan1", "cyan4", "darkcyan",  "blue", "darkblue", "blue4", "navy", "darkgoldenrod", "darkgoldenrod1", "darkgoldenrod1", "gold", "bisque", "palegreen", "darkolivegreen2", "darkolivegreen3", "darkolivegreen4", "darkolivegreen", "chartreuse4", "darkgreen")
+for(i in 1:19)
+{
+  paul_colorcells[which(Types[,2]==i)]=selected_colors[i]
+}
+
+ExpressionData=paste(find.package("merlot"), "/example/Paul2015.txt", sep="")
+raw <- read.table(ExpressionData, sep="\t", header=T, row.names=1, stringsAsFactors = T)
+exprs <- t(as.matrix(raw))
+data <- newCellDataSet(exprs, expressionFamily = negbinomial.size(), lowerDetectionLimit = 1)
+Dataset=ReadDataset(ExpressionData)
+```
+We will compute the dimensionality reduction using Monocle 2 and plot the result.
+
+```{r}
+data <- estimateSizeFactors(data)
+data <- estimateDispersions(data) # fails
+
+data <- detectGenes(data, min_expr=0.1)
+
+disp_table <- dispersionTable(data)
+ordering_genes <- subset(disp_table, mean_expression >= 0.5 & dispersion_empirical >= 2*dispersion_fit)$gene_id
+
+data <- setOrderingFilter(data, ordering_genes)
+data <- reduceDimension(data)
+data <- orderCells(data, reverse=FALSE)
+
+CellCoordinates <- t(reducedDimS(data))
+plot(CellCoordinates, pch=16, col=paul_colorcells)
+```
+
+We see that Monocle captures the trajectory that leads from the early progenitors (yellow) towards the myeloblasts (blue) and the erythroid cells (green), just as the authors suggested in their analysis. We calculate the scaffold tree with and without local averaging, and plot the results.
+
+```{r, fig.width=10, fig.height=4}
+ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates, NEndpoints = 3,
+                                   python_location = "~/miniconda3/envs/py36/bin/python")
+reduced <- CalculateScaffoldTree(CellCoordinates = CellCoordinates, NEndpoints = 3,
+                                 python_location = "~/miniconda3/envs/py36/bin/python", reduced=210)
+
+par(mfrow=c(1,2))
+plot_scaffold_tree(ScaffoldTree)
+plot_scaffold_tree(reduced)
+```
+
+Note the massive difference in runtime: calculating the scaffold tree on the full dataset takes approximately 10 minutes, while it completes in only fractions of a second in reduced mode. The quality of the produced scaffold is very similar.
+
+We will now calculate the elastic tree with different elasticity hyperparameters: the MERLoT defaults and the values that ElPiGraph.R proposes for the `elastic_tree` algorithm.
+
+```{r, fig.width=8, fig.height=8}
+NumberOfNodes=100
+
+elastic_full <- CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes)
+elastic_reduced <- CalculateElasticTree(ScaffoldTree = reduced, N_yk = NumberOfNodes)
+elpi_full <- nikoElastic(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes)
+elpi_reduced <- nikoElastic(ScaffoldTree = reduced, N_yk = NumberOfNodes)
+par(mfrow=c(2,2))
+plot_elastic_tree(elastic_full)
+plot_elastic_tree(elastic_reduced)
+plot_elastic_tree(elpi_full)
+plot_elastic_tree(elpi_reduced)
+```
+
+Top left: (A) MERLoT full, top right: (B) MERLoT reduced, bottom left (C) ElPi full, bottom right (D) ElPi reduced.
+
+We see that when using the MERLoT hyperparameters the elastic tree follows the topology detected by the scaffold tree. ElPi hyperparameters when using all cells for the elastic tree also capture the overall topology, even though the progenitor branch (red) is truncated. When using the forgiving ElPi hyperparameters with reduced mode the branching location is removed to a high density region, and the progenitor branch is replaced by a bend in the tree.
+
+Before we continue with the successful elastic trees we need to inflate the reduced ones with the full coordinates again:
+
+```{r}
+elastic_reduced <- inflate_elastic_tree(elastic_reduced, CellCoordinates)
+```
+
+Now calculate the different embedded trees:
+
+```{r, echo=FALSE}
+# Embedd the principal elastic tree on the gene expression space from which it was calculated.
+elastic_full_merlot = GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = elastic_full)
+elastic_reduced_merlot = GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = elastic_reduced)
+elastic_full_elpi <- nikoEmbed(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = elastic_full)
+elastic_reduced_elpi <- nikoEmbed(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = elastic_reduced)
+elpi_full_elpi <- nikoEmbed(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = elpi_full)
+elpi_full_merlot <- GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = elpi_full)
+```
+
+<!-- There is no immediate way to visualize the embedded tree, but we can plot the trees that result from the embedding in a schematic way, using the `plot_flattened_tree` function. -->
+
+<!-- ```{r, fig.width=10, fig.height=4} -->
+<!-- par(mfrow=c(2,3)) -->
+<!-- plot_flattened_tree(elastic_full_merlot, cell_annot = Types$V2, node_size = "cells") -->
+<!-- plot_flattened_tree(elastic_reduced_merlot, cell_annot = Types$V2, node_size = "cells") -->
+<!-- plot_flattened_tree(elastic_full_elpi, cell_annot = Types$V2, node_size = "cells") -->
+<!-- plot_flattened_tree(elastic_reduced_elpi, cell_annot = Types$V2, node_size = "cells") -->
+<!-- plot_flattened_tree(elpi_full_elpi, cell_annot = Types$V2, node_size = "cells") -->
+<!-- plot_flattened_tree(elpi_full_merlot, cell_annot = Types$V2, node_size = "cells") -->
+<!-- par(mfrow=c(1,1)) -->
+<!-- ``` -->
+
+We calculate the corresponding pseudotimes:
+
+```{r}
+elastic_full_merlot_pt <- CalculatePseudotimes(elastic_full_merlot, T0=3)
+elastic_reduced_merlot_pt <- CalculatePseudotimes(elastic_reduced_merlot, T0=3)
+elastic_full_elpi_pt <- CalculatePseudotimes(elastic_full_elpi, T0=3)
+elastic_reduced_elpi_pt <- CalculatePseudotimes(elastic_reduced_elpi, T0=3)
+elpi_full_elpi_pt <- CalculatePseudotimes(elpi_full_elpi, T0=3)
+elpi_full_merlot_pt <- CalculatePseudotimes(elpi_full_merlot, T0=3)
+```
+
+With the pseudotimes available, we can now plot the expression of genes through pseudotime, allowing a comparison between the different approaches.
+
+```{r, fig.width=10, fig.height=3}
+par(mfrow=c(3, 6))
+gene <- "Klf1"
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_reduced_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_reduced_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elpi_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elpi_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+gene <- "Cebpa"
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_reduced_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_reduced_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elpi_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elpi_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+gene <- "Gata2"
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_reduced_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_reduced_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elpi_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene , EmbeddedTree, elpi_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+par(mfrow=c(1,1))
+```
+
