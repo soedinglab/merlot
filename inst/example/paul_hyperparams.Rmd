@@ -5,7 +5,7 @@ output: html_notebook
 
 In this notebook we will visualize the effect of the choice of elastic tree hyperparameters for the elastic and embedded tree. In the second part we will be working with the dataset by Paul _et al._, detailing mouse hematopoiesis. We will be needing MERLoT, Monocle 2, as well as some customized versions of the MERLoT functions.
 
-```{r, echo=FALSE}
+```{r, message=FALSE}
 library(merlot)
 library(monocle)
 source("~/Documents/repos/merlot-scripts/scripts/niko_tree_funcs.R")
@@ -13,7 +13,7 @@ source("~/Documents/repos/merlot-scripts/scripts/niko_tree_funcs.R")
 
 We will read the dataset and the annotation.
 
-```{r, echo=FALSE}
+```{r, message=FALSE}
 CellTypes= paste(find.package("merlot"), "/example/PaulCellsMapping.csv", sep="")
 Types=read.table(file =CellTypes, header=F, stringsAsFactors = F, sep=",")
 paul_colorcells=c()
@@ -74,12 +74,16 @@ elpi_full <- nikoElastic(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes)
 elpi_reduced <- nikoElastic(ScaffoldTree = reduced, N_yk = NumberOfNodes)
 par(mfrow=c(2,2))
 plot_elastic_tree(elastic_full)
+text(-4, -2, labels = "A", cex = 3)
 plot_elastic_tree(elastic_reduced)
+text(4, -2, labels = "B", cex = 3)
 plot_elastic_tree(elpi_full)
+text(-4, -2, labels = "C", cex = 3)
 plot_elastic_tree(elpi_reduced)
+text(4, -2, labels = "D", cex = 3)
 ```
 
-Top left: (A) MERLoT full, top right: (B) MERLoT reduced, bottom left (C) ElPi full, bottom right (D) ElPi reduced.
+(A) MERLoT full (B) MERLoT reduced (C) ElPi full (D) ElPi reduced.
 
 We see that when using the MERLoT hyperparameters the elastic tree follows the topology detected by the scaffold tree. ElPi hyperparameters when using all cells for the elastic tree also capture the overall topology, even though the progenitor branch (red) is truncated. When using the forgiving ElPi hyperparameters with reduced mode the branching location is removed to a high density region, and the progenitor branch is replaced by a bend in the tree.
 
@@ -91,7 +95,7 @@ elastic_reduced <- inflate_elastic_tree(elastic_reduced, CellCoordinates)
 
 Now calculate the different embedded trees:
 
-```{r, echo=FALSE}
+```{r, message=FALSE}
 # Embedd the principal elastic tree on the gene expression space from which it was calculated.
 elastic_full_merlot = GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = elastic_full)
 elastic_reduced_merlot = GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = elastic_reduced)
@@ -127,29 +131,71 @@ elpi_full_merlot_pt <- CalculatePseudotimes(elpi_full_merlot, T0=3)
 
 With the pseudotimes available, we can now plot the expression of genes through pseudotime, allowing a comparison between the different approaches.
 
-```{r, fig.width=10, fig.height=3}
-par(mfrow=c(3, 6))
+```{r, echo=FALSE, fig.width=9, fig.height=15}
+par(mfcol=c(6, 3))
 gene <- "Klf1"
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_reduced_merlot_pt, addlegend = F, selectedcolors = plot_cols)
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_reduced_elpi_pt, addlegend = F, selectedcolors = plot_cols)
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elpi_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elpi_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
-gene <- "Cebpa"
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_reduced_merlot_pt, addlegend = F, selectedcolors = plot_cols)
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_reduced_elpi_pt, addlegend = F, selectedcolors = plot_cols)
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elpi_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elpi_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
-gene <- "Gata2"
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_reduced_merlot_pt, addlegend = F, selectedcolors = plot_cols)
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elastic_reduced_elpi_pt, addlegend = F, selectedcolors = plot_cols)
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elpi_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
-plot_pseudotime_expression_gene(gene , EmbeddedTree, elpi_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene, elastic_full_merlot, elastic_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+text(4, 8.5, labels = "A", cex = 3, adj=c(0.5, 0.5))
+plot_pseudotime_expression_gene(gene, elastic_reduced_merlot, elastic_reduced_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+text(4, 8.5, labels = "B", cex = 3, adj=c(0.5, 0.5))
+plot_pseudotime_expression_gene(gene, elastic_full_elpi, elastic_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+text(4, 9, labels = "C", cex = 3, adj=c(0.5, 0.5))
+plot_pseudotime_expression_gene(gene, elastic_reduced_elpi, elastic_reduced_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+text(4, 10, labels = "D", cex = 3, adj=c(0.5, 0.5))
+plot_pseudotime_expression_gene(gene, elpi_full_elpi, elpi_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+text(4, 9, labels = "E", cex = 3, adj=c(0.5, 0.5))
+plot_pseudotime_expression_gene(gene, elpi_full_merlot, elpi_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+text(4, 8.5, labels = "F", cex = 3, adj=c(0.5, 0.5))
+gene <- "Mpo"
+plot_pseudotime_expression_gene(gene, elastic_full_merlot, elastic_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene, elastic_reduced_merlot, elastic_reduced_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene, elastic_full_elpi, elastic_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene, elastic_reduced_elpi, elastic_reduced_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene, elpi_full_elpi, elpi_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene, elpi_full_merlot, elpi_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+gene <- "Actb"
+plot_pseudotime_expression_gene(gene, elastic_full_merlot, elastic_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene, elastic_reduced_merlot, elastic_reduced_merlot_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene, elastic_full_elpi, elastic_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene, elastic_reduced_elpi, elastic_reduced_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene, elpi_full_elpi, elpi_full_elpi_pt, addlegend = F, selectedcolors = plot_cols)
+plot_pseudotime_expression_gene(gene, elpi_full_merlot, elpi_full_merlot_pt, addlegend = F, selectedcolors = plot_cols)
 par(mfrow=c(1,1))
 ```
+
+```{r, echo=FALSE, results='asis'}
+library(knitr)
+a <- c("MERLoT", FALSE, "MERLoT")
+b <- c("MERLoT", TRUE, "MERLoT")
+c <- c("MERLoT", FALSE, "ElPiGraph.R")
+d <- c("MERLoT", TRUE, "ElPiGraph.R")
+e <- c("ElPiGraph.R", FALSE, "ElPiGraph.R")
+f <- c("ElPiGraph.R", FALSE, "MERLoT")
+test <- data.frame(rbind(a, b, c, d, e, f))
+rownames(test) <- c("(A)", "(B)", "(C)", "(D)", "(E)", "(F)")
+colnames(test) <- c("hpms. elastic", "reduced mode", "hpms. embedded")
+knitr::kable(test)
+```
+
+It is evident in a glance that the big difference in the quality of gene expression profiles in pseudotime lies in the choice of hyperparameters for the embedded tree; panels A, B, and F combine different scaffold and elastic trees, but all return very similar expression profiles. In contrast to that, panels C, D, and E all have wiggles in the expression profiles. This overfitting is particularly obvious for the `Klf1` and `Actb` profiles.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

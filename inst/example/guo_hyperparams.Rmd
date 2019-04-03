@@ -92,7 +92,9 @@ With the pseudotimes available, we can now plot the expression of genes through 
 par(mfrow=c(1, 3))
 gene = "Gata4"
 plot_pseudotime_expression_gene(GeneName = gene , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes)
+text(4, 10, labels = "A", cex = 3, adj=c(0.5, 0.5))
 plot_pseudotime_expression_gene(GeneName = gene , EmbeddedTree = nikoEmb, Pseudotimes = nikotimes)
+text(4, 8.5, labels = "A", cex = 3, adj=c(0.5, 0.5))
 plot_pseudotime_expression_gene(GeneName = gene , EmbeddedTree = mixed, Pseudotimes = mixed_times)
 par(mfrow=c(1,1))
 ```
