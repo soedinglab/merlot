@@ -39,7 +39,7 @@ CalculatePseudotimes <- function (InputTree, plot=F, T0=1, C0=NULL)
   # Map cells to the closest yk node and assign its pseudotime
   cell2yk=c()
   Times_cells=c()
-  Proyected_Times_Cells=c()
+  Projected_Times_Cells=c()
 
   for (i in 1:dim(InputTree$CellCoords)[1])
   {
@@ -60,10 +60,10 @@ CalculatePseudotimes <- function (InputTree, plot=F, T0=1, C0=NULL)
 
     cell2yk=rbind(cell2yk, c(i, closest_yk))
     Times_cells=c(Times_cells, Times_yk[closest_yk])
-    Proyected_Times_Cells=c(Proyected_Times_Cells, (Times_yk[closest_yk] + extra_time))
+    Projected_Times_Cells=c(Projected_Times_Cells, (Times_yk[closest_yk] + extra_time))
   }
   # delete names from vector
-  names(Proyected_Times_Cells) = NULL
+  names(Projected_Times_Cells) = NULL
 
   allnodes=1:N_yk
   cells_branchs_assigments=c()
@@ -81,11 +81,11 @@ CalculatePseudotimes <- function (InputTree, plot=F, T0=1, C0=NULL)
       cell2yk[which(cell2yk[,1]==i),2]
       PseudoExpressionMatrix[i,]=InputTree$Nodes[cell2yk[which(cell2yk[,1]==i),2],]
     }
-    Pseudotimes= list(Times_yk=Times_yk, Times_cells=Times_cells, Proyected_Times_Cells=Proyected_Times_Cells, Branches=InputTree$Branches, Cells2TreeNodes=cell2yk, Cells2Branches=cells_branchs_assigments, PseudoExpressionMatrix=PseudoExpressionMatrix, T0=T0, C0=C0)
+    Pseudotimes= list(Times_yk=Times_yk, Times_cells=Times_cells, Projected_Times_Cells=Projected_Times_Cells, Branches=InputTree$Branches, Cells2TreeNodes=cell2yk, Cells2Branches=cells_branchs_assigments, PseudoExpressionMatrix=PseudoExpressionMatrix, T0=T0, C0=C0)
   }
   else
   {
-    Pseudotimes= list(Times_yk=Times_yk, Times_cells=Times_cells, Proyected_Times_Cells=Proyected_Times_Cells, Branches=InputTree$Branches, Cells2TreeNodes=cell2yk, Cells2Branches=cells_branchs_assigments, T0=T0, C0=C0)
+    Pseudotimes= list(Times_yk=Times_yk, Times_cells=Times_cells, Projected_Times_Cells=Projected_Times_Cells, Branches=InputTree$Branches, Cells2TreeNodes=cell2yk, Cells2Branches=cells_branchs_assigments, T0=T0, C0=C0)
   }
   return (Pseudotimes)
 }
