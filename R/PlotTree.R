@@ -296,7 +296,7 @@ map2color<-function(x,pal,limits=NULL){
 #'
 #' @param CellCoordinates matrix containing up to 3 coordinates for cells in the manifold space
 #' @param Pseudotimes object calculated by CalculatePseudotimes()
-#' @param Proyected boolean parameter to plot discrete suppport nodes pseudotime or projected pseudotime.
+#' @param Projected boolean parameter to plot discrete suppport nodes pseudotime or projected pseudotime.
 #'
 #'
 #' @export
@@ -304,13 +304,13 @@ map2color<-function(x,pal,limits=NULL){
 #' @importFrom grDevices colorRampPalette
 #' @importFrom graphics plot legend
 #' @importFrom rgl plot3d legend3d
-plot_pseudotimes <- function (CellCoordinates, Pseudotimes, Proyected=F)
+plot_pseudotimes <- function (CellCoordinates, Pseudotimes, Projected=F)
 {
 
   mypal <- grDevices::colorRampPalette( c( "yellow", "orange", "darkorange", "red", "black" ) )( length(Pseudotimes$Times_cells) )
-  if(Proyected==T)
+  if(Projected==T)
   {
-    col1=map2color(Pseudotimes$Proyected_Times_Cells, mypal)
+    col1=map2color(Pseudotimes$Projected_Times_Cells, mypal)
   }else
   {
     col1=map2color(Pseudotimes$Times_cells, mypal)
@@ -331,14 +331,14 @@ plot_pseudotimes <- function (CellCoordinates, Pseudotimes, Proyected=F)
   else if(dim(CellCoordinates)[2]==2)
   {
     # mypal <- grDevices::colorRampPalette( c( "yellow", "orange", "darkorange", "red", "black" ) )( length(Pseudotimes$Times_cells) )
-    # col1=map2color(Pseudotimes$Proyected_Times_Cells, mypal)
+    # col1=map2color(Pseudotimes$Projected_Times_Cells, mypal)
     # paleta<-grDevices::colorRampPalette(colors=c("yellow", "orange", "red", "black"))
     # color<-paleta(200)
     plot(CellCoordinates[,1], CellCoordinates[,2], col=col1, pch=16, cex=1.5, ylab="Cooordinate 1", xlab="Coordinate 2")
   }
   else
   {
-    print ("This function cannot plot pseudotime for datasets with more than 3 dimensions. If your dataset has more dimensions you may want to make a proyection from those into 2 or 3 dimensions in order to visualize their pseudotimes")
+    print ("This function cannot plot pseudotime for datasets with more than 3 dimensions. If your dataset has more dimensions you may want to make a projection from those into 2 or 3 dimensions in order to visualize their pseudotimes")
   }
 }
 
