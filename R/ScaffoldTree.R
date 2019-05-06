@@ -24,7 +24,8 @@ CalculateScaffoldTree <- function(CellCoordinates,
                                   python_location="python3",
                                   docker=NULL,
                                   tmp_dir=NA,
-                                  rm_tmp=TRUE)
+                                  rm_tmp=TRUE,
+                                  random_seed=42)
 {
   CellCoordinates=as.matrix(CellCoordinates)
   if (is.na(tmp_dir)) {
@@ -50,13 +51,15 @@ CalculateScaffoldTree <- function(CellCoordinates,
     commands <- paste(CoordinatesFile,
                       "-BranchMinLength ", BranchMinLength,
                       "-BranchMinLengthSensitive", BranchMinLengthSensitive,
-                      "--reduced", reduced)
+                      "--reduced", reduced,
+                      "--seed", random_seed)
   }  else
   {
     #-------------------------------------------Execute TreeTopology.py-------------
     commands <- paste(CoordinatesFile,
                       " -NBranches ", NEndpoints,
-                      "--reduced", reduced)
+                      "--reduced", reduced,
+                      "--seed", random_seed)
   }
 
   if (is.null(docker)) {

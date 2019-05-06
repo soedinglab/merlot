@@ -4,6 +4,7 @@ import collections
 import argparse
 
 import numpy as np
+from numpy import random
 import pandas as pd
 import scipy
 from scipy.spatial import distance
@@ -320,6 +321,9 @@ parser.add_argument('-BranchMinLengthSensitive', type=int, default=(-1),
 parser.add_argument('-r', '--reduced', dest='reduced', default=0, type=int,
                     help='Number of clusters for k-means reduction of the \
                     dataset')
+parser.add_argument('-s', '--seed', dest='seed', default=42, type=int,
+                    help='Random seed to be passed on for reproducibility \
+                    reasons.')
 
 args = parser.parse_args()
 DMCoordinates = args.Filename
@@ -327,6 +331,8 @@ NBranches = args.NBranches
 BranchMinLength = args.BranchMinLength
 BranchMinLengthSensitive = args.BranchMinLengthSensitive
 reduced = args.reduced
+rseed = args.seed
+random.seed(rseed)
 
 #---Read Manifold Coordinates (DMs, t-SNE, etc)
 Coordinates = pd.read_csv(DMCoordinates, sep="\t", header=None)
