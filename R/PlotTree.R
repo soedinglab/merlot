@@ -505,6 +505,7 @@ plot_gene_on_map <- function(
 #' @param legend_position The position of the legend.
 #' @param node_size If annotation was provided, set if the size of each pie chart will be uniform ("topology") or depend on the number of cells assigned to the node ("cells")
 #' @param node_radius Sets the default node radius if \code{node_size = "topology"}
+#' @param cols A vector of colors to use for the annotation.
 #' @export
 #'
 #' @importFrom igraph graph_from_adjacency_matrix layout_with_kk
@@ -529,7 +530,7 @@ plot_flattened_tree <- function(ElasticTree,
                          "brown", "gray", "wheat1", "azure4", "lightsalmon4",
                          "navy", "sienna1", "gold4", "red4", "violetred", "black")
   } else {
-    selected_colors <- palette
+    selected_colors <- cols
   }
   
   # build an adjacency matrix of the nodes and translate it to a graph
@@ -643,7 +644,7 @@ plot_flattened_tree <- function(ElasticTree,
                   col='black')
       x <- (a$text$x + a$rect$left) / 2
       y <- a$text$y
-      symbols(x,y,circles=sizes[keep] * 5 / (200 * avg_cells_per_node) ,inches=FALSE,add=TRUE,bg='orange')
+      graphics::symbols(x,y,circles=sizes[keep] * 5 / (200 * avg_cells_per_node) ,inches=FALSE,add=TRUE,bg='orange')
     }
   }
   # legend(x="bottomright", inset=c(-0.16,0), legend=paste("Branch ", 1:length(ElasticTree$Branches)), col = selected_colors[1:length(ElasticTree$Branches)], pch=c(16))

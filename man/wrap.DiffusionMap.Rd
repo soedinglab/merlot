@@ -4,7 +4,7 @@
 \alias{wrap.DiffusionMap}
 \title{From destiny: Wrapper to create a diffusion map of cells.}
 \usage{
-wrap.DiffusionMap(data = stopifnot_distmatrix(distance),
+wrap.DiffusionMap(data = destiny:::stopifnot_distmatrix(distance),
   sigma = "local", k = destiny::find_dm_k(dataset_n_observations(data,
   distance) - 1L), n_eigs = min(20L, dataset_n_observations(data,
   distance) - 2L), density_norm = TRUE, ..., distance = c("euclidean",

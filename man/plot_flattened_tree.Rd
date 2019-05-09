@@ -6,7 +6,7 @@
 \usage{
 plot_flattened_tree(ElasticTree, cell_annot = NULL, layout = NULL,
   legend_position = "topright", node_size = c("topology", "cells"),
-  node_radius = 12)
+  node_radius = 12, cols = NULL)
 }
 \arguments{
 \item{ElasticTree}{One of the elements in the Dataset$GeneNames object.}
@@ -20,6 +20,8 @@ plot_flattened_tree(ElasticTree, cell_annot = NULL, layout = NULL,
 \item{node_size}{If annotation was provided, set if the size of each pie chart will be uniform ("topology") or depend on the number of cells assigned to the node ("cells")}
 
 \item{node_radius}{Sets the default node radius if \code{node_size = "topology"}}
+
+\item{cols}{A vector of colors to use for the annotation.}
 }
 \description{
 Given an Elastic Tree it plots a 2 dimensional version of the Elastic Tree. If given annotation for each cell,
