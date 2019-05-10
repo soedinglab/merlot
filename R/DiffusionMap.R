@@ -1,4 +1,17 @@
 
+#' From destiny: Helper function for diffusion map calculations.
+#'
+#' @param data The data matrix
+#' @param distances The matrix of pairwise distances of cells.
+#'
+#' @return The number of observations in the data
+dataset_n_observations <- function(data, distances) {
+  if (is.null(data)) nrow(distances)
+  else if (methods::is(data, 'ExpressionSet')) length(Biobase::sampleNames(data))
+  else if (methods::is(data, 'SingleCellExperiment')) ncol(data)
+  else nrow(data)
+}
+
 #' From destiny: Wrapper to create a diffusion map of cells.
 #'
 #' The provided data can be a double \link[base]{matrix} of expression data or a \link[base]{data.frame} with all non-integer (double) columns
@@ -25,7 +38,7 @@
 #' @return a DiffusionMap object
 #'
 #' @export
-wrap.DiffusionMap <- function(data = stopifnot_distmatrix(distance),
+wrap.DiffusionMap <- function(data = destiny:::stopifnot_distmatrix(distance),
                               sigma = 'local',
                               k = destiny::find_dm_k(dataset_n_observations(data, distance) - 1L),
                               n_eigs = min(20L, dataset_n_observations(data, distance) - 2L),
@@ -54,11 +67,4 @@ wrap.DiffusionMap <- function(data = stopifnot_distmatrix(distance),
                         vars = vars,
                         verbose = verbose,
                         suppress_dpt = suppress_dpt)
-}
-
-dataset_n_observations <- function(data, distances) {
-  if (is.null(data)) nrow(distances)
-  else if (is(data, 'ExpressionSet')) length(Biobase::sampleNames(data))
-  else if (is(data, 'SingleCellExperiment')) ncol(data)
-  else nrow(data)
 }

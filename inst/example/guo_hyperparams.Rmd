@@ -46,7 +46,7 @@ legend(x="bottomright", legend=c("2C", "4C", "8C", "16C", "32C", "64C"), col=sel
 
 We will now calculate the elastic tree with different elasticity hyperparameters: the MERLoT defaults and the values that ElPiGraph.R proposes for the `elastic_tree` algorithm.
 
-```{r}
+```{r, message=FALSE}
 NumberOfNodes=100
 
 ElasticTree <- CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes)
@@ -61,7 +61,7 @@ The exact number of nodes per branch differs, and the exact positions of endpoin
 
 For the embedding in gene space, we will use (1) the MERLoT elastic tree with MERLoT hyperparameters (benchmarked in original benchmark), (2) the ElPi elastic tree with ElPi hyperparameters (benchmarked in extended benchmark), and (3) the ElPi elastic tree with MERLoT hyperparameters (not benchmarked).
 
-```{r}
+```{r, message=FALSE}
 # Embedd the principal elastic tree on the gene expression space from which it was calculated.
 EmbeddedTree= GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = ElasticTree)
 nikoEmb <- nikoEmbed(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = nikoTree)
@@ -103,7 +103,7 @@ Here we see a big difference for the first time. The default ElPi parameters all
 
 We include some more examples below. Always, from left to right: MERLoT+MERLoT, ElPi+ElPi, ElPi+MERLoT.
 
-```{r, fig.width=10, fig.height=15}
+```{r, fig.width=10, fig.height=15, echo=FALSE}
 # Plot gene expression profile as a function of pseudotime
 par(mfrow=c(5, 3))
 gene <- "Runx1"

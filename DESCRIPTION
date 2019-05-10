@@ -2,7 +2,7 @@ Package: merlot
 Type: Package
 Title: MERLoT
 Description: A method for reconstructing lineage-tree topologies from scRNA-seq data.
-Version: 0.1.2
+Version: 0.2.2
 Author: R. Gonzalo Parra <parra.gonzalo@gmail.com>
 Maintainer: R. Gonzalo Parra <parra.gonzalo@gmail.com>
 Encoding: UTF-8
@@ -13,12 +13,15 @@ Depends:
   R (>= 3.4.0)
 Imports:
   ElPiGraph.R,
+  destiny,
+  Biobase,
   igraph,
   fields,
   Matrix,
   scales,
   rgl,
   stats,
+  methods,
   utils,
   LSD
 Suggests:

@@ -505,6 +505,7 @@ plot_gene_on_map <- function(
 #' @param legend_position The position of the legend.
 #' @param node_size If annotation was provided, set if the size of each pie chart will be uniform ("topology") or depend on the number of cells assigned to the node ("cells")
 #' @param node_radius Sets the default node radius if \code{node_size = "topology"}
+#' @param cols A vector of colors to use for the annotation.
 #' @export
 #'
 #' @importFrom igraph graph_from_adjacency_matrix layout_with_kk
@@ -515,18 +516,23 @@ plot_flattened_tree <- function(ElasticTree,
                                 layout=NULL,
                                 legend_position="topright",
                                 node_size=c("topology", "cells"),
-                                node_radius=12)
+                                node_radius=12,
+                                cols=NULL)
 {
   node_size <- match.arg(node_size)
   NumberOfNodes <- dim(ElasticTree$Nodes)[1]
   N <- length(ElasticTree$Topology$Endpoints)
   B <- length(ElasticTree$Topology$Branchpoints)
-
-  selected_colors <- c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid",
-                       "darkorange3", "orange", "blue", "aquamarine", "magenta",
-                       "brown", "gray", "wheat1", "azure4", "lightsalmon4",
-                       "navy", "sienna1", "gold4", "red4", "violetred", "black")
-
+  
+  if (is.null(cols)) {
+    selected_colors <- c("forestgreen", "firebrick3", "dodgerblue3", "darkorchid",
+                         "darkorange3", "orange", "blue", "aquamarine", "magenta",
+                         "brown", "gray", "wheat1", "azure4", "lightsalmon4",
+                         "navy", "sienna1", "gold4", "red4", "violetred", "black")
+  } else {
+    selected_colors <- cols
+  }
+  
   # build an adjacency matrix of the nodes and translate it to a graph
   graph_yk <- get_node_graph(ElasticTree)
 
@@ -559,26 +565,27 @@ plot_flattened_tree <- function(ElasticTree,
     nodes_labels=c(seq(1, N + B), rep(NA, NumberOfNodes - N - B))
     nodes_sizes=c(rep(6, N + B), rep(4, NumberOfNodes - N - B))
     legend_labs <- c("Endpoints",
-                      "Branchpoints",
-                      paste("Branch ", 1:length(ElasticTree$Branches)))
+                     "Branchpoints",
+                     paste("Branch ", 1:length(ElasticTree$Branches)))
     legend_cols <- c("red",
-                      "skyblue",
-                      selected_colors[1:length(ElasticTree$Branches)])
-
+                     "skyblue",
+                     selected_colors[1:length(ElasticTree$Branches)])
+    
     plot(graph_yk, layout=l,
-          vertex.label=nodes_labels,
-          vertex.size=nodes_sizes,
-          vertex.color=nodes_colors,
-          vertex.label.cex=0.6)
+         vertex.label=nodes_labels,
+         vertex.size=nodes_sizes,
+         vertex.color=nodes_colors,
+         vertex.label.cex=0.6)
     legend(x=legend_position,
-            legend=legend_labs,
-            col=legend_cols,
-            pch=16)
+           legend=legend_labs,
+           col=legend_cols,
+           pch=16)
   } else {
     annot_levels <- levels(as.factor(cell_annot))
     if (length(annot_levels) <= length(selected_colors)) {
       pie_cols <- c("white", selected_colors[1:length(annot_levels)])
     } else {
+      print(paste("Supplied colors not enough; creating LSD palette with", length(annot_levels), "colors"))
       tmp <- LSD::distinctcolors(length(annot_levels), show = FALSE, bw = TRUE)
       pie_cols <- c("white", tmp)
     }
@@ -604,10 +611,18 @@ plot_flattened_tree <- function(ElasticTree,
     } else if (node_size == "cells") {
       avg_cells_per_node <- length(cell_annot) / NumberOfNodes
       nodes_sizes = rep(5, NumberOfNodes)
+      cells <- rep(0, NumberOfNodes)
       for (n in 1:NumberOfNodes) {
-        cells_n <- sum((ElasticTree$Cells2TreeNodes[, 2] == n))
-        nodes_sizes[n] <- nodes_sizes[n] * (cells_n / avg_cells_per_node)
+        cells[n] <- sum((ElasticTree$Cells2TreeNodes[, 2] == n))
+        nodes_sizes[n] <- nodes_sizes[n] * (cells[n] / avg_cells_per_node)
       }
+      sizes <- seq(0, max(cells), 10)[-1]
+      size_length <- length(sizes)
+      keep <- c(1,
+                as.integer(size_length/4),
+                as.integer(size_length/2),
+                as.integer(size_length) * 0.75,
+                size_length)
     }
 
     plot(graph_yk, layout=l,
@@ -617,15 +632,21 @@ plot_flattened_tree <- function(ElasticTree,
          vertex.pie=pie_values,
          vertex.pie.color=list(pie_cols),
          vertex.label.cex=0.6)
-    legend(x=legend_position,
-           legend=annot_levels,
-           col="black",
-           pt.bg=pie_cols,
-           pch=21)
+    l <- legend(x=legend_position,
+                legend=annot_levels,
+                col="black",
+                pt.bg=pie_cols,
+                pch=21)
+    if (node_size == "cells") {
+      a <- legend(x = l$rect$left, y=l$rect$top - l$rect$h,
+                  legend=sizes[keep],
+                  pt.cex= keep,
+                  col='black')
+      x <- (a$text$x + a$rect$left) / 2
+      y <- a$text$y
+      graphics::symbols(x,y,circles=sizes[keep] * 5 / (200 * avg_cells_per_node) ,inches=FALSE,add=TRUE,bg='orange')
+    }
   }
-
-
-
   # legend(x="bottomright", inset=c(-0.16,0), legend=paste("Branch ", 1:length(ElasticTree$Branches)), col = selected_colors[1:length(ElasticTree$Branches)], pch=c(16))
 }
 
