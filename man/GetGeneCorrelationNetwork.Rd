@@ -4,7 +4,8 @@
 \alias{GetGeneCorrelationNetwork}
 \title{Get Gene Correlation Network}
 \usage{
-GetGeneCorrelationNetwork(ExpressionMatrix, cor_threshold = 0.4, plot = T)
+GetGeneCorrelationNetwork(ExpressionMatrix, cor_threshold = 0.4,
+  plot = T)
 }
 \arguments{
 \item{ExpressionMatrix}{contaings the expression profiles(columns) along the cells (rows)}

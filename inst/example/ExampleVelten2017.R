@@ -23,18 +23,14 @@ for(i in 1:length(Types))
 #------Calculate the Scaffold tree
 ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates)
 
-# svg(filename = "/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Figuras/Fig1Bis/DMSteinmetScaffold.svg", height = 6, width = 6)
 plot_scaffold_tree(ScaffoldTree = ScaffoldTree, colorcells = branches_colors)
 legend(x="bottomright", legend=c("B Cell", "Eo/Baso/Mast", "Ery", "Mk", "Mono/DC", "Neutro"), col=selected_colors, pch=16, cex=0.7)
-# dev.off()
 
 #----------------- Calculate the Elastic tree
 NumberOfNodes=100
 ElasticTree= CalculateElasticTree(ScaffoldTree = ScaffoldTree, N_yk = NumberOfNodes, FixEndpoints = F)
 
-# svg(filename = "/home/gonzalo/Dropbox/SoedingGroup/PaperTree/Figuras/Fig1Bis/DMSteinmetzCellColors.svg", height = 6, width = 6)
 plot_elastic_tree(ElasticTree, legend = F, colorcells = branches_colors)
-# dev.off()
 
 # Read the dataset to be embedded in the low dimensional manifold
 ExpressionData=paste(find.package("merlot"), "/example/Velten2017.txt", sep="")

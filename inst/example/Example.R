@@ -41,11 +41,6 @@ plot_pseudotime_expression_gene(GeneName = "Sox2" , EmbeddedTree = EmbeddedTree,
 plot_pseudotime_expression_gene(GeneName = "Nanog" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
 plot_pseudotime_expression_gene(GeneName = "Klf2" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
 
-
-
-svg(filename = "/home/gonzalo/Dropbox/SoedingGroup/ISMB2017/Show1.svg", height = 4, width = 6)
-plot_pseudotime_expression_gene(GeneName = "Gata4" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = T)
-dev.off()
 # Plots the averaged expression and the interpolated expression matrices. both matrices are returned as part of a list object
 OrderedMatrix=plot_heatmaps_embedding(Pseudotimes, EmbeddedTree, log_tranform=F)
 
@@ -58,8 +53,6 @@ DifferentiallyExpressedGenes=subpopulations_differential_expression(SubPopulatio
 Branch1Genes=branch_differential_expression(Branch =1, EmbeddedTree, mode="cells")
 Branch2Genes=branch_differential_expression(Branch =2, EmbeddedTree, mode="cells")
 
-
-
 #cluster into a K-Star with K=3
 clust=kbranches.global(CellCoordinates,Kappa=3)
 
@@ -71,7 +64,7 @@ plot(CellCoordinates,col=pal[clust$cluster],pch=21,bg=pal[clust$cluster])
 
 # --------
 # Load the cell types
-CellTypes=read.table(file="/home/gonzalo/Desktop/Postdoc/Colabs/Niko/Papers/PreparingDatasets/ProcessedDatasets/Features/GuoFeatures.txt", sep="\t", header = F, stringsAsFactors = F)
+CellTypes=read.table(file=paste(find.package("merlot"), "/example/GuoFeatures.txt", sep=""), sep="\t", header = F, stringsAsFactors = F)
 CellTypes=CellTypes[,2]
 selected_colors=c("red", "orange", "yellow", "green", "cyan", "darkblue")
 

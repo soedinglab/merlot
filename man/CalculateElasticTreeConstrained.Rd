@@ -4,12 +4,12 @@
 \alias{CalculateElasticTreeConstrained}
 \title{Calculate elastic tree with iterative constraints}
 \usage{
-CalculateElasticTreeConstrained(ScaffoldTree, N_yk = 150, start_N_yk = 100,
-  step_N_yk = 50, lambda_0 = 2.03e-09, mu_0 = 0.00625, FixEndpoints = F,
-  plot = F)
+CalculateElasticTreeConstrained(ScaffoldTree, N_yk = 150,
+  start_N_yk = 100, step_N_yk = 50, lambda_0 = 8e-10,
+  mu_0 = 0.0025, FixEndpoints = F, plot = F)
 }
 \arguments{
-\item{ScaffoldTree}{scaffoldTree calculated by the CalculateScaffoldTree function.}
+\item{ScaffoldTree}{scaffoldTree calculated by the CalculateScaffoldTree function}
 
 \item{N_yk}{number of nodes for the elastic principal tree}
 
@@ -19,7 +19,7 @@ CalculateElasticTreeConstrained(ScaffoldTree, N_yk = 150, start_N_yk = 100,
 
 \item{lambda_0}{principal elastic tree energy function parameter.}
 
-\item{mu_0}{principal elastic tree energy function parameter.}
+\item{mu_0}{principal elastic tree energy function parameter}
 
 \item{FixEndpoints}{Whether or not the end points coordinates are fixed}
 
