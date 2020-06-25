@@ -55,7 +55,7 @@ For rJava **you have to have Java installed** in your system. You can install **
 You might be required to installed the following system libraries: libudunits2-dev, mesa-common-dev, libglu1-mesa-dev, and zlib1g-dev.
 
 
-## 3) Download
+## 3) Download The Rpackage files 
 Download an archive from github (for example the [zip](https://github.com/soedinglab/merlot/archive/master.zip) file) and unpack it, or pull the repository directly.
 
 
